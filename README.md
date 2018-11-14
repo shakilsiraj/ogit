@@ -28,28 +28,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`ogit hello [FILE]`](#ogit-hello-file)
 * [`ogit help [COMMAND]`](#ogit-help-command)
-
-## `ogit hello [FILE]`
-
-describe the command here
-
-```
-USAGE
-  $ ogit hello [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ ogit hello
-  hello world from ./src/hello.ts!
-```
-
-_See code: [src/commands/hello.ts](https://github.com/shakilsiraj/ogit/blob/v0.0.0/src/commands/hello.ts)_
 
 ## `ogit help [COMMAND]`
 
