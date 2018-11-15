@@ -24,6 +24,6 @@ export class GitStatus {
   private currentBranch: string = undefined;
   @JsonProperty({ name: "tracking" })
   private trackingBranch: string = undefined;
-  @JsonProperty({ name: "files", type: GitFile })
-  changedFiles: GitFile[] = undefined;
+  @JsonProperty({ type: GitFile })
+  files: GitFile[] = undefined;
 }
