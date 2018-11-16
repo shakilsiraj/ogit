@@ -13,7 +13,13 @@ describe('ogit', () => {
                 });
                 it('should return a list of changed files', async () => {
                     const status = await GitWrapper.status();
-                    expect(status.files.length > 0).toBeTruthy();
+                    expect(status.modified.length > 0).toBeTruthy();
+                });
+            });
+            describe('originUrl', () => {
+                it('should return the right value', async () => {
+                    const originUrl = await GitWrapper.originUrl();
+                    expect(originUrl).toEqual('https://ssiraj@bitbucket.org/ssiraj/ogit.git');
                 });
 
             });

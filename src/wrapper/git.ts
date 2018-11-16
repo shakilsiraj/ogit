@@ -3,25 +3,51 @@ import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
 import { GitFile } from '../models';
 
+/**
+ *Wrapper class for git commands.
+ *
+ * @export
+ * @class GitWrapper
+ */
 export class GitWrapper {
 
+    /**
+     *Returns the status of the current git repo.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
     static status = async (): Promise<GitStatus> => {
-        const gitStatus = await SimpleGit().status();
 
-        //TODO: Cleanup .. when I can figure out what's wrong!!!!!
-        // Maybe use a deserializer?
-        const a = ObjectMapper.deserialize(GitStatus, gitStatus);
-        a.files = [];
-        for (let file of gitStatus.files) {
-            const gitFile = new GitFile();
-            gitFile.path = file.path;
-            gitFile.index = file.index;
-            gitFile.workingDirectory = file.working_dir;
-            a.files.push(gitFile);
+        let statusObj;
+        try {
+            const gitStatus = await SimpleGit().status();
+            statusObj = ObjectMapper.deserialize(GitStatus, gitStatus);
+        } catch (error) {
+            throw `Call to get repository status failed with message: ${error.message}`;
         }
-        return a;
+        return statusObj;
     }
 
-
-
+    /**
+     *Returns the remote origin url for this branch.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
+    static originUrl = async (): Promise<string> => {
+        let url;
+        try {
+            url = await SimpleGit().raw(
+                [
+                    'config',
+                    '--get',
+                    'remote.origin.url'
+                ]
+            )
+        } catch (error) {
+            throw `Call to get remote origin failed with message: ${error.message}`;
+        }
+        return !!url ? url.trim() : undefined;
+    }
 }
