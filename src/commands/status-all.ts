@@ -1,9 +1,9 @@
-import { ChangeTypes } from './../models/GitStatus';
+import { ChangeTypes } from '../models/GitStatus';
 import 'reflect-metadata';
 const terminalLink = require('terminal-link');
 const chalk = require('chalk');
 const columnify = require('columnify');
-import { GitWrapper } from './../wrapper/git';
+import { GitWrapper } from '../wrapper/git';
 import { Command, flags } from "@oclif/command";
 import { GitStatus } from '../models';
 
@@ -61,7 +61,7 @@ export default class CheckStatusCommand extends Command {
 
       }));
     } else {
-      console.log(chalk.yellow('You do not have any changes'));
+      console.log(chalk.yellow('You do not have any uncommitted changes'));
     }
 
   }
