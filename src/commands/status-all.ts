@@ -8,7 +8,7 @@ import { Command, flags } from "@oclif/command";
 import { GitStatus } from '../models';
 
 export default class CheckStatusCommand extends Command {
-  static description = "d???";
+  static description = "Display the uncommitted changes";
 
   static aliases = ['status'];
 
