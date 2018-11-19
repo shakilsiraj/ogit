@@ -26,7 +26,7 @@ describe('ogit', () => {
             describe('initialized', () => {
                 it('should be already initalized', async () => {
                     const alreadyInitialized = await GitWrapper.initialize();
-                    expect(alreadyInitialized).toBeTruthy();
+                    expect(alreadyInitialized).toBeFalsy();
                 });
 
             });
