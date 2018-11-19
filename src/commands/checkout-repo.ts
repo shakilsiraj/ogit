@@ -1,8 +1,6 @@
 import 'reflect-metadata';
-const chalk = require('chalk');
 import { GitWrapper } from '../wrapper/git';
-import { Command, flags } from "@oclif/command";
-import { ClientRequest } from 'http';
+import { Command } from "@oclif/command";
 
 export default class CheckoutRepoCommand extends Command {
   static description = "Checkout a git repo into current directory";
