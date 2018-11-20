@@ -1,8 +1,8 @@
 import { GitStatus } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
-import { GitFile } from '../models';
 import cli from 'cli-ux';
+import { GitBranchSummary, GitBranch } from '../models';
 
 /**
  *Wrapper class for git commands.
@@ -113,6 +113,31 @@ export class GitWrapper {
                 cli.action.stop(`Pulling down branch failed with message: ${error.message}`);
             }
         }
+    }
+
+    /**
+     * Returns the list of branches in the current repo.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
+    static listBranches = async (): Promise<GitBranch[]> => {
+
+        const branches: GitBranch[] = [];
+
+        const remoteBranchesSummary = ObjectMapper.deserialize(GitBranchSummary, await SimpleGit().branch(['-r']));
+        remoteBranchesSummary.branches.forEach(branch => {
+            branch.isLocal = false;
+            branches.push(branch);
+        });
+
+        const localBranchesSummary = ObjectMapper.deserialize(GitBranchSummary, await SimpleGit().branchLocal());
+        localBranchesSummary.branches.forEach(branch => {
+            branch.isLocal = true;
+            branches.push(branch);
+        })
+
+        return branches;
     }
 
 }
