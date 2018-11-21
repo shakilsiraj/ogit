@@ -1,7 +1,8 @@
 import { GitStatus } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
-import { GitFile } from '../models';
+import cli from 'cli-ux';
+import { GitBranchSummary, GitBranch } from '../models';
 
 /**
  *Wrapper class for git commands.
@@ -50,4 +51,125 @@ export class GitWrapper {
         }
         return !!url ? url.trim() : undefined;
     }
+
+    /**
+     * Initializes the current directory as a git repo if not already.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
+    static initialize = async (): Promise<boolean> => {
+        let success = false;
+        try {
+            cli.action.start('Initializing git repo');
+            if (! await SimpleGit().checkIsRepo()) {
+                await SimpleGit().init();
+                success = true;
+                cli.action.stop();
+            } else {
+                cli.action.stop('Skipping initialization as the directiory is already a git repo!');
+            }
+        } catch (error) {
+            throw `Call to check init status failed with message: ${error.message}`;
+        }
+        return success;
+    }
+
+    /**
+     * Sets up the git project from in the current directory. Works the same as 
+     * cloning except that cloning requires a new directory be created and 
+     * the code checked out in that.
+     * 
+     * By default, this operation will pull the master branch.
+     *
+     * TODO: How to test this method?
+     * 
+     * @static
+     * @memberof GitWrapper
+     */
+    static checkoutRepo = async (url: string): Promise<void> => {
+        let success = false;
+        const branch = 'master';
+        await GitWrapper.initialize();
+        try {
+            cli.action.start('Adding remote origin to ' + url, '', { stdout: false });
+            const originUrl = await GitWrapper.originUrl();
+            if (originUrl) {
+                cli.action.stop('failed as remote origin already exists!');
+            } else {
+                await SimpleGit().addRemote('origin', url);
+                success = true;
+                cli.action.stop();
+            }
+        } catch (error) {
+            cli.action.stop(`Call to setup git repo failed with message: ${error.message}`);
+        }
+        if (success) {
+            try {
+                cli.action.start('Pulling down repository');
+                await SimpleGit().pull('origin', branch);
+                cli.action.stop();
+            } catch (error) {
+                cli.action.stop(`Pulling down branch failed with message: ${error.message}`);
+            }
+        }
+    }
+
+    /**
+     * Returns the list of branches in the current repo.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
+    static listBranches = async (): Promise<GitBranch[]> => {
+
+        const branches: GitBranch[] = [];
+
+        const remoteBranchesSummary = ObjectMapper.deserialize(GitBranchSummary, await SimpleGit().branch(['-r']));
+        remoteBranchesSummary.branches.forEach(branch => {
+            branch.isLocal = false;
+            branches.push(branch);
+        });
+
+        const localBranchesSummary = ObjectMapper.deserialize(GitBranchSummary, await SimpleGit().branchLocal());
+        localBranchesSummary.branches.forEach(branch => {
+            branch.isLocal = true;
+            branches.push(branch);
+        })
+
+        return branches;
+    }
+
+    static commit = async (message: string, fileNames: string[], skipValidation: boolean): Promise<SimpleGit.CommitSummary> => {
+        const options: any = {};
+        if (skipValidation) {
+            options['--no-verify'] = null;
+        }
+        try {
+            cli.action.start('Committing changes');
+            const commitResult = await SimpleGit().commit(message, fileNames, options);
+            cli.action.stop();
+            return commitResult;
+        } catch (error) {
+            throw `Call to commit changes failed with message: ${error.message}`;
+        }
+
+    }
+
+    /**
+     * Add the file to source control.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
+    static addToRepo = async (filePath: string): Promise<void> => {
+        try {
+            cli.action.start(`Adding file to repo ${filePath} `);
+            await SimpleGit().add(filePath);
+            cli.action.stop();
+        } catch (error) {
+            throw `Call to add file to repo failed with message: ${error.message}`;
+        }
+    }
+
 }

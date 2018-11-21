@@ -23,6 +23,39 @@ describe('ogit', () => {
                 });
 
             });
+            describe('initialized', () => {
+                it('should be already initalized', async () => {
+                    const alreadyInitialized = await GitWrapper.initialize();
+                    expect(alreadyInitialized).toBeFalsy();
+                });
+
+            });
+
+            describe('listBranches', () => {
+                it('should return a list', async () => {
+                    const branchesSummary = await GitWrapper.listBranches();
+                    expect(branchesSummary.length > 0).toBeTruthy();
+                });
+                it('should return a list containing local branch master', async done => {
+                    const branchesSummary = await GitWrapper.listBranches();
+                    for (let branchSummary of branchesSummary) {
+                        if (branchSummary.name === 'master' && branchSummary.isLocal === true) {
+                            done();
+                            return;
+                        }
+                    }
+                });
+                it('should return a list containing remote branch master', async done => {
+                    const branchesSummary = await GitWrapper.listBranches();
+                    for (let branchSummary of branchesSummary) {
+                        if (branchSummary.name === 'origin/master' && branchSummary.isLocal === false) {
+                            done();
+                            return;
+                        }
+                    }
+                });
+
+            });
         });
     });
 });

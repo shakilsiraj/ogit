@@ -28,5 +28,6 @@ module.exports = {
     "verbose": true,
     "transformIgnorePatterns": [
         "/node_modules/(?!@tsed/testing).+\\.js$"
-    ]
+    ],
+    "testEnvironment": "node"
 }

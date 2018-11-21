@@ -1,4 +1,4 @@
-import CheckStatusCommand from "../status-all";
+import CheckStatusCommand from "../display-changes";
 
 describe("ogit", () => {
   describe("commands", () => {

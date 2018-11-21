@@ -7,23 +7,12 @@ import { GitWrapper } from '../wrapper/git';
 import { Command, flags } from "@oclif/command";
 import { GitStatus } from '../models';
 
-export default class CheckStatusCommand extends Command {
-  static description = "d???";
+export default class DisplayChangesCommand extends Command {
+  static description = "Display all the uncommitted changes";
 
   static aliases = ['status'];
 
-  // static args = [{ name: "file" }];
-
   async run() {
-    // const { args, flags } = this.parse(CheckStatusCommand);
-
-    // const name = flags.name || "world";
-    // this.log(
-    //   `hello ${name} from /home/ec2-user/environment/src/commands/statuscheck.ts`
-    // );
-    // if (args.file && flags.force) {
-    //   this.log(`you input --force and --file: ${args.file}`);
-    // }
 
     const status: GitStatus = await GitWrapper.status();
     const remoteBranch = !!status.trackingBranch ? await GitWrapper.originUrl() : null;
@@ -37,9 +26,16 @@ export default class CheckStatusCommand extends Command {
     console.log(message);
 
     const dataTable = [];
+    console.log(status.created);
     for (let file of status.created) {
       dataTable.push({
         change: 'New',
+        path: file.path
+      })
+    }
+    for (let file of status.added) {
+      dataTable.push({
+        change: 'Added',
         path: file.path
       })
     }

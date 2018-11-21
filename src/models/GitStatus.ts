@@ -6,7 +6,7 @@ class GitFilesDeserializer implements Deserializer {
     const gitFiles: Map<string, GitFile> = new Map();
 
     for (let file of files) {
-      const gitFile = new GitFile(file.path, file.working_dir);
+      const gitFile = new GitFile(file.path, file.working_dir, file.index);
       gitFiles.set(gitFile.id, gitFile);
     }
 
@@ -17,7 +17,8 @@ class GitFilesDeserializer implements Deserializer {
 export enum ChangeTypes {
   Deleted = 'D',
   New = '?',
-  Modified = 'M'
+  Modified = 'M',
+  Added = 'A'
 }
 
 export class GitStatus {
@@ -30,13 +31,20 @@ export class GitStatus {
   @JsonProperty({ name: "conflicted" })
   private conflicted: string[] = undefined;
 
+  get all() {
+    return Array.from(this._files.values());
+  }
   get deleted() {
     return this.getFiles(ChangeTypes.Deleted);
   }
-
   get created() {
     return this.getFiles(ChangeTypes.New);
   }
+
+  get added() {
+    return this.getFiles(ChangeTypes.Added);
+  }
+
   get modified() {
     return this.getFiles(ChangeTypes.Modified);
   }
@@ -58,7 +66,7 @@ export class GitStatus {
   private getFiles(type: string): GitFile[] {
     const files: GitFile[] = [];
     this._files.forEach(file => {
-      if (file.type === type) {
+      if (file.changeType === type) {
         files.push(file);
       }
     });
