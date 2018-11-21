@@ -26,9 +26,16 @@ export default class DisplayChangesCommand extends Command {
     console.log(message);
 
     const dataTable = [];
+    console.log(status.created);
     for (let file of status.created) {
       dataTable.push({
         change: 'New',
+        path: file.path
+      })
+    }
+    for (let file of status.added) {
+      dataTable.push({
+        change: 'Added',
         path: file.path
       })
     }

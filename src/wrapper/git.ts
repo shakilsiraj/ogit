@@ -140,4 +140,36 @@ export class GitWrapper {
         return branches;
     }
 
+    static commit = async (message: string, fileNames: string[], skipValidation: boolean): Promise<SimpleGit.CommitSummary> => {
+        const options: any = {};
+        if (skipValidation) {
+            options['--no-verify'] = null;
+        }
+        try {
+            cli.action.start('Committing changes');
+            const commitResult = await SimpleGit().commit(message, fileNames, options);
+            cli.action.stop();
+            return commitResult;
+        } catch (error) {
+            throw `Call to commit changes failed with message: ${error.message}`;
+        }
+
+    }
+
+    /**
+     * Add the file to source control.
+     *
+     * @static
+     * @memberof GitWrapper
+     */
+    static addToRepo = async (filePath: string): Promise<void> => {
+        try {
+            cli.action.start(`Adding file to repo ${filePath} `);
+            await SimpleGit().add(filePath);
+            cli.action.stop();
+        } catch (error) {
+            throw `Call to add file to repo failed with message: ${error.message}`;
+        }
+    }
+
 }
