@@ -1,5 +1,5 @@
-import { JsonProperty, Deserializer } from "json-object-mapper";
-import { GitFile } from "./GitFile";
+import { JsonProperty, Deserializer } from 'json-object-mapper';
+import { GitFile } from './GitFile';
 
 class GitFilesDeserializer implements Deserializer {
   deserialize = (files: any[]): Map<string, GitFile> => {
@@ -11,7 +11,7 @@ class GitFilesDeserializer implements Deserializer {
     }
 
     return gitFiles;
-  }
+  };
 }
 
 export enum ChangeTypes {
@@ -22,13 +22,12 @@ export enum ChangeTypes {
 }
 
 export class GitStatus {
-
   @JsonProperty({ name: 'files', deserializer: GitFilesDeserializer })
   private _files: Map<string, GitFile> = new Map();
 
-  @JsonProperty({ name: "not_added" })
+  @JsonProperty({ name: 'not_added' })
   private notAdded: string[] = undefined;
-  @JsonProperty({ name: "conflicted" })
+  @JsonProperty({ name: 'conflicted' })
   private conflicted: string[] = undefined;
 
   get all() {
@@ -50,17 +49,17 @@ export class GitStatus {
   }
 
   // modified: GitFile[] = this.getFiles('M');
-  @JsonProperty({ name: "renamed" })
+  @JsonProperty({ name: 'renamed' })
   private renamed: string[] = undefined;
-  @JsonProperty({ name: "staged" })
+  @JsonProperty({ name: 'staged' })
   private staged: string[] = undefined;
   @JsonProperty()
   private ahead: number = undefined;
   @JsonProperty()
   private behind: number = undefined;
-  @JsonProperty({ name: "current" })
+  @JsonProperty({ name: 'current' })
   currentBranch: string = undefined;
-  @JsonProperty({ name: "tracking" })
+  @JsonProperty({ name: 'tracking' })
   trackingBranch: string = undefined;
 
   private getFiles(type: string): GitFile[] {
@@ -72,6 +71,4 @@ export class GitStatus {
     });
     return files;
   }
-
-
 }

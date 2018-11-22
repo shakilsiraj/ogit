@@ -18,5 +18,4 @@ export class GitFile {
     }
     return this.workingDir;
   }
-
 }

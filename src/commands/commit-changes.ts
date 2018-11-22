@@ -1,14 +1,14 @@
-import { string } from "@oclif/command/lib/flags";
-import { ChangeTypes } from "../models/GitStatus";
-import "reflect-metadata";
-const inquirer = require("inquirer");
-import { GitWrapper } from "../wrapper/git";
-import { Command } from "@oclif/command";
-import { GitStatus } from "../models";
-import { FileNameUtils } from "../utils/FileNameUtils";
+import { string } from '@oclif/command/lib/flags';
+import { ChangeTypes } from '../models/GitStatus';
+import 'reflect-metadata';
+const inquirer = require('inquirer');
+import { GitWrapper } from '../wrapper/git';
+import { Command } from '@oclif/command';
+import { GitStatus } from '../models';
+import { FileNameUtils } from '../utils/FileNameUtils';
 
 export default class CommitChangesCommand extends Command {
-  static description = "Commit all the uncommitted changes";
+  static description = 'Commit all the uncommitted changes';
 
   async run() {
     const status: GitStatus = await GitWrapper.status();
@@ -25,26 +25,26 @@ export default class CommitChangesCommand extends Command {
 
     const answers = await inquirer.prompt([
       {
-        message: "The following changes will be committed",
-        type: "checkbox",
+        message: 'The following changes will be committed',
+        type: 'checkbox',
         choices: choices,
-        name: "fileToBeCommitted",
+        name: 'fileToBeCommitted',
         validate: function validate(choices: string[]) {
           return choices.length > 0;
         }
       },
       {
-        message: "Commit message",
-        type: "input",
-        name: "commitMessage",
+        message: 'Commit message',
+        type: 'input',
+        name: 'commitMessage',
         validate: function validate(message: string) {
-          return message !== "";
+          return message !== '';
         }
       },
       {
-        message: "Skip varification",
-        type: "confirm",
-        name: "skipValidation",
+        message: 'Skip varification',
+        type: 'confirm',
+        name: 'skipValidation',
         default: false
       }
     ]);
@@ -85,7 +85,7 @@ export default class CommitChangesCommand extends Command {
   };
 
   private getFilePath = (fileName: string): string => {
-    const lastIndex = fileName.lastIndexOf("(");
+    const lastIndex = fileName.lastIndexOf('(');
     return fileName.substring(0, lastIndex - 1).trim();
   };
 }

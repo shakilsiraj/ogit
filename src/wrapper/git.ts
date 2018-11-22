@@ -1,11 +1,11 @@
-import { GitStatus } from "../models/GitStatus";
-import * as SimpleGit from "simple-git/promise";
-import { ObjectMapper } from "json-object-mapper";
-import cli from "cli-ux";
-import { GitBranchSummary, GitBranch } from "../models";
+import { GitStatus } from '../models/GitStatus';
+import * as SimpleGit from 'simple-git/promise';
+import { ObjectMapper } from 'json-object-mapper';
+import cli from 'cli-ux';
+import { GitBranchSummary, GitBranch } from '../models';
 
 /**
- *Wrapper class for git commands.
+ * Wrapper class for git commands.
  *
  * @export
  * @class GitWrapper
@@ -39,7 +39,7 @@ export class GitWrapper {
   static originUrl = async (): Promise<string> => {
     let url;
     try {
-      url = await SimpleGit().raw(["config", "--get", "remote.origin.url"]);
+      url = await SimpleGit().raw(['config', '--get', 'remote.origin.url']);
     } catch (error) {
       throw `Call to get remote origin failed with message: ${error.message}`;
     }
@@ -55,14 +55,14 @@ export class GitWrapper {
   static initialize = async (): Promise<boolean> => {
     let success = false;
     try {
-      cli.action.start("Initializing git repo");
+      cli.action.start('Initializing git repo');
       if (!(await SimpleGit().checkIsRepo())) {
         await SimpleGit().init();
         success = true;
         cli.action.stop();
       } else {
         cli.action.stop(
-          "Skipping initialization as the directiory is already a git repo!"
+          'Skipping initialization as the directiory is already a git repo!'
         );
       }
     } catch (error) {
@@ -85,15 +85,15 @@ export class GitWrapper {
    */
   static checkoutRepo = async (url: string): Promise<void> => {
     let success = false;
-    const branch = "master";
+    const branch = 'master';
     await GitWrapper.initialize();
     try {
-      cli.action.start("Adding remote origin to " + url, "", { stdout: false });
+      cli.action.start('Adding remote origin to ' + url, '', { stdout: false });
       const originUrl = await GitWrapper.originUrl();
       if (originUrl) {
-        cli.action.stop("failed as remote origin already exists!");
+        cli.action.stop('failed as remote origin already exists!');
       } else {
-        await SimpleGit().addRemote("origin", url);
+        await SimpleGit().addRemote('origin', url);
         success = true;
         cli.action.stop();
       }
@@ -104,8 +104,8 @@ export class GitWrapper {
     }
     if (success) {
       try {
-        cli.action.start("Pulling down repository");
-        await SimpleGit().pull("origin", branch);
+        cli.action.start('Pulling down repository');
+        await SimpleGit().pull('origin', branch);
         cli.action.stop();
       } catch (error) {
         cli.action.stop(
@@ -126,7 +126,7 @@ export class GitWrapper {
 
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
-      await SimpleGit().branch(["-r"])
+      await SimpleGit().branch(['-r'])
     );
     remoteBranchesSummary.branches.forEach(branch => {
       branch.isLocal = false;
@@ -152,10 +152,10 @@ export class GitWrapper {
   ): Promise<SimpleGit.CommitSummary> => {
     const options: any = {};
     if (skipValidation) {
-      options["--no-verify"] = null;
+      options['--no-verify'] = null;
     }
     try {
-      cli.action.start("Committing changes");
+      cli.action.start('Committing changes');
       const commitResult = await SimpleGit().commit(
         message,
         fileNames,
@@ -188,6 +188,6 @@ export class GitWrapper {
    * Optimizes the repo by calling garbage collection
    */
   static optimizeRepo = async (): Promise<void> => {
-    await SimpleGit().raw(["gc"]);
+    await SimpleGit().raw(['gc']);
   };
 }
