@@ -68,7 +68,7 @@
     "prettier": "prettier --write src/**/*.ts",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "jest",
-    "test-watch": "jest --watch --no-cache",
+    "test-watch": "jest --watch --no-cache --runInBand --colors",
     "jest-clear-cache": "jest --clearCache",
     "version": "oclif-dev readme && git add README.md"
   },
