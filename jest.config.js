@@ -8,6 +8,7 @@ module.exports = {
   "testPathIgnorePatterns": [
     "<rootDir>/.c9/", "<rootDir>/node_modules/"
   ],
+  "setupTestFrameworkScriptFile": "./jest.setup.ts",
   "transform": {
     "^.+\\.tsx?$": "ts-jest"
   },
