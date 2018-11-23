@@ -168,6 +168,8 @@ describe('ogit', () => {
 
       describe('ammendLastCommit', () => {
         it('should ammend a new file to the commit', async done => {
+          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
           await GitWrapper.addToRepo(file1);
