@@ -201,10 +201,6 @@ describe('ogit', () => {
             }
           }
           expect(found).toBe(2);
-
-          await SimpleGit().revert(commitSummary.commit, { '--soft': null });
-          fs.unlinkSync(file1);
-          fs.unlinkSync(file2);
         });
       });
     });
