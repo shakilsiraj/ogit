@@ -3,7 +3,6 @@ import { GitWrapper } from '../git';
 import * as fs from 'fs';
 import * as SimpleGit from 'simple-git/promise';
 import uuid = require('uuid');
-import { __await } from 'tslib';
 
 describe('ogit', () => {
   describe('wrapper', () => {

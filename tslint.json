@@ -3,5 +3,9 @@
   "rules": {
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "triple-equals": [true, "allow-null-check"],
+    "ordered-imports": false,
+    "object-curly-spacing": [false, "never"],
+    "no-unused-variable": true,
+    "prefer-for-of": false
   }
 }
