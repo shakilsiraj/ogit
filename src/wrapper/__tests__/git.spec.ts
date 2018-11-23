@@ -166,12 +166,13 @@ describe('ogit', () => {
       });
 
       describe('ammendLastCommit', () => {
-        let lastCommitHashBeforeTest: any;
-        beforeEach(async _ => {
-          lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
-        });
+        // let lastCommitHashBeforeTest: any;
+        // beforeEach(async _ => {
+        //   lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+        // });
 
         it('should amend a new file to the commit', async () => {
+          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
           await GitWrapper.addToRepo(file1);
@@ -194,6 +195,8 @@ describe('ogit', () => {
             commitSummary.commit
           );
 
+          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
+
           expect(fileNames.length).toBe(2);
 
           let found = 0;
@@ -204,9 +207,9 @@ describe('ogit', () => {
           }
           expect(found).toBe(2);
         });
-        afterEach(async _ => {
-          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
-        });
+        // afterEach(async _ => {
+        //   await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
+        // });
       });
     });
   });
