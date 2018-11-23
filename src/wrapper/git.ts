@@ -190,4 +190,72 @@ export class GitWrapper {
   static optimizeRepo = async (): Promise<void> => {
     await SimpleGit().raw(['gc']);
   };
+
+  /**
+   * Ammends the last commit
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static ammendLastCommit = async (
+    filePaths: string[],
+    message: string
+  ): Promise<SimpleGit.CommitSummary> => {
+    let summary: SimpleGit.CommitSummary;
+
+    cli.action.start(`Updating last comment to ${message}`);
+    summary = await SimpleGit().commit(message, filePaths, {
+      '--amend': null
+    });
+    cli.action.stop();
+
+    return summary;
+  };
+
+  /**
+   * Returns the last commit message from the commits
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static getLastCommitMessage = async (): Promise<string> => {
+    return (await SimpleGit().raw([
+      'log',
+      '--pretty=format:"%s"',
+      '-n 1'
+    ])).replace(/['"]+/g, '');
+  };
+
+  /**
+   * Return file names in an string array from the last commit
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static getFileNamesFromCommit = async (
+    commitHash: string
+  ): Promise<string[]> => {
+    const fileNamesString = await SimpleGit().raw([
+      'diff-tree',
+      '--no-commit-id',
+      '--name-only',
+      '-r',
+      commitHash
+    ]);
+    return fileNamesString.split('\n').filter(n => n);
+  };
+
+  /**
+   * Returns the last commit hash from the commits
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static getLastCommitHash = async (): Promise<string> => {
+    return (await SimpleGit().raw([
+      'log',
+      '--pretty=format:"%h"',
+      '-n 1'
+    ])).replace(/['"]+/g, '');
+  };
 }

@@ -102,13 +102,13 @@ describe('ogit', () => {
 
       describe('optimizeRepo', () => {
         it('should not fail', async () => {
-            let success = true;
-            try{
-              await GitWrapper.optimizeRepo();
-            }catch(err){
-              success = false;
-            }
-            expect(success).toBeTruthy();
+          let success = true;
+          try {
+            await GitWrapper.optimizeRepo();
+          } catch (err) {
+            success = false;
+          }
+          expect(success).toBeTruthy();
         });
       });
 
@@ -138,6 +138,71 @@ describe('ogit', () => {
           fs.unlinkSync(file2);
           fs.unlinkSync(file3);
           expect(found).toBe(3);
+        });
+      });
+
+      describe('getLastCommitMessage', () => {
+        it('should return a string value', async () => {
+          const response = await GitWrapper.getLastCommitMessage();
+          expect(typeof response === 'string').toBeTruthy();
+          expect(response).toBeDefined();
+        });
+      });
+
+      describe('getLastCommitHash', () => {
+        it('should return a string value', async () => {
+          const response = await GitWrapper.getLastCommitHash();
+          expect(typeof response === 'string').toBeTruthy();
+          expect(response).toBeDefined();
+        });
+      });
+
+      describe('getFileNamesFromLastCommit', () => {
+        it('should return a string array', async () => {
+          const response = await GitWrapper.getFileNamesFromCommit(
+            await GitWrapper.getLastCommitHash()
+          );
+          expect(response[0]).toBeDefined();
+        });
+      });
+
+      describe('ammendLastCommit', () => {
+        it('should ammend a new file to the commit', async done => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await GitWrapper.addToRepo(file1);
+          const message =
+            'testing ammendLastCommit > should add a new file to the commit';
+          const commitSummary1 = await GitWrapper.commit(
+            message,
+            [file1],
+            true
+          );
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          await GitWrapper.addToRepo(file2);
+          const commitSummary = await GitWrapper.ammendLastCommit(
+            [file2],
+            message
+          );
+          expect(await GitWrapper.getLastCommitMessage()).toBe(message);
+          const fileNames = await GitWrapper.getFileNamesFromCommit(
+            commitSummary.commit
+          );
+
+          expect(fileNames.length).toBe(2);
+
+          let found = 0;
+          for (let i = 0; i < fileNames.length; i++) {
+            if (fileNames[i] === file1 || fileNames[i] === file2) {
+              found++;
+            }
+          }
+          expect(found).toBe(2);
+
+          await SimpleGit().revert(commitSummary.commit, { '--soft': null });
+          fs.unlinkSync(file1);
+          fs.unlinkSync(file2);
         });
       });
     });
