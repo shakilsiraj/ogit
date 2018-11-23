@@ -171,13 +171,13 @@ describe('ogit', () => {
           lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
         });
 
-        it('should ammend a new file to the commit', async done => {
+        it('should amend a new file to the commit', async () => {
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
           await GitWrapper.addToRepo(file1);
           const message =
             'testing ammendLastCommit > should add a new file to the commit';
-          const commitSummary1 = await GitWrapper.commit(
+          await GitWrapper.commit(
             message,
             [file1],
             true
