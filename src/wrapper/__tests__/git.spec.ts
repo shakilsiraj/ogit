@@ -205,7 +205,9 @@ describe('ogit', () => {
           }
           expect(found).toBe(2);
         });
-        afterEach(async _ => {});
+        afterEach(async _ => {
+          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
+        });
       });
     });
   });
