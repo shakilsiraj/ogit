@@ -5,10 +5,10 @@
     "module": "commonjs",
     "inlineSourceMap": true,
     "strict": true,
-    "skipLibCheck": true,
     "target": "es6",
     "experimentalDecorators": true,
     "strictNullChecks": false,
     "lib": ["ES2015"]
-  }
+  },
+  "exclude": ["**/*.d.ts"]
 }
