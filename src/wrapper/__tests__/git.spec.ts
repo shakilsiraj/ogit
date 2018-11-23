@@ -168,7 +168,7 @@ describe('ogit', () => {
 
       describe('ammendLastCommit', () => {
         let lastCommitHashBeforeTest: any;
-        beforeEach(_ => {
+        beforeEach(async _ => {
           lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
         });
 
