@@ -167,9 +167,12 @@ describe('ogit', () => {
       });
 
       describe('ammendLastCommit', () => {
-        it('should ammend a new file to the commit', async done => {
-          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+        let lastCommitHashBeforeTest: any;
+        beforeEach(_ => {
+          lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+        });
 
+        it('should ammend a new file to the commit', async done => {
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
           await GitWrapper.addToRepo(file1);
@@ -202,6 +205,7 @@ describe('ogit', () => {
           }
           expect(found).toBe(2);
         });
+        afterEach(async _ => {});
       });
     });
   });
