@@ -2,14 +2,14 @@ import { GitWrapper } from '../wrapper/git';
 import Command from '../abstracts/AbstractCommitCommand';
 
 export default class CommitChangesCommand extends Command {
-  static description = 'Commit all the uncommitted changes';
+  static description = 'Commit all the uncommitted changes to repo';
   choices: any[] = [];
 
   async run() {
     super.runHelper();
   }
 
-  public getPrompts = (): any[] => {
+  public getPrompts = async (): Promise<any[]> => {
     return [
       {
         message: 'The following changes will be committed',

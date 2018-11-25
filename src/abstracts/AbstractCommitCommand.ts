@@ -20,7 +20,7 @@ export default abstract class extends Command {
       });
     });
 
-    const answers: any = await inquirer.prompt(this.getPrompts());
+    const answers: any = await inquirer.prompt(await this.getPrompts());
 
     //lets filter out the files that needs to be added to git seperately..
     const changeTypeToCheck = FileNameUtils.getFileChangeType(ChangeTypes.New);
@@ -33,13 +33,13 @@ export default abstract class extends Command {
     await GitWrapper.optimizeRepo();
 
     this.runCommit(
-      answers.message,
+      answers.commitMessage,
       this.getListOfFilesFromPrompt(answers.fileToBeCommitted),
       answers.skipValidation
     );
   }
 
-  public abstract getPrompts(): any[];
+  public abstract getPrompts(): Promise<any[]>;
   public abstract async runCommit(
     message: string,
     fileNames: string[],
