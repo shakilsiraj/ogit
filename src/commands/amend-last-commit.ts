@@ -1,57 +1,40 @@
-import 'reflect-metadata';
-import { GitWrapper } from '../wrapper/git';
 import Command from './AbstractCommitCommand';
+import { GitWrapper } from '../wrapper/git';
 
-export default class CommitChangesCommand extends Command {
-  static description = 'Commit all the uncommitted changes';
-  choices: any[] = [];
-
+export class AmendLastCommand extends Command {
+  static description = 'Amends the last commit changes';
   async run() {
     super.runHelper();
   }
-
-  public getPrompts = (): any[] => {
+  getPrompts = (): any[] => {
     return [
       {
         message: 'The following changes will be committed',
         type: 'checkbox',
         choices: this.choices,
         name: 'fileToBeCommitted',
-        when: this.choices.length > 0,
-        validate: function validate(choices: string[]) {
-          return choices.length > 0;
-        }
+        when: this.choices.length > 0
       },
       {
         message: 'Commit message',
         type: 'input',
         name: 'commitMessage',
+        default: GitWrapper.getLastCommitMessage(),
         validate: function validate(message: string) {
           return message !== '';
         }
-      },
-      {
-        message: 'Skip varification',
-        type: 'confirm',
-        name: 'skipValidation',
-        default: false
       }
     ];
   };
-
-  public runCommit = async (
+  runCommit = async (
     message: string,
     fileNames: string[],
     skipValidation: boolean
   ) => {
-    const commitResult = await GitWrapper.commit(
-      message,
-      fileNames,
-      skipValidation
-    );
+    const commitResult = await GitWrapper.ammendLastCommit(fileNames, message);
 
     console.log(
-      `Commit ${commitResult.commit} for branch ${
+      `Amend commit ${commitResult.commit} for branch ${
         commitResult.branch
       } was successful with ${commitResult.summary.changes} changes, ${
         commitResult.summary.insertions
