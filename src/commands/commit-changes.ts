@@ -1,5 +1,5 @@
 import { GitWrapper } from '../wrapper/git';
-import Command from './abstracts/AbstractCommitCommand';
+import Command from '../abstracts/AbstractCommitCommand';
 
 export default class CommitChangesCommand extends Command {
   static description = 'Commit all the uncommitted changes';

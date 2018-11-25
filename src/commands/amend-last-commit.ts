@@ -1,4 +1,4 @@
-import Command from './abstracts/AbstractCommitCommand';
+import Command from '../abstracts/AbstractCommitCommand';
 import { GitWrapper } from '../wrapper/git';
 
 export class AmendLastCommand extends Command {

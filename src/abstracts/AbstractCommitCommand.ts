@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { Command } from '@oclif/command';
-import { GitStatus, ChangeTypes } from '../../models';
-import { GitWrapper } from '../../wrapper/git';
-import { FileNameUtils } from '../../utils/FileNameUtils';
 import * as inquirer from 'inquirer';
+import { GitStatus, ChangeTypes } from '../models';
+import { GitWrapper } from '../wrapper/git';
+import { FileNameUtils } from '../utils/FileNameUtils';
 
 export default abstract class extends Command {
   choices: any[] = [];
@@ -20,7 +20,7 @@ export default abstract class extends Command {
       });
     });
 
-    const answers = await inquirer.prompt(this.getPrompts());
+    const answers: any = await inquirer.prompt(this.getPrompts());
 
     //lets filter out the files that needs to be added to git seperately..
     const changeTypeToCheck = FileNameUtils.getFileChangeType(ChangeTypes.New);
