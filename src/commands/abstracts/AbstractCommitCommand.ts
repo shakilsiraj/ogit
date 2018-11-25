@@ -1,8 +1,9 @@
+import 'reflect-metadata';
 import { Command } from '@oclif/command';
-import { GitStatus, ChangeTypes } from '../models';
-import { GitWrapper } from '../wrapper/git';
-import { FileNameUtils } from '../utils/FileNameUtils';
-const inquirer = require('inquirer');
+import { GitStatus, ChangeTypes } from '../../models';
+import { GitWrapper } from '../../wrapper/git';
+import { FileNameUtils } from '../../utils/FileNameUtils';
+import * as inquirer from 'inquirer';
 
 export default abstract class extends Command {
   choices: any[] = [];
