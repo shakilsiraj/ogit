@@ -161,7 +161,7 @@ describe('ogit', () => {
           const response = await GitWrapper.getFileNamesFromCommit(
             await GitWrapper.getLastCommitHash()
           );
-          expect(response[0]).toBeDefined();
+          expect(response).toBeDefined();
         });
       });
 

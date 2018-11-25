@@ -242,7 +242,8 @@ export class GitWrapper {
       '-r',
       commitHash
     ]);
-    return fileNamesString.split('\n').filter(n => n);
+    return fileNamesString ?
+      fileNamesString.split('\n').filter(n => n) : [];
   };
 
   /**
