@@ -3,11 +3,10 @@ import { Command } from '@oclif/command';
 
 export default abstract class extends Command {
   async runHelper() {
-    const commitHashes = this.getCommitHashes();
-    for (const commitHash in commitHashes) {
-      this.preformRevertOnCommit(commitHash);
+    const commitHashes = await this.getCommitHashes();
+    for (const commitHash of commitHashes) {
+      await this.preformRevertOnCommit(commitHash);
     }
-    console.log('Test');
   }
 
   public abstract getCommitHashes(): Promise<string[]>;
