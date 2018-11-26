@@ -202,13 +202,87 @@ describe('ogit', () => {
 
       //efa0e915a7d4c27fca2002350e47aceda4e6b872 - Fix for scenario where there was not files in the commit
       describe('getMessageFromCommitHash', () => {
-        it('should return a string ', async () => {
+        it('should return the subject as a string for a commit', async () => {
           const response = await GitWrapper.getMessageFromCommitHash(
             'efa0e915a7d4c27fca2002350e47aceda4e6b872'
           );
           expect(response).toBe(
             'Fix for scenario where there was not files in the commit'
           );
+        });
+      });
+
+      describe('revertCommit', () => {
+        it('should keep the files in fileSystem', async () => {
+          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await GitWrapper.addToRepo(file1);
+          const message =
+            'testing revertCommit > should keep the files in fileSystem';
+          const summary = await GitWrapper.commit(message, [file1], true);
+
+          await GitWrapper.revertCommit(summary.commit);
+
+          expect(fs.existsSync(file1)).toBeTruthy();
+          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
+        });
+        it('should cleanup the hash from repo', async () => {
+          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await GitWrapper.addToRepo(file1);
+          const message =
+            'testing revertCommit > should cleanup the hash from repo';
+          const summary = await GitWrapper.commit(message, [file1], true);
+
+          await GitWrapper.revertCommit(summary.commit);
+
+          const hashExists = (await SimpleGit().raw([
+            'branch',
+            '--contains',
+            summary.commit
+          ])).trim();
+          expect(hashExists.length).toBe(0);
+
+          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
+        });
+      });
+
+      describe('deleteCommit', () => {
+        it('should delete the files in fileSystem', async () => {
+          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await GitWrapper.addToRepo(file1);
+          const message =
+            'testing revertCommit > should delete the files in fileSystem';
+          const summary = await GitWrapper.commit(message, [file1], true);
+
+          await GitWrapper.deleteCommit(summary.commit);
+
+          expect(fs.existsSync(file1)).toBeFalsy();
+          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
+        });
+        it('should cleanup the hash from repo', async () => {
+          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await GitWrapper.addToRepo(file1);
+          const message =
+            'testing revertCommit > should cleanup the hash from repo';
+          const summary = await GitWrapper.commit(message, [file1], true);
+
+          await GitWrapper.deleteCommit(summary.commit);
+
+          const hashExists = (await SimpleGit().raw([
+            'branch',
+            '--contains',
+            summary.commit
+          ])).trim();
+          expect(hashExists.length).toBe(0);
+
+          await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
       });
     });

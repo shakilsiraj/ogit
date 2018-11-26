@@ -269,10 +269,29 @@ export class GitWrapper {
     return await SimpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
   };
 
-  // static revertCommit = async (hash: string): Promise<void> {
+  /**
+   * Reverts a commit using the commit hash. It does not delete the files
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static revertCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await GitWrapper.getMessageFromCommitHash(hash);
+    cli.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
+    await SimpleGit().raw(['reset', '--soft', `${hash}~`]);
+    cli.action.stop();
+  };
 
-  //   const commitMessage =
-
-  //   cli.action.start(`Reverting commit with `);
-  // }
+  /**
+   * Reverts a commit using the commit hash. It does not delete the files
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static deleteCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await GitWrapper.getMessageFromCommitHash(hash);
+    cli.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
+    await SimpleGit().raw(['reset', '--hard', `${hash}~`]);
+    cli.action.stop();
+  };
 }
