@@ -243,7 +243,7 @@ describe('ogit', () => {
             '--contains',
             summary.commit
           ]);
-          expect(hashExists).toBeUndefined();
+          expect(hashExists).toBeNull();
 
           await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
@@ -280,7 +280,7 @@ describe('ogit', () => {
             '--contains',
             summary.commit
           ]);
-          expect(hashExists).toBeUndefined();
+          expect(hashExists).toBeNull();
 
           await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
