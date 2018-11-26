@@ -319,7 +319,7 @@ export class GitWrapper {
    */
   static switchBranch = async (branchName: string): Promise<void> => {
     cli.action.start(`Switching to branch ${branchName}`);
-    await SimpleGit().checkoutLocalBranch(branchName);
+    await SimpleGit().checkout(branchName);
     cli.action.stop();
   };
 
