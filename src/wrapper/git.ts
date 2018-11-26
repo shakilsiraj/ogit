@@ -329,7 +329,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static currentBranchName = async (): Promise<string> => {
+  static getCurrentBranchName = async (): Promise<string> => {
     return await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD']);
   };
 }

@@ -289,7 +289,7 @@ describe('ogit', () => {
       describe('createBranch', () => {
         it('should be able to create a new branch', async done => {
           const newBranchName = 'branch_' + uuid.v4();
-          const currentBranchName = await GitWrapper.currentBranchName();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
           await GitWrapper.createBranch(newBranchName, 'origin/develop');
 
           const branches = await GitWrapper.listBranches();
