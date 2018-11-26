@@ -8,11 +8,11 @@ export class RevertLastCommitCommand extends Command {
     super.runHelper();
   }
 
-  public getCommitHashes = async (): Promise<string[]> => {
+  public async getCommitHashes(): Promise<string[]> {
     return [await GitWrapper.getLastCommitHash()];
-  };
-  public preformRevertOnCommit = async (hash: string): Promise<void> => {
+  }
+  public async preformRevertOnCommit(hash: string): Promise<void> {
     console.log('Reverting commit ' + hash);
     await GitWrapper.revertCommit(hash);
-  };
+  }
 }
