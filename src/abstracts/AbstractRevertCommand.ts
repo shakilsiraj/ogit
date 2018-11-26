@@ -7,6 +7,7 @@ export default abstract class extends Command {
     for (const commitHash in commitHashes) {
       this.preformRevertOnCommit(commitHash);
     }
+    console.log('Test');
   }
 
   public abstract getCommitHashes(): Promise<string[]>;
