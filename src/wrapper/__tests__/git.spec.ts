@@ -142,6 +142,7 @@ describe('ogit', () => {
 
       describe('getLastCommitMessage', () => {
         it('should return a string value', async () => {
+          console.log('test');
           const response = await GitWrapper.getLastCommitMessage();
           expect(typeof response === 'string').toBeTruthy();
           expect(response).toBeDefined();
@@ -178,11 +179,7 @@ describe('ogit', () => {
           await GitWrapper.addToRepo(file1);
           const message =
             'testing ammendLastCommit > should add a new file to the commit';
-          await GitWrapper.commit(
-            message,
-            [file1],
-            true
-          );
+          await GitWrapper.commit(message, [file1], true);
           const file2 = uuid.v4() + '.txt';
           createAndWriteToFile(file2);
           await GitWrapper.addToRepo(file2);
