@@ -12,6 +12,7 @@ export class RevertLastCommitCommand extends Command {
     return [await GitWrapper.getLastCommitHash()];
   };
   public preformRevertOnCommit = async (hash: string): Promise<void> => {
+    console.log('Reverting commit ' + hash);
     await GitWrapper.revertCommit(hash);
   };
 }
