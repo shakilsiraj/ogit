@@ -294,4 +294,32 @@ export class GitWrapper {
     await SimpleGit().raw(['reset', '--hard', `${hash}~`]);
     cli.action.stop();
   };
+
+  /**
+   * Creates a local branch from a remote branch
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static createBranch = async (
+    branchName: string,
+    remoteBranchName: string
+  ): Promise<void> => {
+    cli.action.start(`Creating a local branch ${branchName}`);
+    await SimpleGit().checkoutBranch(branchName, remoteBranchName);
+    cli.action.stop();
+  };
+
+  /**
+   * Switches to the local branch
+   * TODO: missing unit test...
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static switchBranch = async (branchName: string): Promise<void> => {
+    cli.action.start(`Switching to branch ${branchName}`);
+    await SimpleGit().checkoutLocalBranch(branchName);
+    cli.action.stop();
+  };
 }
