@@ -1,7 +1,7 @@
 {
   "name": "ogit",
   "description": "A lazy developer's Git CLI made simple",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": "shakil.siraj@gmail.com",
   "bin": {
     "ogit": "./bin/run"

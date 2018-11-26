@@ -166,11 +166,6 @@ describe('ogit', () => {
       });
 
       describe('ammendLastCommit', () => {
-        // let lastCommitHashBeforeTest: any;
-        // beforeEach(async _ => {
-        //   lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
-        // });
-
         it('should amend a new file to the commit', async () => {
           const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
@@ -178,11 +173,7 @@ describe('ogit', () => {
           await GitWrapper.addToRepo(file1);
           const message =
             'testing ammendLastCommit > should add a new file to the commit';
-          await GitWrapper.commit(
-            message,
-            [file1],
-            true
-          );
+          await GitWrapper.commit(message, [file1], true);
           const file2 = uuid.v4() + '.txt';
           createAndWriteToFile(file2);
           await GitWrapper.addToRepo(file2);
@@ -207,9 +198,18 @@ describe('ogit', () => {
           }
           expect(found).toBe(2);
         });
-        // afterEach(async _ => {
-        //   await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
-        // });
+      });
+
+      //efa0e915a7d4c27fca2002350e47aceda4e6b872 - Fix for scenario where there was not files in the commit
+      describe('getMessageFromCommitHash', () => {
+        it('should return a string ', async () => {
+          const response = await GitWrapper.getMessageFromCommitHash(
+            'efa0e915a7d4c27fca2002350e47aceda4e6b872'
+          );
+          expect(response).toBe(
+            'Fix for scenario where there was not files in the commit'
+          );
+        });
       });
     });
   });

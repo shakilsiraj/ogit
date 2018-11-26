@@ -242,8 +242,7 @@ export class GitWrapper {
       '-r',
       commitHash
     ]);
-    return fileNamesString ?
-      fileNamesString.split('\n').filter(n => n) : [];
+    return fileNamesString ? fileNamesString.split('\n').filter(n => n) : [];
   };
 
   /**
@@ -259,4 +258,21 @@ export class GitWrapper {
       '-n 1'
     ])).replace(/['"]+/g, '');
   };
+
+  /**
+   * Returns the commit message by looking up the hash in repo
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static getMessageFromCommitHash = async (hash: string): Promise<string> => {
+    return await SimpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
+  };
+
+  // static revertCommit = async (hash: string): Promise<void> {
+
+  //   const commitMessage =
+
+  //   cli.action.start(`Reverting commit with `);
+  // }
 }
