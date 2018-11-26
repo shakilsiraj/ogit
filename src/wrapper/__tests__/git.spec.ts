@@ -296,7 +296,6 @@ describe('ogit', () => {
           for (let branch of branches) {
             console.log('Branch ' + branch.name);
             if (branch.name === newBranchName) {
-              await GitWrapper.switchBranch(currentBranchName);
               await SimpleGit().deleteLocalBranch(newBranchName);
               done();
             }
