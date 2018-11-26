@@ -238,12 +238,12 @@ describe('ogit', () => {
 
           await GitWrapper.revertCommit(summary.commit);
 
-          const hashExists = (await SimpleGit().raw([
+          const hashExists = await SimpleGit().raw([
             'branch',
             '--contains',
             summary.commit
-          ])).trim();
-          expect(hashExists.length).toBe(0);
+          ]);
+          expect(hashExists).toBeUndefined();
 
           await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
@@ -275,12 +275,12 @@ describe('ogit', () => {
 
           await GitWrapper.deleteCommit(summary.commit);
 
-          const hashExists = (await SimpleGit().raw([
+          const hashExists = await SimpleGit().raw([
             'branch',
             '--contains',
             summary.commit
-          ])).trim();
-          expect(hashExists.length).toBe(0);
+          ]);
+          expect(hashExists).toBeUndefined();
 
           await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
