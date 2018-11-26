@@ -242,8 +242,7 @@ export class GitWrapper {
       '-r',
       commitHash
     ]);
-    return fileNamesString ?
-      fileNamesString.split('\n').filter(n => n) : [];
+    return fileNamesString ? fileNamesString.split('\n').filter(n => n) : [];
   };
 
   /**
@@ -258,5 +257,79 @@ export class GitWrapper {
       '--pretty=format:"%h"',
       '-n 1'
     ])).replace(/['"]+/g, '');
+  };
+
+  /**
+   * Returns the commit message by looking up the hash in repo
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static getMessageFromCommitHash = async (hash: string): Promise<string> => {
+    return await SimpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
+  };
+
+  /**
+   * Reverts a commit using the commit hash. It does not delete the files
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static revertCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await GitWrapper.getMessageFromCommitHash(hash);
+    cli.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
+    await SimpleGit().raw(['reset', '--soft', `${hash}~`]);
+    cli.action.stop();
+  };
+
+  /**
+   * Reverts a commit using the commit hash. It does not delete the files
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static deleteCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await GitWrapper.getMessageFromCommitHash(hash);
+    cli.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
+    await SimpleGit().raw(['reset', '--hard', `${hash}~`]);
+    cli.action.stop();
+  };
+
+  /**
+   * Creates a local branch from a remote branch
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static createBranch = async (
+    branchName: string,
+    remoteBranchName: string
+  ): Promise<void> => {
+    cli.action.start(`Creating a local branch ${branchName}`);
+    await SimpleGit().raw(['branch', branchName, remoteBranchName]);
+    cli.action.stop();
+  };
+
+  /**
+   * Switches to the local branch
+   * TODO: missing unit test...
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static switchBranch = async (branchName: string): Promise<void> => {
+    cli.action.start(`Switching to branch ${branchName}`);
+    await SimpleGit().checkout(branchName);
+    cli.action.stop();
+  };
+
+  /**
+   * Returns the current branch name
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static getCurrentBranchName = async (): Promise<string> => {
+    return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
   };
 }
