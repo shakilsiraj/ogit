@@ -302,6 +302,19 @@ describe('ogit', () => {
           }
         });
       });
+
+      describe('switchBranch', () => {
+        it('should be able to switch to a new branch', async () => {
+          const newBranchName = 'branch_' + uuid.v4();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          await GitWrapper.createBranch(newBranchName, 'origin/develop');
+
+          await GitWrapper.switchBranch(newBranchName);
+          expect(await GitWrapper.getCurrentBranchName()).toBe(newBranchName);
+          await GitWrapper.switchBranch(currentBranchName);
+          await SimpleGit().deleteLocalBranch(newBranchName);
+        });
+      });
     });
   });
 });
