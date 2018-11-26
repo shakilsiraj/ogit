@@ -289,12 +289,14 @@ describe('ogit', () => {
       describe('createBranch', () => {
         it('should be able to create a new branch', async done => {
           const newBranchName = 'branch_' + uuid.v4();
+          const currentBranchName = await GitWrapper.currentBranchName();
           await GitWrapper.createBranch(newBranchName, 'origin/develop');
 
           const branches = await GitWrapper.listBranches();
           for (let branch of branches) {
             console.log('Branch ' + branch.name);
             if (branch.label === newBranchName) {
+              await GitWrapper.switchBranch(currentBranchName);
               await SimpleGit().deleteLocalBranch(newBranchName);
               done();
             }

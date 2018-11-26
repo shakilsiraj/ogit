@@ -322,4 +322,14 @@ export class GitWrapper {
     await SimpleGit().checkoutLocalBranch(branchName);
     cli.action.stop();
   };
+
+  /**
+   * Returns the current branch name
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  static currentBranchName = async (): Promise<string> => {
+    return await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD']);
+  };
 }
