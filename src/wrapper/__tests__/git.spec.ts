@@ -142,6 +142,7 @@ describe('ogit', () => {
 
       describe('getLastCommitMessage', () => {
         it('should return a string value', async () => {
+          console.log('test');
           const response = await GitWrapper.getLastCommitMessage();
           expect(typeof response === 'string').toBeTruthy();
           expect(response).toBeDefined();
