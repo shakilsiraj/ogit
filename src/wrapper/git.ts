@@ -12,7 +12,7 @@ import { GitBranchSummary, GitBranch } from '../models';
  */
 export class GitWrapper {
   /**
-   *Returns the status of the current git repo.
+   * Returns the status of the current git repo.
    *
    * @static
    * @memberof GitWrapper
@@ -23,15 +23,15 @@ export class GitWrapper {
       const gitStatus = await SimpleGit().status();
       statusObj = ObjectMapper.deserialize(GitStatus, gitStatus);
     } catch (error) {
-      throw new Error(`Call to get repository status failed with message: ${
-        error.message
-      }`);
+      throw new Error(
+        `Call to get repository status failed with message: ${error.message}`
+      );
     }
     return statusObj;
   };
 
   /**
-   *Returns the remote origin url for this branch.
+   * Returns the remote origin url for this branch.
    *
    * @static
    * @memberof GitWrapper
@@ -41,9 +41,11 @@ export class GitWrapper {
     try {
       url = await SimpleGit().raw(['config', '--get', 'remote.origin.url']);
     } catch (error) {
-      throw new Error(`Call to get remote origin failed with message: ${error.message}`);
+      throw new Error(
+        `Call to get remote origin failed with message: ${error.message}`
+      );
     }
-    return !!url ? url.trim() : undefined;
+    return url ? url.trim() : undefined;
   };
 
   /**
@@ -66,7 +68,9 @@ export class GitWrapper {
         );
       }
     } catch (error) {
-      throw new Error(`Call to check init status failed with message: ${error.message}`);
+      throw new Error(
+        `Call to check init status failed with message: ${error.message}`
+      );
     }
     return success;
   };
@@ -164,7 +168,9 @@ export class GitWrapper {
       cli.action.stop();
       return commitResult;
     } catch (error) {
-      throw new Error(`Call to commit changes failed with message: ${error.message}`);
+      throw new Error(
+        `Call to commit changes failed with message: ${error.message}`
+      );
     }
   };
 
@@ -180,7 +186,9 @@ export class GitWrapper {
       await SimpleGit().add(filePath);
       cli.action.stop();
     } catch (error) {
-      throw new Error(`Call to add file to repo failed with message: ${error.message}`);
+      throw new Error(
+        `Call to add file to repo failed with message: ${error.message}`
+      );
     }
   };
 

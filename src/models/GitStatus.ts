@@ -22,7 +22,6 @@ export enum ChangeTypes {
 }
 
 export class GitStatus {
-
   get all() {
     return Array.from(this._files.values());
   }

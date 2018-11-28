@@ -10,6 +10,7 @@
     "no-console": false,
     "file-name-casing": [false, "camel-case"],
     "no-unused-variable": false,
-    "no-empty-line-after-opening-brace": false
+    "no-empty-line-after-opening-brace": false,
+    "no-redundant-jsdoc": false
   }
 }
