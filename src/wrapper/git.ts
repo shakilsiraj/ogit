@@ -10,14 +10,14 @@ import { GitBranchSummary, GitBranch } from '../models';
  * @export
  * @class GitWrapper
  */
-export class GitWrapper {
+export namespace GitWrapper {
   /**
    * Returns the status of the current git repo.
    *
    * @static
    * @memberof GitWrapper
    */
-  static status = async (): Promise<GitStatus> => {
+  export const status = async (): Promise<GitStatus> => {
     let statusObj;
     try {
       const gitStatus = await SimpleGit().status();
@@ -36,7 +36,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static originUrl = async (): Promise<string> => {
+  export const originUrl = async (): Promise<string> => {
     let url;
     try {
       url = await SimpleGit().raw(['config', '--get', 'remote.origin.url']);
@@ -54,7 +54,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static initialize = async (): Promise<boolean> => {
+  export const initialize = async (): Promise<boolean> => {
     let success = false;
     try {
       cli.action.start('Initializing git repo');
@@ -87,10 +87,10 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static checkoutRepo = async (url: string): Promise<void> => {
+  export const checkoutRepo = async (url: string): Promise<void> => {
     let success = false;
     const branch = 'master';
-    await GitWrapper.initialize();
+    await initialize();
     try {
       cli.action.start('Adding remote origin to ' + url, '', { stdout: false });
       const originUrl = await GitWrapper.originUrl();
@@ -125,7 +125,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static listBranches = async (): Promise<GitBranch[]> => {
+  export const listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
     console.log('Testing');
     const remoteBranchesSummary = ObjectMapper.deserialize(
@@ -149,7 +149,7 @@ export class GitWrapper {
     return branches;
   };
 
-  static commit = async (
+  export const commit = async (
     message: string,
     fileNames: string[],
     skipValidation: boolean
@@ -180,7 +180,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static addToRepo = async (filePath: string): Promise<void> => {
+  export const addToRepo = async (filePath: string): Promise<void> => {
     try {
       cli.action.start(`Adding file to repo ${filePath} `);
       await SimpleGit().add(filePath);
@@ -195,7 +195,7 @@ export class GitWrapper {
   /**
    * Optimizes the repo by calling garbage collection
    */
-  static optimizeRepo = async (): Promise<void> => {
+  export const optimizeRepo = async (): Promise<void> => {
     await SimpleGit().raw(['gc']);
   };
 
@@ -205,7 +205,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static ammendLastCommit = async (
+  export const ammendLastCommit = async (
     filePaths: string[],
     message: string
   ): Promise<SimpleGit.CommitSummary> => {
@@ -226,7 +226,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static getLastCommitMessage = async (): Promise<string> => {
+  export const getLastCommitMessage = async (): Promise<string> => {
     return (await SimpleGit().raw([
       'log',
       '--pretty=format:"%s"',
@@ -240,7 +240,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static getFileNamesFromCommit = async (
+  export const getFileNamesFromCommit = async (
     commitHash: string
   ): Promise<string[]> => {
     const fileNamesString = await SimpleGit().raw([
@@ -259,7 +259,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static getLastCommitHash = async (): Promise<string> => {
+  export const getLastCommitHash = async (): Promise<string> => {
     return (await SimpleGit().raw([
       'log',
       '--pretty=format:"%h"',
@@ -273,7 +273,9 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static getMessageFromCommitHash = async (hash: string): Promise<string> => {
+  export const getMessageFromCommitHash = async (
+    hash: string
+  ): Promise<string> => {
     return SimpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
   };
 
@@ -283,8 +285,8 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static revertCommit = async (hash: string): Promise<void> => {
-    const commitMessage = await GitWrapper.getMessageFromCommitHash(hash);
+  export const revertCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await getMessageFromCommitHash(hash);
     cli.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
     await SimpleGit().raw(['reset', '--soft', `${hash}~`]);
     cli.action.stop();
@@ -296,8 +298,8 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static deleteCommit = async (hash: string): Promise<void> => {
-    const commitMessage = await GitWrapper.getMessageFromCommitHash(hash);
+  export const deleteCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await getMessageFromCommitHash(hash);
     cli.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
     await SimpleGit().raw(['reset', '--hard', `${hash}~`]);
     cli.action.stop();
@@ -309,7 +311,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static createBranch = async (
+  export const createBranch = async (
     branchName: string,
     remoteBranchName: string
   ): Promise<void> => {
@@ -325,7 +327,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static switchBranch = async (branchName: string): Promise<void> => {
+  export const switchBranch = async (branchName: string): Promise<void> => {
     cli.action.start(`Switching to branch ${branchName}`);
     try {
       await SimpleGit().checkout(branchName);
@@ -346,7 +348,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static getCurrentBranchName = async (): Promise<string> => {
+  export const getCurrentBranchName = async (): Promise<string> => {
     return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
   };
 }
