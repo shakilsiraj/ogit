@@ -5,7 +5,7 @@ export class RevertLastCommitCommand extends Command {
   static description =
     'Reverts the last commit to repo, changes are left on the file system';
   async run() {
-    super.runHelper();
+    await super.runHelper();
   }
 
   public async getCommitHashes(): Promise<string[]> {

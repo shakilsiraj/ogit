@@ -6,7 +6,7 @@ export default class CommitChangesCommand extends Command {
   choices: any[] = [];
 
   async run() {
-    super.runHelper();
+    await super.runHelper();
   }
 
   public getPrompts = async (): Promise<any[]> => {
@@ -17,7 +17,7 @@ export default class CommitChangesCommand extends Command {
         choices: this.choices,
         name: 'fileToBeCommitted',
         when: this.choices.length > 0,
-        validate: function validate(choices: string[]) {
+        validate(choices: string[]) {
           return choices.length > 0;
         }
       },
@@ -25,7 +25,7 @@ export default class CommitChangesCommand extends Command {
         message: 'Commit message',
         type: 'input',
         name: 'commitMessage',
-        validate: function validate(message: string) {
+        validate(message: string) {
           return message !== '';
         }
       },

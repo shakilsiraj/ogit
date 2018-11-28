@@ -32,7 +32,7 @@ export default abstract class extends Command {
 
     await GitWrapper.optimizeRepo();
 
-    this.runCommit(
+    await this.runCommit(
       answers.commitMessage,
       this.getListOfFilesFromPrompt(answers.fileToBeCommitted),
       answers.skipValidation
@@ -46,7 +46,9 @@ export default abstract class extends Command {
     skipValidation: boolean
   ): Promise<void>;
 
-  private getListOfFilesFromPrompt = (fileNames: string[]): string[] => {
+  private readonly getListOfFilesFromPrompt = (
+    fileNames: string[]
+  ): string[] => {
     const processedFileNames: string[] = [];
     fileNames.forEach(fileName => {
       processedFileNames.push(this.getFilePath(fileName));
@@ -54,7 +56,7 @@ export default abstract class extends Command {
     return processedFileNames;
   };
 
-  private getFilePath = (fileName: string): string => {
+  private readonly getFilePath = (fileName: string): string => {
     const lastIndex = fileName.lastIndexOf('(');
     return fileName.substring(0, lastIndex - 1).trim();
   };

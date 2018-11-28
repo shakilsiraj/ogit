@@ -7,7 +7,7 @@ import * as inquirer from 'inquirer';
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';
   async run() {
-    super.runHelper();
+    await super.runHelper();
   }
 
   public async getSelectedBranch(): Promise<CreateBranchStructure> {

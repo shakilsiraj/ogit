@@ -7,7 +7,7 @@ import * as inquirer from 'inquirer';
 export class CreateBranchCommand extends Command {
   static description = 'Switches the current branch to another local branch';
   async run() {
-    super.runHelper();
+    await super.runHelper();
   }
 
   public async getSelectedBranch(): Promise<CreateBranchStructure> {

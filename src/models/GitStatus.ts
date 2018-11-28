@@ -22,13 +22,6 @@ export enum ChangeTypes {
 }
 
 export class GitStatus {
-  @JsonProperty({ name: 'files', deserializer: GitFilesDeserializer })
-  private _files: Map<string, GitFile> = new Map();
-
-  @JsonProperty({ name: 'not_added' })
-  private notAdded: string[] = undefined;
-  @JsonProperty({ name: 'conflicted' })
-  private conflicted: string[] = undefined;
 
   get all() {
     return Array.from(this._files.values());
@@ -47,20 +40,27 @@ export class GitStatus {
   get modified() {
     return this.getFiles(ChangeTypes.Modified);
   }
-
-  // modified: GitFile[] = this.getFiles('M');
-  @JsonProperty({ name: 'renamed' })
-  private renamed: string[] = undefined;
-  @JsonProperty({ name: 'staged' })
-  private staged: string[] = undefined;
-  @JsonProperty()
-  private ahead: number = undefined;
-  @JsonProperty()
-  private behind: number = undefined;
   @JsonProperty({ name: 'current' })
   currentBranch: string = undefined;
   @JsonProperty({ name: 'tracking' })
   trackingBranch: string = undefined;
+  @JsonProperty({ name: 'files', deserializer: GitFilesDeserializer })
+  private readonly _files: Map<string, GitFile> = new Map();
+
+  @JsonProperty({ name: 'not_added' })
+  private readonly notAdded: string[] = undefined;
+  @JsonProperty({ name: 'conflicted' })
+  private readonly conflicted: string[] = undefined;
+
+  // modified: GitFile[] = this.getFiles('M');
+  @JsonProperty({ name: 'renamed' })
+  private readonly renamed: string[] = undefined;
+  @JsonProperty({ name: 'staged' })
+  private readonly staged: string[] = undefined;
+  @JsonProperty()
+  private readonly ahead: number = undefined;
+  @JsonProperty()
+  private readonly behind: number = undefined;
 
   private getFiles(type: string): GitFile[] {
     const files: GitFile[] = [];

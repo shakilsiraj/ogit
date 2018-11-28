@@ -4,7 +4,7 @@ import { GitWrapper } from '../wrapper/git';
 export class AmendLastCommand extends Command {
   static description = 'Amends the last commit to repo';
   async run() {
-    super.runHelper();
+    await super.runHelper();
   }
   getPrompts = async (): Promise<any[]> => {
     const lastCommitMessage = await GitWrapper.getLastCommitMessage();
@@ -22,17 +22,13 @@ export class AmendLastCommand extends Command {
         type: 'input',
         name: 'commitMessage',
         default: lastCommitMessage,
-        validate: function validate(message: string) {
+        validate(message: string) {
           return message !== '';
         }
       }
     ]);
   };
-  runCommit = async (
-    message: string,
-    fileNames: string[],
-    skipValidation: boolean
-  ) => {
+  runCommit = async (message: string, fileNames: string[]) => {
     const commitResult = await GitWrapper.ammendLastCommit(fileNames, message);
 
     console.log(
