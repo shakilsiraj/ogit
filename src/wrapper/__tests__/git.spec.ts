@@ -10,7 +10,7 @@ describe('ogit', () => {
       describe('status', () => {
         it('should return a list of created files when a file has created', async done => {
           const fileName = uuid.v4() + '.txt';
-          const fd = createAndWriteToFile(fileName);
+          createAndWriteToFile(fileName);
           const status = await GitWrapper.status();
           status.created.forEach(async stat => {
             if (stat.path === fileName) {
@@ -41,7 +41,7 @@ describe('ogit', () => {
         });
         it('should return a list of added files when a file has been added', async done => {
           const fileName = uuid.v4() + '.txt';
-          const fd = createAndWriteToFile(fileName);
+          createAndWriteToFile(fileName);
           await SimpleGit().raw(['add', '.']);
           const status = await GitWrapper.status();
           status.added.forEach(async stat => {
@@ -105,6 +105,7 @@ describe('ogit', () => {
           try {
             await GitWrapper.optimizeRepo();
           } catch (err) {
+            console.log(err);
             success = false;
           }
           expect(success).toBeTruthy();
@@ -290,7 +291,6 @@ describe('ogit', () => {
       describe('createBranch', () => {
         it('should be able to create a new branch', async done => {
           const newBranchName = 'branch_' + uuid.v4();
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
           await GitWrapper.createBranch(newBranchName, 'origin/develop');
 
           const branches = await GitWrapper.listBranches();

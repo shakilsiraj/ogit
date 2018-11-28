@@ -8,6 +8,8 @@
     "no-unused-variable": true,
     "prefer-for-of": false,
     "no-console": false,
-    "file-name-casing": [false, "camel-case"]
+    "file-name-casing": [false, "camel-case"],
+    "no-unused-variable": false,
+    "no-empty-line-after-opening-brace": false
   }
 }

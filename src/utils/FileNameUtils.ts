@@ -1,6 +1,6 @@
 import { ChangeTypes } from './../models/GitStatus';
-export class FileNameUtils {
-  static getFileChangeType = (type: string) => {
+export namespace FileNameUtils {
+  export const getFileChangeType = (type: string) => {
     switch (type) {
     case ChangeTypes.Modified:
       return '(modified)';

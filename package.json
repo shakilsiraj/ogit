@@ -70,6 +70,7 @@
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "jest --runInBand",
     "test-watch": "jest --watch --no-cache --runInBand --colors",
+    "linter-autofix": "tslint -p . --fix",
     "jest-clear-cache": "jest --clearCache",
     "version": "oclif-dev readme && git add README.md"
   },

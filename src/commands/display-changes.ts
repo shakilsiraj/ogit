@@ -13,7 +13,7 @@ export default class DisplayChangesCommand extends Command {
 
   async run() {
     const status: GitStatus = await GitWrapper.status();
-    const remoteBranch = !!status.trackingBranch
+    const remoteBranch = status.trackingBranch
       ? await GitWrapper.originUrl()
       : null;
 
