@@ -30,6 +30,16 @@ export class CreateBranchCommand extends Command {
   public async preformBranchOperation(
     branchInfo: CreateBranchStructure
   ): Promise<void> {
-    await GitWrapper.switchBranch(branchInfo.localBranchName);
+    try {
+      await GitWrapper.switchBranch(branchInfo.localBranchName);
+    } catch (err) {
+      console.error('Possible merge conflict with the following files:');
+      err.fileNamesArray.forEach((fileName: string) => {
+        console.error(fileName.trim());
+      });
+      console.error(
+        'Please commit your changes (ogit commit-changes) or stash (ogit stash-changes) them before you switch branches'
+      );
+    }
   }
 }

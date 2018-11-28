@@ -123,7 +123,7 @@ export class GitWrapper {
    */
   static listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
-
+    console.log('Testing');
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
       await SimpleGit().branch(['-r'])
@@ -319,8 +319,17 @@ export class GitWrapper {
    */
   static switchBranch = async (branchName: string): Promise<void> => {
     cli.action.start(`Switching to branch ${branchName}`);
-    await SimpleGit().checkout(branchName);
-    cli.action.stop();
+    try {
+      await SimpleGit().checkout(branchName);
+      cli.action.stop();
+    } catch (err) {
+      cli.action.stop('failed');
+      const errorRegex = /checkout:\n((.+\n)+)Please/;
+      const fileNames = errorRegex.exec(err.message)[1].trim();
+      err.fileNamesArray = fileNames.split('\n');
+
+      throw err;
+    }
   };
 
   /**
