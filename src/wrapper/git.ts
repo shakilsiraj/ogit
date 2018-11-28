@@ -10,40 +10,42 @@ import { GitBranchSummary, GitBranch } from '../models';
  * @export
  * @class GitWrapper
  */
-export class GitWrapper {
+export namespace GitWrapper {
   /**
-   *Returns the status of the current git repo.
+   * Returns the status of the current git repo.
    *
    * @static
    * @memberof GitWrapper
    */
-  static status = async (): Promise<GitStatus> => {
+  export const status = async (): Promise<GitStatus> => {
     let statusObj;
     try {
       const gitStatus = await SimpleGit().status();
       statusObj = ObjectMapper.deserialize(GitStatus, gitStatus);
     } catch (error) {
-      throw `Call to get repository status failed with message: ${
-        error.message
-      }`;
+      throw new Error(
+        `Call to get repository status failed with message: ${error.message}`
+      );
     }
     return statusObj;
   };
 
   /**
-   *Returns the remote origin url for this branch.
+   * Returns the remote origin url for this branch.
    *
    * @static
    * @memberof GitWrapper
    */
-  static originUrl = async (): Promise<string> => {
+  export const originUrl = async (): Promise<string> => {
     let url;
     try {
       url = await SimpleGit().raw(['config', '--get', 'remote.origin.url']);
     } catch (error) {
-      throw `Call to get remote origin failed with message: ${error.message}`;
+      throw new Error(
+        `Call to get remote origin failed with message: ${error.message}`
+      );
     }
-    return !!url ? url.trim() : undefined;
+    return url ? url.trim() : undefined;
   };
 
   /**
@@ -52,7 +54,7 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static initialize = async (): Promise<boolean> => {
+  export const initialize = async (): Promise<boolean> => {
     let success = false;
     try {
       cli.action.start('Initializing git repo');
@@ -66,7 +68,9 @@ export class GitWrapper {
         );
       }
     } catch (error) {
-      throw `Call to check init status failed with message: ${error.message}`;
+      throw new Error(
+        `Call to check init status failed with message: ${error.message}`
+      );
     }
     return success;
   };
@@ -83,10 +87,10 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static checkoutRepo = async (url: string): Promise<void> => {
+  export const checkoutRepo = async (url: string): Promise<void> => {
     let success = false;
     const branch = 'master';
-    await GitWrapper.initialize();
+    await initialize();
     try {
       cli.action.start('Adding remote origin to ' + url, '', { stdout: false });
       const originUrl = await GitWrapper.originUrl();
@@ -121,9 +125,9 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static listBranches = async (): Promise<GitBranch[]> => {
+  export const listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
-
+    console.log('Testing');
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
       await SimpleGit().branch(['-r'])
@@ -145,7 +149,7 @@ export class GitWrapper {
     return branches;
   };
 
-  static commit = async (
+  export const commit = async (
     message: string,
     fileNames: string[],
     skipValidation: boolean
@@ -164,7 +168,9 @@ export class GitWrapper {
       cli.action.stop();
       return commitResult;
     } catch (error) {
-      throw `Call to commit changes failed with message: ${error.message}`;
+      throw new Error(
+        `Call to commit changes failed with message: ${error.message}`
+      );
     }
   };
 
@@ -174,20 +180,175 @@ export class GitWrapper {
    * @static
    * @memberof GitWrapper
    */
-  static addToRepo = async (filePath: string): Promise<void> => {
+  export const addToRepo = async (filePath: string): Promise<void> => {
     try {
       cli.action.start(`Adding file to repo ${filePath} `);
       await SimpleGit().add(filePath);
       cli.action.stop();
     } catch (error) {
-      throw `Call to add file to repo failed with message: ${error.message}`;
+      throw new Error(
+        `Call to add file to repo failed with message: ${error.message}`
+      );
     }
   };
 
   /**
    * Optimizes the repo by calling garbage collection
    */
-  static optimizeRepo = async (): Promise<void> => {
+  export const optimizeRepo = async (): Promise<void> => {
     await SimpleGit().raw(['gc']);
+  };
+
+  /**
+   * Ammends the last commit
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const ammendLastCommit = async (
+    filePaths: string[],
+    message: string
+  ): Promise<SimpleGit.CommitSummary> => {
+    let summary: SimpleGit.CommitSummary;
+
+    cli.action.start(`Updating last comment to ${message}`);
+    summary = await SimpleGit().commit(message, filePaths, {
+      '--amend': null
+    });
+    cli.action.stop();
+
+    return summary;
+  };
+
+  /**
+   * Returns the last commit message from the commits
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const getLastCommitMessage = async (): Promise<string> => {
+    return (await SimpleGit().raw([
+      'log',
+      '--pretty=format:"%s"',
+      '-n 1'
+    ])).replace(/['"]+/g, '');
+  };
+
+  /**
+   * Return file names in an string array from the last commit
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const getFileNamesFromCommit = async (
+    commitHash: string
+  ): Promise<string[]> => {
+    const fileNamesString = await SimpleGit().raw([
+      'diff-tree',
+      '--no-commit-id',
+      '--name-only',
+      '-r',
+      commitHash
+    ]);
+    return fileNamesString ? fileNamesString.split('\n').filter(n => n) : [];
+  };
+
+  /**
+   * Returns the last commit hash from the commits
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const getLastCommitHash = async (): Promise<string> => {
+    return (await SimpleGit().raw([
+      'log',
+      '--pretty=format:"%h"',
+      '-n 1'
+    ])).replace(/['"]+/g, '');
+  };
+
+  /**
+   * Returns the commit message by looking up the hash in repo
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const getMessageFromCommitHash = async (
+    hash: string
+  ): Promise<string> => {
+    return SimpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
+  };
+
+  /**
+   * Reverts a commit using the commit hash. It does not delete the files
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const revertCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await getMessageFromCommitHash(hash);
+    cli.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
+    await SimpleGit().raw(['reset', '--soft', `${hash}~`]);
+    cli.action.stop();
+  };
+
+  /**
+   * Reverts a commit using the commit hash. It does not delete the files
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const deleteCommit = async (hash: string): Promise<void> => {
+    const commitMessage = await getMessageFromCommitHash(hash);
+    cli.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
+    await SimpleGit().raw(['reset', '--hard', `${hash}~`]);
+    cli.action.stop();
+  };
+
+  /**
+   * Creates a local branch from a remote branch
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const createBranch = async (
+    branchName: string,
+    remoteBranchName: string
+  ): Promise<void> => {
+    cli.action.start(`Creating a local branch ${branchName}`);
+    await SimpleGit().raw(['branch', branchName, remoteBranchName]);
+    cli.action.stop();
+  };
+
+  /**
+   * Switches to the local branch
+   * TODO: missing unit test...
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const switchBranch = async (branchName: string): Promise<void> => {
+    cli.action.start(`Switching to branch ${branchName}`);
+    try {
+      await SimpleGit().checkout(branchName);
+      cli.action.stop();
+    } catch (err) {
+      cli.action.stop('failed');
+      const errorRegex = /checkout:\n((.+\n)+)Please/;
+      const fileNames = errorRegex.exec(err.message)[1].trim();
+      err.fileNamesArray = fileNames.split('\n');
+
+      throw err;
+    }
+  };
+
+  /**
+   * Returns the current branch name
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const getCurrentBranchName = async (): Promise<string> => {
+    return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
   };
 }

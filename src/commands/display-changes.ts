@@ -1,10 +1,9 @@
-import { ChangeTypes } from '../models/GitStatus';
 import 'reflect-metadata';
 const terminalLink = require('terminal-link');
 const chalk = require('chalk');
 const columnify = require('columnify');
 import { GitWrapper } from '../wrapper/git';
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import { GitStatus } from '../models';
 
 export default class DisplayChangesCommand extends Command {
@@ -14,7 +13,7 @@ export default class DisplayChangesCommand extends Command {
 
   async run() {
     const status: GitStatus = await GitWrapper.status();
-    const remoteBranch = !!status.trackingBranch
+    const remoteBranch = status.trackingBranch
       ? await GitWrapper.originUrl()
       : null;
 

@@ -1,7 +1,7 @@
 {
   "name": "ogit",
   "description": "A lazy developer's Git CLI made simple",
-  "version": "1.4.0",
+  "version": "1.10.2",
   "author": "shakil.siraj@gmail.com",
   "bin": {
     "ogit": "./bin/run"
@@ -24,6 +24,7 @@
     "@oclif/dev-cli": "^1.19.4",
     "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.1.7",
+    "@types/inquirer": "0.0.43",
     "@types/jest": "^23.3.9",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.5",
@@ -67,8 +68,9 @@
     "posttest": "tslint -p . -t stylish",
     "prettier": "prettier --write src/**/*.ts",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test-watch": "jest --watch --no-cache --runInBand --colors",
+    "linter-autofix": "tslint -p . --fix",
     "jest-clear-cache": "jest --clearCache",
     "version": "oclif-dev readme && git add README.md"
   },

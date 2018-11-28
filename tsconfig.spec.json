@@ -1,15 +1,14 @@
 {
-    "compilerOptions": {
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "module": "commonjs",
-        "inlineSourceMap": true,
-        "strict": true,
-        "target": "es6",
-        "experimentalDecorators": true,
-        "strictNullChecks": false,
-        "lib": [
-            "ES2015"
-        ]
-    }
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "module": "commonjs",
+    "inlineSourceMap": true,
+    "strict": true,
+    "target": "es6",
+    "experimentalDecorators": true,
+    "strictNullChecks": false,
+    "lib": ["ES2015"]
+  },
+  "exclude": ["**/*.d.ts"]
 }
