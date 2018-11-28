@@ -9,6 +9,7 @@
     "target": "es6",
     "experimentalDecorators": true,
     "strictNullChecks": false,
+    "noImplicitAny": false,
     "lib": [
       "ES2015"
     ]
