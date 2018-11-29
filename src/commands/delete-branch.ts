@@ -1,0 +1,53 @@
+import Command, {
+  CreateBranchStructure
+} from '../abstracts/AbstractBranchCommand';
+import { GitWrapper } from '../wrapper/git';
+import * as inquirer from 'inquirer';
+
+export class DeleteBranchCommand extends Command {
+  static description = 'Deletes a branch from the repo';
+  async run() {
+    await super.runHelper();
+  }
+
+  public async getSelectedBranch(): Promise<CreateBranchStructure> {
+    const branchNames: string[] = [];
+    const verifyingNumber: string = ('' + Math.random()).substr(4, 4);
+    this.branchesList.forEach(branch => {
+      branchNames.push(this.getName(branch));
+    });
+    const answers: any = await inquirer.prompt([
+      {
+        message: 'Select the branch to delete',
+        type: 'list',
+        choices: branchNames,
+        name: 'branchName',
+        validate(choices: string[]) {
+          return choices.length > 0;
+        }
+      },
+      {
+        message: `Please enter ${verifyingNumber} on the prompt`,
+        type: 'input',
+        name: 'localBranchName',
+        validate(number: string) {
+          return number === verifyingNumber;
+        }
+      }
+    ]);
+    return {
+      localBranchName: answers.localBranchName,
+      remoteBranchName: answers.remoteBranchName
+    };
+  }
+
+  public async preformBranchOperation(
+    branchInfo: CreateBranchStructure
+  ): Promise<void> {
+    await GitWrapper.createBranch(
+      branchInfo.localBranchName,
+      branchInfo.remoteBranchName
+    );
+    await GitWrapper.switchBranch(branchInfo.localBranchName);
+  }
+}

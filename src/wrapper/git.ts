@@ -3,7 +3,6 @@ import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch } from '../models';
-import { __await } from 'tslib';
 
 /**
  * Wrapper class for git commands.
@@ -128,7 +127,6 @@ export namespace GitWrapper {
    */
   export const listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
-    console.log('Testing');
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
       await SimpleGit().branch(['-r'])
