@@ -14,7 +14,9 @@ export class DeleteBranchCommand extends Command {
     const branchNames: string[] = [];
     const verifyingNumber: string = ('' + Math.random()).substr(4, 4);
     this.branchesList.forEach(branch => {
-      branchNames.push(this.getName(branch));
+      if (!branch.isCurrent) {
+        branchNames.push(`${this.getName(branch)} (${this.getType(branch)})`);
+      }
     });
     const answers: any = await inquirer.prompt([
       {
@@ -35,19 +37,32 @@ export class DeleteBranchCommand extends Command {
         }
       }
     ]);
+    const selectBranchName = this.getNameFromPrompt(answers.branchName);
     return {
-      localBranchName: answers.localBranchName,
-      remoteBranchName: answers.remoteBranchName
+      localBranchName:
+        this.localBranches.indexOf(selectBranchName) > -1
+          ? selectBranchName
+          : undefined,
+      remoteBranchName:
+        this.remoteBranches.indexOf(selectBranchName) > -1
+          ? selectBranchName
+          : undefined
     };
   }
 
   public async preformBranchOperation(
     branchInfo: CreateBranchStructure
   ): Promise<void> {
-    await GitWrapper.createBranch(
-      branchInfo.localBranchName,
-      branchInfo.remoteBranchName
-    );
-    await GitWrapper.switchBranch(branchInfo.localBranchName);
+    console.log(branchInfo);
+    if (branchInfo.localBranchName) {
+      await GitWrapper.deleteLocalBranch(branchInfo.localBranchName);
+    } else {
+      await GitWrapper.deleteRemoteBranch(branchInfo.remoteBranchName);
+    }
+    // await GitWrapper.createBranch(
+    //   branchInfo.localBranchName,
+    //   branchInfo.remoteBranchName
+    // );
+    // await GitWrapper.switchBranch(branchInfo.localBranchName);
   }
 }

@@ -26,6 +26,10 @@ export default abstract class extends Command {
     branchInfo: CreateBranchStructure
   ): Promise<void>;
 
+  protected getNameFromPrompt = (name: string): string => {
+    return name.split(' ')[0];
+  };
+
   protected getName = (branch: GitBranch): string => {
     return branch.isCurrent
       ? chalk.green(`${branch.name} (current)`)
