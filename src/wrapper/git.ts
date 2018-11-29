@@ -357,7 +357,14 @@ export namespace GitWrapper {
   export const deleteLocalBranch = async (
     branchName: string
   ): Promise<void> => {
-    await SimpleGit().deleteLocalBranch(branchName);
+    cli.action.start(`Deleting local branch ${branchName}`);
+    try {
+      await SimpleGit().raw(['branch', '-D', branchName]);
+      cli.action.stop();
+    } catch (e) {
+      cli.action.stop('failed');
+      throw e;
+    }
   };
 
   /**
@@ -366,6 +373,12 @@ export namespace GitWrapper {
   export const deleteRemoteBranch = async (
     branchName: string
   ): Promise<void> => {
-    await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
+    cli.action.start(`Deleting remote branch ${branchName}`);
+    try {
+      await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
   };
 }

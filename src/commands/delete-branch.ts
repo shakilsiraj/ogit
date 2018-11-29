@@ -53,16 +53,10 @@ export class DeleteBranchCommand extends Command {
   public async preformBranchOperation(
     branchInfo: CreateBranchStructure
   ): Promise<void> {
-    console.log(branchInfo);
     if (branchInfo.localBranchName) {
       await GitWrapper.deleteLocalBranch(branchInfo.localBranchName);
     } else {
       await GitWrapper.deleteRemoteBranch(branchInfo.remoteBranchName);
     }
-    // await GitWrapper.createBranch(
-    //   branchInfo.localBranchName,
-    //   branchInfo.remoteBranchName
-    // );
-    // await GitWrapper.switchBranch(branchInfo.localBranchName);
   }
 }
