@@ -3,6 +3,7 @@ import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch } from '../models';
+import { __await } from 'tslib';
 
 /**
  * Wrapper class for git commands.
@@ -350,5 +351,23 @@ export namespace GitWrapper {
    */
   export const getCurrentBranchName = async (): Promise<string> => {
     return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
+  };
+
+  /**
+   * Deletes a branch from local repo
+   */
+  export const deleteLocalBranch = async (
+    branchName: string
+  ): Promise<void> => {
+    await SimpleGit().deleteLocalBranch(branchName);
+  };
+
+  /**
+   * Deletes a remote branch
+   */
+  export const deleteRemoteBranch = async (
+    branchName: string
+  ): Promise<void> => {
+    await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
   };
 }
