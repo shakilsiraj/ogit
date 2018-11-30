@@ -1,14 +1,17 @@
 import 'reflect-metadata';
 import { Command } from '@oclif/command';
 import { GitWrapper } from '../wrapper/git';
+import { GitBranch } from '../models';
+const chalk = require('chalk');
 
 export default abstract class extends Command {
   protected localBranches: string[] = [];
   protected remoteBranches: string[] = [];
+  protected branchesList: GitBranch[] = [];
 
   async runHelper() {
-    const branchesList = await GitWrapper.listBranches();
-    for (let branch of branchesList) {
+    this.branchesList = await GitWrapper.listBranches();
+    for (let branch of this.branchesList) {
       if (branch.isLocal) {
         this.localBranches.push(branch.name);
       } else {
@@ -22,6 +25,24 @@ export default abstract class extends Command {
   public abstract async preformBranchOperation(
     branchInfo: CreateBranchStructure
   ): Promise<void>;
+
+  protected getNameFromPrompt = (name: string): string => {
+    return name.split(' ')[0];
+  };
+
+  protected getName = (branch: GitBranch): string => {
+    return branch.isCurrent
+      ? chalk.green(`${branch.name} (current)`)
+      : branch.name;
+  };
+
+  protected getType = (branch: GitBranch): string => {
+    let branchType = branch.isLocal ? 'Local' : 'Remote';
+    if (branch.isCurrent) {
+      branchType = chalk.green(branchType);
+    }
+    return branchType;
+  };
 }
 
 export interface CreateBranchStructure {

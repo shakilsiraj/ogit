@@ -127,7 +127,6 @@ export namespace GitWrapper {
    */
   export const listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
-    console.log('Testing');
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
       await SimpleGit().branch(['-r'])
@@ -350,5 +349,36 @@ export namespace GitWrapper {
    */
   export const getCurrentBranchName = async (): Promise<string> => {
     return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
+  };
+
+  /**
+   * Deletes a branch from local repo
+   */
+  export const deleteLocalBranch = async (
+    branchName: string
+  ): Promise<void> => {
+    cli.action.start(`Deleting local branch ${branchName}`);
+    try {
+      await SimpleGit().raw(['branch', '-D', branchName]);
+      cli.action.stop();
+    } catch (e) {
+      cli.action.stop('failed');
+      throw e;
+    }
+  };
+
+  /**
+   * Deletes a remote branch
+   */
+  export const deleteRemoteBranch = async (
+    branchName: string
+  ): Promise<void> => {
+    cli.action.start(`Deleting remote branch ${branchName}`);
+    try {
+      await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
   };
 }

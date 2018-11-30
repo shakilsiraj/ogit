@@ -316,6 +316,15 @@ describe('ogit', () => {
           await SimpleGit().deleteLocalBranch(newBranchName);
         });
       });
+
+      describe('deleteLocalBranch', () => {
+        it('should be able to delete a local branch', async () => {
+          const newBranchName = 'branch_' + uuid.v4();
+          await GitWrapper.createBranch(newBranchName, 'origin/develop');
+
+          await GitWrapper.deleteLocalBranch(newBranchName);
+        });
+      });
     });
   });
 });
