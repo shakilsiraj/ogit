@@ -325,6 +325,19 @@ describe('ogit', () => {
           await GitWrapper.deleteLocalBranch(newBranchName);
         });
       });
+
+      describe('stash', ()=> {
+        it('clearStash should clear all the stashed changes', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await SimpleGit().raw(['stash', '-u']);
+          expect(fs.existsSync(file1)).toBeFalsy();
+          await GitWrapper.clearStash();
+          expect(fs.existsSync(file1)).toBeTruthy();
+          fs.unlinkSync(file1);
+        });
+      });
+
     });
   });
 });

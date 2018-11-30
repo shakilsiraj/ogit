@@ -376,6 +376,24 @@ export namespace GitWrapper {
     cli.action.start(`Deleting remote branch ${branchName}`);
     try {
       await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Clears the stash by removing all entries
+   *
+   */
+  export const clearStash = async (): Promise<void> => {
+    cli.action.start('Removing all stashed changes');
+    try {
+      await SimpleGit().stash({
+        clear: null
+      });
+      cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
       throw error;
