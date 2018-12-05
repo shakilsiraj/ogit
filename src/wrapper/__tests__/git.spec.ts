@@ -347,7 +347,7 @@ describe('getStashes', () => {
     createAndWriteToFile(file1);
     const file2 = uuid.v4() + '.txt';
     createAndWriteToFile(file2);
-    await SimpleGit().raw(['stash', '-u', '-m "getStashes test"']);
+    await SimpleGit().raw(['stash', '-u', '-m getStashes test']);
     const stashes = await GitWrapper.getStashes();
     await GitWrapper.clearStash();
     const currentBranchName = await GitWrapper.getCurrentBranchName();
