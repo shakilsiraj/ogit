@@ -3,6 +3,7 @@ import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch } from '../models';
+import { GitStash } from '../models/GitStash';
 
 /**
  * Wrapper class for git commands.
@@ -398,5 +399,67 @@ export namespace GitWrapper {
       cli.action.stop('failed');
       throw error;
     }
+  };
+
+  /**
+   * Returns a list of file names contained in a stash
+   * @param stashNumber the stash number to lookup on
+   */
+  export const getStashedFiles = async (
+    stashNumber: number
+  ): Promise<string[]> => {
+    const fileNames: string[] = [];
+
+    /** tracked portion */
+    const fileNamesLookupOptions = {
+      show: null,
+      '--name-only': null
+    };
+    fileNamesLookupOptions[`stash@{${stashNumber}}`] = null;
+    const trackedFileNames: string[] = (await SimpleGit().stash(
+      fileNamesLookupOptions
+    ))
+      .split('\n')
+      .filter(n => n);
+    trackedFileNames.forEach(fileName => fileNames.push(fileName));
+
+    /** Untracked portion */
+    // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
+    const untrackedFileNames: string[] = (await SimpleGit().raw([
+      'ls-tree',
+      '-r',
+      `stash@{${stashNumber}}^3`,
+      '--name-only'
+    ]))
+      .split('\n')
+      .filter(n => n);
+    untrackedFileNames.forEach(fileName => fileNames.push(fileName));
+
+    return fileNames;
+  };
+
+  /**
+   * Returns the list of stash names and the files attached to the stashes
+   */
+  export const getStashes = async (): Promise<GitStash[]> => {
+    const stashes: GitStash[] = [];
+    const stashNames: string[] = (await SimpleGit().stash({
+      list: null,
+      '--pretty': 'format:%s %N'
+    })).split('\n');
+    for (let i = 0; i < stashNames.length; i++) {
+      const stashEntries: string[] = stashNames[i].split(':');
+      const stash = new GitStash();
+      stash.stashNumber = i;
+      stash.branchName = stashEntries[0]
+        .split(' ')
+        .splice(-1)[0]
+        .trim();
+      stash.stashName = stashEntries[1].trim();
+      stash.files = await getStashedFiles(i);
+      stashes.push(stash);
+    }
+
+    return stashes;
   };
 }
