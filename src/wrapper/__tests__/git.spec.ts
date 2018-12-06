@@ -380,7 +380,7 @@ describe('deleteStash', () => {
       stashNumber: 0,
       branchName: currentBranchName,
       stashName: 'deleteStash test1',
-      files: [file1, file2]
+      files: [file3]
     });
   });
 });
