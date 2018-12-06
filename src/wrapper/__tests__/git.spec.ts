@@ -379,7 +379,7 @@ describe('deleteStash', () => {
     expect(stashes[0]).toEqual({
       stashNumber: 0,
       branchName: currentBranchName,
-      stashName: 'deleteStash test1',
+      stashName: 'deleteStash test2',
       files: [file3]
     });
   });
