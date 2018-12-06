@@ -462,4 +462,26 @@ export namespace GitWrapper {
 
     return stashes;
   };
+
+  /**
+   * Deletes a stash based on the number supplied
+   * @param stashNumber Stash number to delete
+   */
+  export const deleteStash = async (
+    stashNumber: number,
+    message: string
+  ): Promise<void> => {
+    cli.action.start(`Deleting stash ${message}`);
+    const deleteStashCommandOptions = {
+      drop: null
+    };
+    deleteStashCommandOptions[`stash@{${stashNumber}}`] = null;
+    try {
+      await SimpleGit().stash(deleteStashCommandOptions);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }

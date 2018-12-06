@@ -337,17 +337,41 @@ xdescribe('ogit', () => {
           expect(fs.existsSync(file1)).toBeFalsy();
         });
       });
+
+      describe('getStashes', () => {
+        it('should return a list of stash entries', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          await SimpleGit().raw(['stash', '-u', '-m getStashes test']);
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes.length).toBe(1);
+          expect(stashes[0]).toEqual({
+            stashNumber: 0,
+            branchName: currentBranchName,
+            stashName: 'getStashes test',
+            files: [file1, file2]
+          });
+        });
+      });
     });
   });
 });
 
-describe('getStashes', () => {
-  it('should return a list of stash entries', async () => {
+describe('deleteStash', () => {
+  it('should delete a stash entry based on number', async () => {
     const file1 = uuid.v4() + '.txt';
     createAndWriteToFile(file1);
     const file2 = uuid.v4() + '.txt';
     createAndWriteToFile(file2);
-    await SimpleGit().raw(['stash', '-u', '-m getStashes test']);
+    await SimpleGit().raw(['stash', '-u', '-m deleteStash test1']);
+    const file3 = uuid.v4() + '.txt';
+    createAndWriteToFile(file3);
+    await SimpleGit().raw(['stash', '-u', '-m deleteStash test2']);
+    await GitWrapper.deleteStash(1, '');
     const stashes = await GitWrapper.getStashes();
     await GitWrapper.clearStash();
     const currentBranchName = await GitWrapper.getCurrentBranchName();
@@ -355,7 +379,7 @@ describe('getStashes', () => {
     expect(stashes[0]).toEqual({
       stashNumber: 0,
       branchName: currentBranchName,
-      stashName: 'getStashes test',
+      stashName: 'deleteStash test1',
       files: [file1, file2]
     });
   });
