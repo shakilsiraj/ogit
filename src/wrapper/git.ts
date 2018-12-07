@@ -484,4 +484,26 @@ export namespace GitWrapper {
       throw error;
     }
   };
+
+  /**
+   * Removes a stash from local repo
+   */
+  export const unstash = async (
+    stashNumber: number,
+    message: string,
+    doNotRemove: boolean = true
+  ): Promise<void> => {
+    cli.action.start(`Unstashing changes for ${message}`);
+    const unStashCommandOptions = {
+      pop: null
+    };
+    unStashCommandOptions[`stash@{${stashNumber}}`] = null;
+    try {
+      await SimpleGit().stash(unStashCommandOptions);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
