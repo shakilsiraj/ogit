@@ -467,12 +467,15 @@ describe('stash', () => {
     const stashes = await GitWrapper.getStashes();
     await GitWrapper.clearStash();
     const currentBranchName = await GitWrapper.getCurrentBranchName();
-    expect(stashes[0]).toEqual({
-      stashNumber: 0,
-      branchName: currentBranchName,
-      stashName: 'test stash2',
-      files: [file1, file2, file3].sort()
-    });
+    // expect(stashes[0]).toEqual({
+    //   stashNumber: 0,
+    //   branchName: currentBranchName,
+    //   stashName: 'test stash2',
+    //   files: [file1, file2, file3].sort()
+    // });
+    expect(stashes[0].files).toContainEqual(
+      expect.arrayContaining([file1, file2, file3])
+    );
   });
 });
 function createAndWriteToFile(fileName: string): any {
