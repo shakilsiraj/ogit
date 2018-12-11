@@ -471,7 +471,7 @@ describe('stash', () => {
       stashNumber: 0,
       branchName: currentBranchName,
       stashName: 'test stash2',
-      files: [file1, file2, file3]
+      files: [file1, file2, file3].sort()
     });
   });
 });

@@ -250,7 +250,12 @@ export namespace GitWrapper {
       '-r',
       commitHash
     ]);
-    return fileNamesString ? fileNamesString.split('\n').filter(n => n) : [];
+    return fileNamesString
+      ? fileNamesString
+          .split('\n')
+          .filter(n => n)
+          .sort()
+      : [];
   };
 
   /**
@@ -336,7 +341,7 @@ export namespace GitWrapper {
       cli.action.stop('failed');
       const errorRegex = /checkout:\n((.+\n)+)Please/;
       const fileNames = errorRegex.exec(err.message)[1].trim();
-      err.fileNamesArray = fileNames.split('\n');
+      err.fileNamesArray = fileNames.split('\n').sort();
 
       throw err;
     }
@@ -446,7 +451,7 @@ export namespace GitWrapper {
       /** DO_NOTHING */
     }
 
-    return fileNames;
+    return fileNames.sort();
   };
 
   /**
