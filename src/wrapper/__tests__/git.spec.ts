@@ -473,8 +473,6 @@ describe('stash', () => {
       stashName: 'test stash2',
       files: [file1, file2, file3]
     });
-
-    fs.unlinkSync(file3);
   });
 });
 function createAndWriteToFile(fileName: string): any {
