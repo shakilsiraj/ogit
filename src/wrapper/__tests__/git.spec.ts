@@ -3,7 +3,6 @@ import { GitWrapper } from '../git';
 import * as fs from 'fs';
 import * as SimpleGit from 'simple-git/promise';
 import uuid = require('uuid');
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 xdescribe('ogit', () => {
   describe('wrapper', () => {
@@ -353,7 +352,7 @@ xdescribe('ogit', () => {
             stashNumber: 0,
             branchName: currentBranchName,
             stashName: 'getStashes test',
-            files: [file1, file2]
+            files: [file1, file2].sort();
           });
         });
       });
