@@ -400,12 +400,17 @@ export namespace GitWrapper {
       throw error;
     }
   };
+  /**
+   *
+   *
+   * @param {number} stashNumber
+   * @returns {Promise<string[]>}
+   */
 
   /**
    * Returns a list of file names contained in a stash
    * @param stashNumber the stash number to lookup on
-   */
-  export const getStashedFiles = async (
+   */ const getStashedFiles = async (
     stashNumber: number
   ): Promise<string[]> => {
     const fileNames: string[] = [];
@@ -423,17 +428,23 @@ export namespace GitWrapper {
       .filter(n => n);
     trackedFileNames.forEach(fileName => fileNames.push(fileName));
 
-    /** Untracked portion */
+    /** Untracked portion, can throw error if there is no untracked file in
+     * that particular stash
+     */
     // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
-    const untrackedFileNames: string[] = (await SimpleGit().raw([
-      'ls-tree',
-      '-r',
-      `stash@{${stashNumber}}^3`,
-      '--name-only'
-    ]))
-      .split('\n')
-      .filter(n => n);
-    untrackedFileNames.forEach(fileName => fileNames.push(fileName));
+    try {
+      const untrackedFileNames: string[] = (await SimpleGit().raw([
+        'ls-tree',
+        '-r',
+        `stash@{${stashNumber}}^3`,
+        '--name-only'
+      ]))
+        .split('\n')
+        .filter(n => n);
+      untrackedFileNames.forEach(fileName => fileNames.push(fileName));
+    } catch (error) {
+      /** DO_NOTHING */
+    }
 
     return fileNames;
   };
@@ -521,7 +532,7 @@ export namespace GitWrapper {
     cli.action.start(`Stashing changes for ${message}`);
     let commandList: string[];
     if (partial) {
-      commandList = ['stash', '-p', '-m', message, '--'];
+      commandList = ['stash', 'push', '-m', message, '--'];
       for (let i = 0; i < fileNames.length; i++) {
         await GitWrapper.addToRepo(fileNames[i]);
         commandList.push(fileNames[i]);
