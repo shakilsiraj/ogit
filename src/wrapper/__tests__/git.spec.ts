@@ -446,7 +446,7 @@ describe('stash', () => {
       stashNumber: 0,
       branchName: currentBranchName,
       stashName: 'test stash1',
-      files: [file1, file2]
+      files: [file1, file2].sort()
     });
 
     fs.unlinkSync(file3);
