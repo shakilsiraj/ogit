@@ -422,62 +422,57 @@ xdescribe('ogit', () => {
           });
         });
       });
+      describe('stash', () => {
+        it('should stash a partial selection of files', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          const file3 = uuid.v4() + '.txt';
+          createAndWriteToFile(file3);
+
+          await GitWrapper.stash('test stash1', [file1, file2]);
+          expect(fs.existsSync(file1)).toBeFalsy();
+          expect(fs.existsSync(file2)).toBeFalsy();
+          expect(fs.existsSync(file3)).toBeTruthy();
+
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes[0]).toEqual({
+            stashNumber: 0,
+            branchName: currentBranchName,
+            stashName: 'test stash1',
+            files: [file1, file2].sort()
+          });
+
+          fs.unlinkSync(file3);
+        });
+        it('should stash all the files', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          const file3 = uuid.v4() + '.txt';
+          createAndWriteToFile(file3);
+
+          await GitWrapper.stash('test stash2', [file1, file2, file3], false);
+          expect(fs.existsSync(file1)).toBeFalsy();
+          expect(fs.existsSync(file2)).toBeFalsy();
+          expect(fs.existsSync(file3)).toBeFalsy();
+
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes[0].files).toContain(file1);
+          expect(stashes[0].files).toContain(file2);
+          expect(stashes[0].files).toContain(file3);
+        });
+      });
     });
   });
 });
-describe('stash', () => {
-  it('should stash a partial selection of files', async () => {
-    const file1 = uuid.v4() + '.txt';
-    createAndWriteToFile(file1);
-    const file2 = uuid.v4() + '.txt';
-    createAndWriteToFile(file2);
-    const file3 = uuid.v4() + '.txt';
-    createAndWriteToFile(file3);
 
-    await GitWrapper.stash('test stash1', [file1, file2]);
-    expect(fs.existsSync(file1)).toBeFalsy();
-    expect(fs.existsSync(file2)).toBeFalsy();
-    expect(fs.existsSync(file3)).toBeTruthy();
-
-    const stashes = await GitWrapper.getStashes();
-    await GitWrapper.clearStash();
-    const currentBranchName = await GitWrapper.getCurrentBranchName();
-    expect(stashes[0]).toEqual({
-      stashNumber: 0,
-      branchName: currentBranchName,
-      stashName: 'test stash1',
-      files: [file1, file2].sort()
-    });
-
-    fs.unlinkSync(file3);
-  });
-  it('should stash all the files', async () => {
-    const file1 = uuid.v4() + '.txt';
-    createAndWriteToFile(file1);
-    const file2 = uuid.v4() + '.txt';
-    createAndWriteToFile(file2);
-    const file3 = uuid.v4() + '.txt';
-    createAndWriteToFile(file3);
-
-    await GitWrapper.stash('test stash2', [file1, file2, file3], false);
-    expect(fs.existsSync(file1)).toBeFalsy();
-    expect(fs.existsSync(file2)).toBeFalsy();
-    expect(fs.existsSync(file3)).toBeFalsy();
-
-    const stashes = await GitWrapper.getStashes();
-    await GitWrapper.clearStash();
-    const currentBranchName = await GitWrapper.getCurrentBranchName();
-    // expect(stashes[0]).toEqual({
-    //   stashNumber: 0,
-    //   branchName: currentBranchName,
-    //   stashName: 'test stash2',
-    //   files: [file1, file2, file3].sort()
-    // });
-    expect(stashes[0].files).toContain(file1);
-    expect(stashes[0].files).toContain(file2);
-    expect(stashes[0].files).toContain(file3);
-  });
-});
 function createAndWriteToFile(fileName: string): any {
   const fd = fs.openSync(fileName, 'w');
   fs.writeFileSync(fileName, 'blah!');
