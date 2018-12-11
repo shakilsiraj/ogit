@@ -506,4 +506,34 @@ export namespace GitWrapper {
       throw error;
     }
   };
+
+  /**
+   * Creates a new stash of the files
+   * @param message to add for the stash
+   * @param fileNames the list of file names
+   * @param partial is this a partial list or not
+   */
+  export const stash = async (
+    message: string,
+    fileNames: string[],
+    partial: boolean = true
+  ) => {
+    cli.action.start(`Stashing changes for ${message}`);
+    let commandList: string[];
+    if (partial) {
+      commandList = ['stash', '-p', '-m', message, '--'];
+      for (let i = 0; i < fileNames.length; i++) {
+        await GitWrapper.addToRepo(fileNames[i]);
+        commandList.push(fileNames[i]);
+      }
+    } else {
+      commandList = ['stash', 'save', '-u', message];
+    }
+    try {
+      await SimpleGit().raw(commandList);
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }

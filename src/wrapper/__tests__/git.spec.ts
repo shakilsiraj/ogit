@@ -425,7 +425,35 @@ xdescribe('ogit', () => {
     });
   });
 });
+describe('stash', () => {
+  it('should stash a partial selection of files', async () => {
+    const file1 = uuid.v4() + '.txt';
+    createAndWriteToFile(file1);
+    const file2 = uuid.v4() + '.txt';
+    createAndWriteToFile(file2);
+    const file3 = uuid.v4() + '.txt';
+    createAndWriteToFile(file3);
 
+    await GitWrapper.stash('test stash1', [file1, file2], false);
+    expect(fs.existsSync(file1)).toBeFalsy();
+    expect(fs.existsSync(file2)).toBeFalsy();
+    expect(fs.existsSync(file3)).toBeTruthy();
+
+    const stashes = await GitWrapper.getStashes();
+    await GitWrapper.clearStash();
+    const currentBranchName = await GitWrapper.getCurrentBranchName();
+    expect(stashes[0]).toEqual({
+      stashNumber: 0,
+      branchName: currentBranchName,
+      stashName: 'test stash',
+      files: [file1, file2]
+    });
+
+    fs.unlinkSync(file1);
+    fs.unlinkSync(file2);
+    fs.unlinkSync(file3);
+  });
+});
 function createAndWriteToFile(fileName: string): any {
   const fd = fs.openSync(fileName, 'w');
   fs.writeFileSync(fileName, 'blah!');
