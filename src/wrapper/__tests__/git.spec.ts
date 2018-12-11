@@ -473,9 +473,9 @@ describe('stash', () => {
     //   stashName: 'test stash2',
     //   files: [file1, file2, file3].sort()
     // });
-    expect(stashes[0].files).toContainEqual(
-      expect.arrayContaining([file1, file2, file3])
-    );
+    expect(stashes[0].files).toContain(file1);
+    expect(stashes[0].files).toContain(file2);
+    expect(stashes[0].files).toContain(file3);
   });
 });
 function createAndWriteToFile(fileName: string): any {
