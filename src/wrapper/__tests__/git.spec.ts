@@ -352,7 +352,7 @@ xdescribe('ogit', () => {
             stashNumber: 0,
             branchName: currentBranchName,
             stashName: 'getStashes test',
-            files: [file1, file2].sort();
+            files: [file1, file2].sort()
           });
         });
       });
