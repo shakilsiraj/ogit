@@ -38,7 +38,6 @@ export class StashChangesCommand extends Command {
       fileNames.push(OperationUtils.getFilePath(fileName));
     });
 
-    await GitWrapper.optimizeRepo();
     await GitWrapper.stash(answers.stashMessage, fileNames, partial);
   };
 

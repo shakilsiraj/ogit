@@ -540,7 +540,7 @@ export namespace GitWrapper {
     if (partial) {
       commandList = ['stash', 'push', '-m', message, '--'];
       for (let i = 0; i < fileNames.length; i++) {
-        await GitWrapper.addToRepo(fileNames[i]);
+        await SimpleGit().add(fileNames[i]);
         commandList.push(fileNames[i]);
       }
     } else {
