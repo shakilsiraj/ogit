@@ -16,4 +16,8 @@ export class OperationUtils {
       }
     });
   };
+
+  public static getRandomVerificationNumber = (): string => {
+    return ('' + Math.random()).substr(4, 4);
+  };
 }
