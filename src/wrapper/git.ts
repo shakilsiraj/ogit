@@ -415,9 +415,8 @@ export namespace GitWrapper {
   /**
    * Returns a list of file names contained in a stash
    * @param stashNumber the stash number to lookup on
-   */ const getStashedFiles = async (
-    stashNumber: number
-  ): Promise<string[]> => {
+   */
+  const getStashedFiles = async (stashNumber: number): Promise<string[]> => {
     const fileNames: string[] = [];
 
     /** tracked portion */
@@ -462,7 +461,10 @@ export namespace GitWrapper {
     const stashNames: string[] = (await SimpleGit().stash({
       list: null,
       '--pretty': 'format:%s %N'
-    })).split('\n');
+    }))
+      .split('\n')
+      .filter(n => n);
+    console.log(stashNames);
     for (let i = 0; i < stashNames.length; i++) {
       const stashEntries: string[] = stashNames[i].split(':');
       const stash = new GitStash();
