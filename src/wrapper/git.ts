@@ -464,7 +464,6 @@ export namespace GitWrapper {
     }))
       .split('\n')
       .filter(n => n);
-    console.log(stashNames);
     for (let i = 0; i < stashNames.length; i++) {
       const stashEntries: string[] = stashNames[i].split(':');
       const stash = new GitStash();
