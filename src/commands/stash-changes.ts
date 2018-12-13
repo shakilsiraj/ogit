@@ -1,5 +1,6 @@
 import Command from '../abstracts/AbstractStashCommand';
 import { GitWrapper } from '../wrapper/git';
+import { OperationUtils } from '../utils/OperationUtils';
 export class StashChangesCommand extends Command {
   public getPrompts = async (): Promise<any[]> => {
     return [
@@ -25,11 +26,20 @@ export class StashChangesCommand extends Command {
   };
 
   public performStashOperation = async (answers: any): Promise<void> => {
-    let partial = false;
+    let partial = true;
     if (answers.fileToBeStashed.length === this.choices.length) {
-      partial = true;
+      partial = false;
     }
-    GitWrapper.stash(answers.stashMessage, answers.fileToBeStashed, partial);
+
+    OperationUtils.addNewFilesToRepo(answers.fileToBeStashed);
+
+    const fileNames = [];
+    answers.fileToBeStashed.forEach(fileName => {
+      fileNames.push(OperationUtils.getFilePath(fileName));
+    });
+
+    await GitWrapper.optimizeRepo();
+    await GitWrapper.stash(answers.stashMessage, fileNames, partial);
   };
 
   async run() {
