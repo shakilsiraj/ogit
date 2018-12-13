@@ -14,7 +14,7 @@ export default abstract class extends Command {
     this.stashes = await GitWrapper.getStashes();
     const status: GitStatus = await GitWrapper.status();
 
-    if (status.all.length === 0) {
+    if (this.shouldCheckForChanges() && status.all.length === 0) {
       console.log("You don't have any changes to perform this operation");
       return;
     }
@@ -31,6 +31,10 @@ export default abstract class extends Command {
     const answers: any = await inquirer.prompt(await this.getPrompts());
     this.performStashOperation(answers);
   }
+
+  protected shouldCheckForChanges = (): boolean => {
+    return true;
+  };
 
   public abstract getPrompts(): Promise<any[]>;
 

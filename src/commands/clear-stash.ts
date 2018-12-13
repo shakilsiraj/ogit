@@ -20,6 +20,10 @@ export class ClearStashCommand extends Command {
     ];
   };
 
+  protected shouldCheckForChanges = (): boolean => {
+    return false;
+  };
+
   public performStashOperation = async (answers: any): Promise<void> => {
     await GitWrapper.clearStash();
   };
