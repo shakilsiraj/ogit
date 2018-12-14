@@ -9,6 +9,7 @@ A lazy developer&#39;s Git CLI made simple
 
 <!-- toc -->
 
+- [ogit](#ogit)
 - [Usage](#usage)
 - [Commands](#commands)
   <!-- tocstop -->
@@ -22,7 +23,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.10.2 darwin-x64 node-v8.9.4
+ogit/1.16.0 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
@@ -46,7 +47,8 @@ USAGE
 - [`ogit display-branches`](#ogit-display-branches)
 - [`ogit display-changes`](#ogit-display-changes)
 - [`ogit help [COMMAND]`](#ogit-help-command)
-- [`ogit rename-branch`](#ogit-rename-branch-file)
+- [`ogit push-commits [FILE]`](#ogit-push-commits-file)
+- [`ogit rename-branch`](#ogit-rename-branch)
 - [`ogit revert-last-commit`](#ogit-revert-last-commit)
 - [`ogit stash-changes`](#ogit-stash-changes)
 - [`ogit switch-branch`](#ogit-switch-branch)
@@ -165,13 +167,21 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
 
-## `ogit rename-branch`
+## `ogit push-commits`
 
 describe the command here
 
 ```
+
+## `ogit rename-branch`
+
+Renames a local branch to a new one
+
+```
+
 USAGE
-  $ ogit rename-branch
+\$ ogit rename-branch
+
 ```
 
 ## `ogit revert-last-commit`
@@ -179,15 +189,19 @@ USAGE
 Reverts the last commit to repo, changes are left on the file system
 
 ```
+
 USAGE
-  $ ogit revert-last-commit
+\$ ogit revert-last-commit
+
 ```
 
 ## `ogit stash-changes`
 
 ```
+
 USAGE
-  $ ogit stash-changes
+\$ ogit stash-changes
+
 ```
 
 ## `ogit switch-branch`
@@ -195,8 +209,10 @@ USAGE
 Switches the current branch to another local branch
 
 ```
+
 USAGE
-  $ ogit switch-branch
+\$ ogit switch-branch
+
 ```
 
 ## `ogit unstash-changes`
@@ -204,8 +220,10 @@ USAGE
 Applies the stashed changes back into workspace
 
 ```
-USAGE
-  $ ogit unstash-changes
-```
 
+USAGE
+\$ ogit unstash-changes
+
+```
 <!-- commandsstop -->
+```
