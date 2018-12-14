@@ -14,10 +14,10 @@ export default abstract class extends Command {
     this.stashes = await GitWrapper.getStashes();
     const status: GitStatus = await GitWrapper.status();
 
-    if (this.shouldCheckForChanges() && status.all.length === 0) {
-      console.log("You don't have any changes to perform this operation");
-      return;
-    }
+    // if (this.shouldCheckForChanges() && status.all.length === 0) {
+    //   console.log("You don't have any changes to perform this operation");
+    //   return;
+    // }
 
     status.all.forEach(file => {
       this.choices.push({
@@ -28,11 +28,13 @@ export default abstract class extends Command {
       });
     });
 
-    const answers: any = await inquirer.prompt(await this.getPrompts());
-    this.performStashOperation(answers);
+    if (this.shouldProceedWithPrompts()) {
+      const answers: any = await inquirer.prompt(await this.getPrompts());
+      this.performStashOperation(answers);
+    }
   }
 
-  protected shouldCheckForChanges = (): boolean => {
+  protected shouldProceedWithPrompts = (): boolean => {
     return true;
   };
 
