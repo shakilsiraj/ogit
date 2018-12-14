@@ -1,5 +1,5 @@
 import Command, {
-  CreateBranchStructure
+  BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
@@ -10,7 +10,7 @@ export class CreateBranchCommand extends Command {
     await super.runHelper();
   }
 
-  public async getSelectedBranch(): Promise<CreateBranchStructure> {
+  public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const localBranches = this.localBranches;
     const answers: any = await inquirer.prompt([
       {
@@ -38,17 +38,17 @@ export class CreateBranchCommand extends Command {
       }
     ]);
     return {
-      localBranchName: answers.localBranchName,
-      remoteBranchName: answers.remoteBranchName
+      branchNameA: answers.localBranchName,
+      branchNameB: answers.remoteBranchName
     };
   }
   public async preformBranchOperation(
-    branchInfo: CreateBranchStructure
+    branchInfo: BranchNamePairStructure
   ): Promise<void> {
     await GitWrapper.createBranch(
-      branchInfo.localBranchName,
-      branchInfo.remoteBranchName
+      branchInfo.branchNameA,
+      branchInfo.branchNameB
     );
-    await GitWrapper.switchBranch(branchInfo.localBranchName);
+    await GitWrapper.switchBranch(branchInfo.branchNameA);
   }
 }

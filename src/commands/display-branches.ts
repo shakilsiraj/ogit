@@ -1,5 +1,5 @@
 import Command, {
-  CreateBranchStructure
+  BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 const columnify = require('columnify');
 
@@ -21,12 +21,12 @@ export default class DisplayBranchesCommand extends Command {
   }
 
   public async preformBranchOperation(
-    branchInfo: CreateBranchStructure
+    branchInfo: BranchNamePairStructure
   ): Promise<void> {
     console.log(branchInfo);
   }
 
-  public async getSelectedBranch(): Promise<CreateBranchStructure> {
+  public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     return null;
   }
 }

@@ -326,6 +326,28 @@ export namespace GitWrapper {
   };
 
   /**
+   * Renames a local branch
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const renameBranch = async (
+    currantName: string,
+    newName: string
+  ): Promise<void> => {
+    try {
+      cli.action.start(`Renaming local branch ${currantName} to ${newName}`);
+      await SimpleGit().raw(['branch', '-m', currantName, newName]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw new Error(
+        `Call to rename branch failed with message: ${error.message}`
+      );
+    }
+  };
+
+  /**
    * Switches to the local branch
    * TODO: missing unit test...
    *
