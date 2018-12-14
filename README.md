@@ -46,7 +46,7 @@ USAGE
 - [`ogit display-branches`](#ogit-display-branches)
 - [`ogit display-changes`](#ogit-display-changes)
 - [`ogit help [COMMAND]`](#ogit-help-command)
-- [`ogit rename-branch [FILE]`](#ogit-rename-branch-file)
+- [`ogit rename-branch`](#ogit-rename-branch-file)
 - [`ogit revert-last-commit`](#ogit-revert-last-commit)
 - [`ogit stash-changes`](#ogit-stash-changes)
 - [`ogit switch-branch`](#ogit-switch-branch)
@@ -165,13 +165,13 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
 
-## `ogit rename-branch [FILE]`
+## `ogit rename-branch`
 
 describe the command here
 
 ```
 USAGE
-  $ ogit rename-branch [FILE]
+  $ ogit rename-branch
 ```
 
 ## `ogit revert-last-commit`
