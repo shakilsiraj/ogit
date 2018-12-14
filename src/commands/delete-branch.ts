@@ -1,5 +1,5 @@
 import Command, {
-  CreateBranchStructure
+  BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
@@ -10,7 +10,7 @@ export class DeleteBranchCommand extends Command {
     await super.runHelper();
   }
 
-  public async getSelectedBranch(): Promise<CreateBranchStructure> {
+  public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const branchNames: string[] = [];
     const verifyingNumber: string = ('' + Math.random()).substr(4, 4);
     this.branchesList.forEach(branch => {
@@ -39,11 +39,11 @@ export class DeleteBranchCommand extends Command {
     ]);
     const selectBranchName = this.getNameFromPrompt(answers.branchName);
     return {
-      localBranchName:
+      branchNameA:
         this.localBranches.indexOf(selectBranchName) > -1
           ? selectBranchName
           : undefined,
-      remoteBranchName:
+      branchNameB:
         this.remoteBranches.indexOf(selectBranchName) > -1
           ? selectBranchName
           : undefined
@@ -51,12 +51,12 @@ export class DeleteBranchCommand extends Command {
   }
 
   public async preformBranchOperation(
-    branchInfo: CreateBranchStructure
+    branchInfo: BranchNamePairStructure
   ): Promise<void> {
-    if (branchInfo.localBranchName) {
-      await GitWrapper.deleteLocalBranch(branchInfo.localBranchName);
+    if (branchInfo.branchNameA) {
+      await GitWrapper.deleteLocalBranch(branchInfo.branchNameA);
     } else {
-      await GitWrapper.deleteRemoteBranch(branchInfo.remoteBranchName);
+      await GitWrapper.deleteRemoteBranch(branchInfo.branchNameB);
     }
   }
 }

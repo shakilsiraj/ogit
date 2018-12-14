@@ -1,5 +1,5 @@
 import Command, {
-  CreateBranchStructure
+  BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
@@ -10,7 +10,7 @@ export class CreateBranchCommand extends Command {
     await super.runHelper();
   }
 
-  public async getSelectedBranch(): Promise<CreateBranchStructure> {
+  public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const answers: any = await inquirer.prompt([
       {
         message: 'Select the local branch to switch to',
@@ -23,15 +23,15 @@ export class CreateBranchCommand extends Command {
       }
     ]);
     return {
-      localBranchName: answers.localBranchName,
-      remoteBranchName: undefined
+      branchNameA: answers.localBranchName,
+      branchNameB: undefined
     };
   }
   public async preformBranchOperation(
-    branchInfo: CreateBranchStructure
+    branchInfo: BranchNamePairStructure
   ): Promise<void> {
     try {
-      await GitWrapper.switchBranch(branchInfo.localBranchName);
+      await GitWrapper.switchBranch(branchInfo.branchNameA);
     } catch (err) {
       console.error('Possible merge conflict with the following files:');
       err.fileNamesArray.forEach((fileName: string) => {

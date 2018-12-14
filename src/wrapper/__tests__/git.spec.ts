@@ -317,6 +317,19 @@ xdescribe('ogit', () => {
         });
       });
 
+      describe('renameBranch', () => {
+        it('should be able to rename current branch', async () => {
+          const fakeBranchName = 'test-remote-branch';
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          await GitWrapper.renameBranch(currentBranchName, fakeBranchName);
+          expect(await GitWrapper.getCurrentBranchName()).toBe(fakeBranchName);
+          await GitWrapper.renameBranch(fakeBranchName, currentBranchName);
+          expect(await GitWrapper.getCurrentBranchName()).toBe(
+            currentBranchName
+          );
+        });
+      });
+
       describe('deleteLocalBranch', () => {
         it('should be able to delete a local branch', async () => {
           const newBranchName = 'branch_' + uuid.v4();

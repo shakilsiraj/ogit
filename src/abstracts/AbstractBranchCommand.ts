@@ -21,9 +21,9 @@ export default abstract class extends Command {
     await this.preformBranchOperation(await this.getSelectedBranch());
   }
 
-  public abstract async getSelectedBranch(): Promise<CreateBranchStructure>;
+  public abstract async getSelectedBranch(): Promise<BranchNamePairStructure>;
   public abstract async preformBranchOperation(
-    branchInfo: CreateBranchStructure
+    branchInfo: BranchNamePairStructure
   ): Promise<void>;
 
   protected getNameFromPrompt = (name: string): string => {
@@ -45,7 +45,7 @@ export default abstract class extends Command {
   };
 }
 
-export interface CreateBranchStructure {
-  localBranchName: string;
-  remoteBranchName: string;
+export interface BranchNamePairStructure {
+  branchNameA: string;
+  branchNameB: string;
 }
