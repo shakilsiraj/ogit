@@ -3,8 +3,8 @@ import { OperationUtils } from '../utils/OperationUtils';
 import { GitWrapper } from '../wrapper/git';
 import { GitStash } from '../models';
 
-export class DeleteStashCommand extends Command {
-  static description = 'Deletes a list of stashes in the repo';
+export class UnStashCommand extends Command {
+  static description = 'Applies the stashed changes back into workspace';
   private stashesMap: Map<string, GitStash> = new Map();
 
   public getPrompts = async (): Promise<any[]> => {
@@ -20,7 +20,7 @@ export class DeleteStashCommand extends Command {
     const verifyingNumber = OperationUtils.getRandomVerificationNumber();
     return [
       {
-        message: 'Select the stash to delete',
+        message: 'Select the stash to apply back',
         type: 'list',
         choices: stashNames,
         name: 'stashName',
@@ -29,19 +29,17 @@ export class DeleteStashCommand extends Command {
         }
       },
       {
-        message: `Please enter ${verifyingNumber} on the prompt`,
-        type: 'input',
-        name: 'verificationConfirmed',
-        validate(number: string) {
-          return number === verifyingNumber;
-        }
+        message: 'Remove stash after applying?',
+        type: 'confirm',
+        name: 'removeAfterApplying',
+        default: true
       }
     ];
   };
 
   protected shouldProceedWithPrompts = (): boolean => {
     if (this.stashes.length === 0) {
-      console.log('You do not have any stashes to delete.');
+      console.log('You do not have any stashes to run this operation.');
       return false;
     }
     return true;
@@ -49,10 +47,18 @@ export class DeleteStashCommand extends Command {
 
   public performStashOperation = async (answers: any): Promise<void> => {
     const selectedStash = this.stashesMap.get(answers.stashName);
-    await GitWrapper.deleteStash(
-      selectedStash.stashNumber,
-      selectedStash.stashName
-    );
+    try {
+      await GitWrapper.unstash(
+        selectedStash.stashNumber,
+        selectedStash.stashName,
+        answers.removeAfterApplying
+      );
+    } catch (error) {
+      console.log('Unstashing conflicts with the following files:');
+      for (let i = 0; i < error.fileNamesArray.length; i++) {
+        console.log(error.fileNamesArray[i]);
+      }
+    }
   };
 
   async run() {

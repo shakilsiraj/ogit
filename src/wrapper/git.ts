@@ -508,18 +508,24 @@ export namespace GitWrapper {
   export const unstash = async (
     stashNumber: number,
     message: string,
-    doNotRemove: boolean = true
+    remove: boolean = true
   ): Promise<void> => {
     cli.action.start(`Unstashing changes for ${message}`);
-    const unStashCommandOptions = {
-      pop: null
-    };
+    const unStashCommandOptions = {};
+    if (remove) {
+      unStashCommandOptions['pop'] = null;
+    } else {
+      unStashCommandOptions['apply'] = null;
+    }
     unStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
       await SimpleGit().stash(unStashCommandOptions);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
+      const errorRegex = /merge:\n((.+\n)+)Please/;
+      const fileNames = errorRegex.exec(error.message)[1].trim();
+      error.fileNamesArray = fileNames.split('\n').sort();
       throw error;
     }
   };
