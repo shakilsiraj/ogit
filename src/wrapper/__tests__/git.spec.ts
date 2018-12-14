@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as SimpleGit from 'simple-git/promise';
 import uuid = require('uuid');
 
-describe('ogit', () => {
+xdescribe('ogit', () => {
   describe('wrapper', () => {
     describe('git', () => {
       describe('status', () => {
@@ -323,6 +323,149 @@ describe('ogit', () => {
           await GitWrapper.createBranch(newBranchName, 'origin/develop');
 
           await GitWrapper.deleteLocalBranch(newBranchName);
+        });
+      });
+
+      describe('stash', () => {
+        it('clearStash should clear all the stashed changes', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await SimpleGit().raw(['stash', '-u']);
+          expect(fs.existsSync(file1)).toBeFalsy();
+          await GitWrapper.clearStash();
+          expect(fs.existsSync(file1)).toBeFalsy();
+        });
+      });
+
+      describe('getStashes', () => {
+        it('should return a list of stash entries', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          await SimpleGit().raw(['stash', '-u', '-m getStashes test']);
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes.length).toBe(1);
+          expect(stashes[0]).toEqual({
+            stashNumber: 0,
+            branchName: currentBranchName,
+            stashName: 'getStashes test',
+            files: [file1, file2].sort()
+          });
+        });
+      });
+
+      describe('deleteStash', () => {
+        it('should delete a stash entry based on number', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          await SimpleGit().raw(['stash', '-u', '-m deleteStash test1']);
+          const file3 = uuid.v4() + '.txt';
+          createAndWriteToFile(file3);
+          await SimpleGit().raw(['stash', '-u', '-m deleteStash test2']);
+          await GitWrapper.deleteStash(1, '');
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes.length).toBe(1);
+          expect(stashes[0]).toEqual({
+            stashNumber: 0,
+            branchName: currentBranchName,
+            stashName: 'deleteStash test2',
+            files: [file3]
+          });
+        });
+      });
+
+      describe('unstash', () => {
+        it('should pop a stash entry based on number', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          await SimpleGit().raw(['stash', '-u', '-m unstash test1']);
+          await GitWrapper.unstash(0, '');
+          await GitWrapper.clearStash();
+          expect(fs.existsSync(file1)).toBeTruthy();
+          expect(fs.existsSync(file2)).toBeTruthy();
+          fs.unlinkSync(file1);
+          fs.unlinkSync(file2);
+        });
+        it('should leave the other stash entries intact', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          await SimpleGit().raw(['stash', '-u', '-m unstash test1']);
+          const file3 = uuid.v4() + '.txt';
+          createAndWriteToFile(file3);
+          await SimpleGit().raw(['stash', '-u', '-m unstash test2']);
+          await GitWrapper.unstash(1, '');
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          expect(fs.existsSync(file1)).toBeTruthy();
+          expect(fs.existsSync(file2)).toBeTruthy();
+          fs.unlinkSync(file1);
+          fs.unlinkSync(file2);
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes.length).toBe(1);
+          expect(stashes[0]).toEqual({
+            stashNumber: 0,
+            branchName: currentBranchName,
+            stashName: 'unstash test2',
+            files: [file3]
+          });
+        });
+      });
+      describe('stash', () => {
+        it('should stash a partial selection of files', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          const file3 = uuid.v4() + '.txt';
+          createAndWriteToFile(file3);
+
+          await GitWrapper.stash('test stash1', [file1, file2]);
+          expect(fs.existsSync(file1)).toBeFalsy();
+          expect(fs.existsSync(file2)).toBeFalsy();
+          expect(fs.existsSync(file3)).toBeTruthy();
+
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes[0]).toEqual({
+            stashNumber: 0,
+            branchName: currentBranchName,
+            stashName: 'test stash1',
+            files: [file1, file2].sort()
+          });
+
+          fs.unlinkSync(file3);
+        });
+        it('should stash all the files', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          const file2 = uuid.v4() + '.txt';
+          createAndWriteToFile(file2);
+          const file3 = uuid.v4() + '.txt';
+          createAndWriteToFile(file3);
+
+          await GitWrapper.stash('test stash2', [file1, file2, file3], false);
+          expect(fs.existsSync(file1)).toBeFalsy();
+          expect(fs.existsSync(file2)).toBeFalsy();
+          expect(fs.existsSync(file3)).toBeFalsy();
+
+          const stashes = await GitWrapper.getStashes();
+          await GitWrapper.clearStash();
+          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          expect(stashes[0].files).toContain(file1);
+          expect(stashes[0].files).toContain(file2);
+          expect(stashes[0].files).toContain(file3);
         });
       });
     });
