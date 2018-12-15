@@ -8,51 +8,48 @@ A lazy developer&#39;s Git CLI made simple
 [![License](https://img.shields.io/npm/l/ogit.svg)](https://github.com/shakilsiraj/ogit/blob/master/package.json)
 
 <!-- toc -->
-
-- [ogit](#ogit)
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [ogit](#ogit)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.16.0 darwin-x64 node-v8.9.4
+ogit/1.16.0 linux-x64 node-v8.12.0
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`ogit amend-last-commit`](#ogit-amend-last-commit)
-- [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
-- [`ogit clear-stash`](#ogit-clear-stash)
-- [`ogit commit-changes`](#ogit-commit-changes)
-- [`ogit create-branch`](#ogit-create-branch)
-- [`ogit delete-branch`](#ogit-delete-branch)
-- [`ogit delete-last-commit`](#ogit-delete-last-commit)
-- [`ogit delete-stash`](#ogit-delete-stash)
-- [`ogit display-branches`](#ogit-display-branches)
-- [`ogit display-changes`](#ogit-display-changes)
-- [`ogit help [COMMAND]`](#ogit-help-command)
-- [`ogit push-commits [FILE]`](#ogit-push-commits-file)
-- [`ogit rename-branch`](#ogit-rename-branch)
-- [`ogit revert-last-commit`](#ogit-revert-last-commit)
-- [`ogit stash-changes`](#ogit-stash-changes)
-- [`ogit switch-branch`](#ogit-switch-branch)
-- [`ogit unstash-changes`](#ogit-unstash-changes)
+* [`ogit amend-last-commit`](#ogit-amend-last-commit)
+* [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
+* [`ogit clear-stash`](#ogit-clear-stash)
+* [`ogit commit-changes`](#ogit-commit-changes)
+* [`ogit create-branch`](#ogit-create-branch)
+* [`ogit delete-branch`](#ogit-delete-branch)
+* [`ogit delete-last-commit`](#ogit-delete-last-commit)
+* [`ogit delete-stash`](#ogit-delete-stash)
+* [`ogit display-branches`](#ogit-display-branches)
+* [`ogit display-changes`](#ogit-display-changes)
+* [`ogit help [COMMAND]`](#ogit-help-command)
+* [`ogit push-commits`](#ogit-push-commits)
+* [`ogit rename-branch`](#ogit-rename-branch)
+* [`ogit revert-changes`](#ogit-revert-changes-file)
+* [`ogit revert-last-commit`](#ogit-revert-last-commit)
+* [`ogit stash-changes`](#ogit-stash-changes)
+* [`ogit switch-branch`](#ogit-switch-branch)
+* [`ogit unstash-changes`](#ogit-unstash-changes)
 
 ## `ogit amend-last-commit`
 
@@ -169,8 +166,11 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3
 
 ## `ogit push-commits`
 
-describe the command here
+Pushes local commits to the remote repo
 
+```
+USAGE
+  $ ogit push-commits
 ```
 
 ## `ogit rename-branch`
@@ -178,10 +178,17 @@ describe the command here
 Renames a local branch to a new one
 
 ```
-
 USAGE
-\$ ogit rename-branch
+  $ ogit rename-branch
+```
 
+## `ogit revert-changes`
+
+Revers local file changes
+
+```
+USAGE
+  $ ogit revert-changes
 ```
 
 ## `ogit revert-last-commit`
@@ -189,19 +196,15 @@ USAGE
 Reverts the last commit to repo, changes are left on the file system
 
 ```
-
 USAGE
-\$ ogit revert-last-commit
-
+  $ ogit revert-last-commit
 ```
 
 ## `ogit stash-changes`
 
 ```
-
 USAGE
-\$ ogit stash-changes
-
+  $ ogit stash-changes
 ```
 
 ## `ogit switch-branch`
@@ -209,10 +212,8 @@ USAGE
 Switches the current branch to another local branch
 
 ```
-
 USAGE
-\$ ogit switch-branch
-
+  $ ogit switch-branch
 ```
 
 ## `ogit unstash-changes`
@@ -220,10 +221,8 @@ USAGE
 Applies the stashed changes back into workspace
 
 ```
-
 USAGE
-\$ ogit unstash-changes
-
+  $ ogit unstash-changes
 ```
 <!-- commandsstop -->
 ```
