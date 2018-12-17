@@ -1,8 +1,8 @@
-import { GitStatus } from '../models/GitStatus';
+import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
-import { GitBranchSummary, GitBranch } from '../models';
+import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 
 /**
@@ -547,14 +547,14 @@ export namespace GitWrapper {
   export const unstash = async (
     stashNumber: number,
     message: string,
-    remove: boolean = true
+    remove = true
   ): Promise<void> => {
     cli.action.start(`Unstashing changes for ${message}`);
     const unStashCommandOptions = {};
     if (remove) {
-      unStashCommandOptions['pop'] = null;
+      unStashCommandOptions.pop = null;
     } else {
-      unStashCommandOptions['apply'] = null;
+      unStashCommandOptions.apply = null;
     }
     unStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
@@ -578,7 +578,7 @@ export namespace GitWrapper {
   export const stash = async (
     message: string,
     fileNames: string[],
-    partial: boolean = true
+    partial = true
   ) => {
     cli.action.start(`Stashing changes for ${message}`);
     let commandList: string[];
@@ -593,6 +593,28 @@ export namespace GitWrapper {
     }
     try {
       await SimpleGit().raw(commandList);
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Reverts the changes to a file.
+   * @param file the path to the file
+   */
+  export const revertFile = async (file: GitFile) => {
+    try {
+      cli.action.start(`Reverting file ${file.path}`);
+      if (file.changeType === ChangeTypes.New) {
+        await SimpleGit().raw(['clean', '-f', file.path]);
+      } else if (file.changeType === ChangeTypes.Added) {
+        await SimpleGit().raw(['reset', file.path]);
+        await SimpleGit().raw(['clean', '-f', file.path]);
+      } else {
+        await SimpleGit().checkout(['--', file.path]);
+      }
+      cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
       throw error;

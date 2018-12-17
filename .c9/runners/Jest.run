@@ -1,0 +1,21 @@
+// This file overrides the built-in Node.js runner
+// For more information see http://docs.aws.amazon.com/console/cloud9/change-runner
+{
+  "cmd": [
+    "node",
+    "--inspect-brk=$debugport",
+    "node_modules/.bin/jest",
+    "--runInBand",
+    "--no-cache",
+    "--testPathPattern",
+    "$command"
+  ],
+  "default": true,
+  "working_dir": "/home/ec2-user/environment",
+  "selector": "$file",
+  "env": {},
+  "debugger": "v8",
+  "debugport": 5858,
+  "info": "Jesting $command",
+  "trackId": "Jest"
+}
