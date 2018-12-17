@@ -3,6 +3,7 @@ import { GitWrapper } from '../git';
 import * as fs from 'fs';
 import * as SimpleGit from 'simple-git/promise';
 import uuid = require('uuid');
+import { GitFile, ChangeTypes } from '../../models';
 
 xdescribe('ogit', () => {
   describe('wrapper', () => {
@@ -475,13 +476,23 @@ xdescribe('ogit', () => {
 
           const stashes = await GitWrapper.getStashes();
           await GitWrapper.clearStash();
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
           expect(stashes[0].files).toContain(file1);
           expect(stashes[0].files).toContain(file2);
           expect(stashes[0].files).toContain(file3);
         });
       });
     });
+  });
+});
+
+describe('revertFile', () => {
+  it('should be able to delete an un-stages file', async () => {
+    const file1 = uuid.v4() + '.txt';
+    createAndWriteToFile(file1);
+
+    const gitFile = new GitFile(file1, ' ', ChangeTypes.New);
+    await GitWrapper.revertFile(gitFile);
+    expect(fs.existsSync(file1)).toBeFalsy();
   });
 });
 
