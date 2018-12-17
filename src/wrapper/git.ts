@@ -4,7 +4,6 @@ import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
-import * as fs from 'fs';
 
 /**
  * Wrapper class for git commands.
@@ -270,9 +269,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-        .split('\n')
-        .filter(n => n)
-        .sort()
+          .split('\n')
+          .filter(n => n)
+          .sort()
       : [];
   };
 
@@ -608,10 +607,10 @@ export namespace GitWrapper {
     try {
       cli.action.start(`Reverting file ${file.path}`);
       if (file.changeType === ChangeTypes.New) {
-        fs.unlinkSync(file.path);
+        await SimpleGit().raw(['clean', '-f', file.path]);
       } else if (file.changeType === ChangeTypes.Added) {
         await SimpleGit().raw(['reset', file.path]);
-        fs.unlinkSync(file.path);
+        await SimpleGit().raw(['clean', '-f', file.path]);
       } else {
         await SimpleGit().checkout(['--', file.path]);
       }
