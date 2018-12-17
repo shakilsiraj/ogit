@@ -481,18 +481,42 @@ xdescribe('ogit', () => {
           expect(stashes[0].files).toContain(file3);
         });
       });
+
+      describe('revertFile', () => {
+        it('should be able to delete an un-stages file', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+
+          const gitFile = new GitFile(file1, ' ', ChangeTypes.New);
+          await GitWrapper.revertFile(gitFile);
+          expect(fs.existsSync(file1)).toBeFalsy();
+        });
+
+        it('should be able to delete a newly added file', async () => {
+          const file1 = uuid.v4() + '.txt';
+          createAndWriteToFile(file1);
+          await GitWrapper.addToRepo(file1);
+          const gitFile = new GitFile(file1, ' ', ChangeTypes.Added);
+          await GitWrapper.revertFile(gitFile);
+          expect(fs.existsSync(file1)).toBeFalsy();
+        });
+
+        it('should be able to revert an updated file', async () => {
+          const file = 'package-lock.json';
+          createAndWriteToFile(file);
+          const gitFile = new GitFile(file, ' ', ChangeTypes.Modified);
+          await GitWrapper.revertFile(gitFile);
+          expect(fs.existsSync(file)).toBeTruthy();
+
+          const status = await GitWrapper.status();
+          status.modified.forEach(gitFile => {
+            if (gitFile.path === file) {
+              fail();
+            }
+          });
+        });
+      });
     });
-  });
-});
-
-describe('revertFile', () => {
-  it('should be able to delete an un-stages file', async () => {
-    const file1 = uuid.v4() + '.txt';
-    createAndWriteToFile(file1);
-
-    const gitFile = new GitFile(file1, ' ', ChangeTypes.New);
-    await GitWrapper.revertFile(gitFile);
-    expect(fs.existsSync(file1)).toBeFalsy();
   });
 });
 
