@@ -31,7 +31,7 @@ export default class RevertChanges extends Command {
           message:
             'Select the file to revert changes' +
             ' (non-commited files will be deleted)',
-          type: 'list',
+          type: 'checkbox',
           choices: revertList,
           name: 'revertList',
           validate(choice: string[]) {
