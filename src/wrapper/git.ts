@@ -1,8 +1,9 @@
-import { GitStatus } from '../models/GitStatus';
+import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
-import { GitBranchSummary, GitBranch } from '../models';
+import { GitBranchSummary, GitBranch, GitFile } from '../models';
+import { GitStash } from '../models/GitStash';
 
 /**
  * Wrapper class for git commands.
@@ -127,7 +128,6 @@ export namespace GitWrapper {
    */
   export const listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
-    console.log('Testing');
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
       await SimpleGit().branch(['-r'])
@@ -170,6 +170,23 @@ export namespace GitWrapper {
     } catch (error) {
       throw new Error(
         `Call to commit changes failed with message: ${error.message}`
+      );
+    }
+  };
+
+  /**
+   * Pushes the local commits to the remote branch
+   * @param branchName the remote branch name
+   */
+  export const push = async (branchName: string): Promise<void> => {
+    try {
+      cli.action.start(`Pusing changes to remote ${branchName}`);
+      await SimpleGit().push('origin', branchName);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw new Error(
+        `Call to push changes failed with message: ${error.message}`
       );
     }
   };
@@ -250,7 +267,12 @@ export namespace GitWrapper {
       '-r',
       commitHash
     ]);
-    return fileNamesString ? fileNamesString.split('\n').filter(n => n) : [];
+    return fileNamesString
+      ? fileNamesString
+          .split('\n')
+          .filter(n => n)
+          .sort()
+      : [];
   };
 
   /**
@@ -321,6 +343,28 @@ export namespace GitWrapper {
   };
 
   /**
+   * Renames a local branch
+   *
+   * @static
+   * @memberof GitWrapper
+   */
+  export const renameBranch = async (
+    currantName: string,
+    newName: string
+  ): Promise<void> => {
+    try {
+      cli.action.start(`Renaming local branch ${currantName} to ${newName}`);
+      await SimpleGit().raw(['branch', '-m', currantName, newName]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw new Error(
+        `Call to rename branch failed with message: ${error.message}`
+      );
+    }
+  };
+
+  /**
    * Switches to the local branch
    * TODO: missing unit test...
    *
@@ -336,7 +380,7 @@ export namespace GitWrapper {
       cli.action.stop('failed');
       const errorRegex = /checkout:\n((.+\n)+)Please/;
       const fileNames = errorRegex.exec(err.message)[1].trim();
-      err.fileNamesArray = fileNames.split('\n');
+      err.fileNamesArray = fileNames.split('\n').sort();
 
       throw err;
     }
@@ -350,5 +394,230 @@ export namespace GitWrapper {
    */
   export const getCurrentBranchName = async (): Promise<string> => {
     return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
+  };
+
+  /**
+   * Deletes a branch from local repo
+   */
+  export const deleteLocalBranch = async (
+    branchName: string
+  ): Promise<void> => {
+    cli.action.start(`Deleting local branch ${branchName}`);
+    try {
+      await SimpleGit().raw(['branch', '-D', branchName]);
+      cli.action.stop();
+    } catch (e) {
+      cli.action.stop('failed');
+      throw e;
+    }
+  };
+
+  /**
+   * Deletes a remote branch
+   */
+  export const deleteRemoteBranch = async (
+    branchName: string
+  ): Promise<void> => {
+    cli.action.start(`Deleting remote branch ${branchName}`);
+    try {
+      await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Clears the stash by removing all entries
+   *
+   */
+  export const clearStash = async (): Promise<void> => {
+    cli.action.start('Removing all stashed changes');
+    try {
+      await SimpleGit().stash({
+        clear: null
+      });
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+  /**
+   *
+   *
+   * @param {number} stashNumber
+   * @returns {Promise<string[]>}
+   */
+
+  /**
+   * Returns a list of file names contained in a stash
+   * @param stashNumber the stash number to lookup on
+   */
+  const getStashedFiles = async (stashNumber: number): Promise<string[]> => {
+    const fileNames: string[] = [];
+
+    /** tracked portion */
+    const fileNamesLookupOptions = {
+      show: null,
+      '--name-only': null
+    };
+    fileNamesLookupOptions[`stash@{${stashNumber}}`] = null;
+    const trackedFileNames: string[] = (await SimpleGit().stash(
+      fileNamesLookupOptions
+    ))
+      .split('\n')
+      .filter(n => n);
+    trackedFileNames.forEach(fileName => fileNames.push(fileName));
+
+    /** Untracked portion, can throw error if there is no untracked file in
+     * that particular stash
+     */
+    // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
+    try {
+      const untrackedFileNames: string[] = (await SimpleGit().raw([
+        'ls-tree',
+        '-r',
+        `stash@{${stashNumber}}^3`,
+        '--name-only'
+      ]))
+        .split('\n')
+        .filter(n => n);
+      untrackedFileNames.forEach(fileName => fileNames.push(fileName));
+    } catch (error) {
+      /** DO_NOTHING */
+    }
+
+    return fileNames.sort();
+  };
+
+  /**
+   * Returns the list of stash names and the files attached to the stashes
+   */
+  export const getStashes = async (): Promise<GitStash[]> => {
+    const stashes: GitStash[] = [];
+    const stashNames: string[] = (await SimpleGit().stash({
+      list: null,
+      '--pretty': 'format:%s %N'
+    }))
+      .split('\n')
+      .filter(n => n);
+    for (let i = 0; i < stashNames.length; i++) {
+      const stashEntries: string[] = stashNames[i].split(':');
+      const stash = new GitStash();
+      stash.stashNumber = i;
+      stash.branchName = stashEntries[0]
+        .split(' ')
+        .splice(-1)[0]
+        .trim();
+      stash.stashName = stashEntries[1].trim();
+      stash.files = await getStashedFiles(i);
+      stashes.push(stash);
+    }
+
+    return stashes;
+  };
+
+  /**
+   * Deletes a stash based on the number supplied
+   * @param stashNumber Stash number to delete
+   */
+  export const deleteStash = async (
+    stashNumber: number,
+    message: string
+  ): Promise<void> => {
+    cli.action.start(`Deleting stash ${message}`);
+    const deleteStashCommandOptions = {
+      drop: null
+    };
+    deleteStashCommandOptions[`stash@{${stashNumber}}`] = null;
+    try {
+      await SimpleGit().stash(deleteStashCommandOptions);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Removes a stash from local repo
+   */
+  export const unstash = async (
+    stashNumber: number,
+    message: string,
+    remove = true
+  ): Promise<void> => {
+    cli.action.start(`Unstashing changes for ${message}`);
+    const unStashCommandOptions = {};
+    if (remove) {
+      unStashCommandOptions.pop = null;
+    } else {
+      unStashCommandOptions.apply = null;
+    }
+    unStashCommandOptions[`stash@{${stashNumber}}`] = null;
+    try {
+      await SimpleGit().stash(unStashCommandOptions);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      const errorRegex = /merge:\n((.+\n)+)Please/;
+      const fileNames = errorRegex.exec(error.message)[1].trim();
+      error.fileNamesArray = fileNames.split('\n').sort();
+      throw error;
+    }
+  };
+
+  /**
+   * Creates a new stash of the files
+   * @param message to add for the stash
+   * @param fileNames the list of file names
+   * @param partial is this a partial list or not
+   */
+  export const stash = async (
+    message: string,
+    fileNames: string[],
+    partial = true
+  ) => {
+    cli.action.start(`Stashing changes for ${message}`);
+    let commandList: string[];
+    if (partial) {
+      commandList = ['stash', 'push', '-m', message, '--'];
+      for (let i = 0; i < fileNames.length; i++) {
+        await SimpleGit().add(fileNames[i]);
+        commandList.push(fileNames[i]);
+      }
+    } else {
+      commandList = ['stash', 'save', '-u', message];
+    }
+    try {
+      await SimpleGit().raw(commandList);
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Reverts the changes to a file.
+   * @param file the path to the file
+   */
+  export const revertFile = async (file: GitFile) => {
+    try {
+      cli.action.start(`Reverting file ${file.path}`);
+      if (file.changeType === ChangeTypes.New) {
+        await SimpleGit().raw(['clean', '-f', file.path]);
+      } else if (file.changeType === ChangeTypes.Added) {
+        await SimpleGit().raw(['reset', file.path]);
+        await SimpleGit().raw(['clean', '-f', file.path]);
+      } else {
+        await SimpleGit().checkout(['--', file.path]);
+      }
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
   };
 }

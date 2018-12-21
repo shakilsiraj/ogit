@@ -2,17 +2,16 @@ module.exports = {
   "globals": {
     "ts-jest": {
       "diagnostics": true,
-      "tsConfig": "tsconfig.spec.json"
+      "tsConfig": "<rootDir>/tsconfig.spec.json"
     },
   },
   "testPathIgnorePatterns": [
     "<rootDir>/.c9/", "<rootDir>/node_modules/"
   ],
-  "setupTestFrameworkScriptFile": "./jest.setup.ts",
   "transform": {
     "^.+\\.tsx?$": "ts-jest"
   },
-  "testRegex": "(__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
+  "testRegex": "(/spec/.*|(\\.|/)(test|spec))\\.ts?$",
   "moduleFileExtensions": [
     "ts",
     "tsx",
@@ -22,13 +21,10 @@ module.exports = {
     "node"
   ],
   "collectCoverage": true,
-  "collectCoverageFrom": [
-    "src/**/*.ts"
-  ],
   "coverageReporters": ["text-summary"],
   "verbose": true,
   "transformIgnorePatterns": [
     "/node_modules/(?!@tsed/testing).+\\.js$"
   ],
-  "testEnvironment": "node"
+  "testEnvironment": 'node'
 }
