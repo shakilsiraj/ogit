@@ -14,16 +14,12 @@ export default abstract class extends Command {
     this.stashes = await GitWrapper.getStashes();
     const status: GitStatus = await GitWrapper.status();
 
-    // if (this.shouldCheckForChanges() && status.all.length === 0) {
-    //   console.log("You don't have any changes to perform this operation");
-    //   return;
-    // }
-
     status.all.forEach(file => {
       this.choices.push({
         name: `${file.path} ${FileNameUtils.getFileChangeType(
           file.changeType
         )}`,
+        value: file,
         checked: true
       });
     });
