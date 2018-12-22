@@ -180,7 +180,7 @@ export namespace GitWrapper {
    */
   export const push = async (branchNames: string[]): Promise<void> => {
     try {
-      cli.action.start(`Pusing changes to remote ${branchNames}`);
+      cli.action.start(`Pusing changes to remote ${branchNames.join(', ')}`);
       await SimpleGit().push('origin', ...branchNames);
       cli.action.stop();
     } catch (error) {
