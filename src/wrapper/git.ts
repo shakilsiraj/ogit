@@ -178,10 +178,10 @@ export namespace GitWrapper {
    * Pushes the local commits to the remote branch
    * @param branchName the remote branch name
    */
-  export const push = async (branchName: string): Promise<void> => {
+  export const push = async (branchNames: string[]): Promise<void> => {
     try {
-      cli.action.start(`Pusing changes to remote ${branchName}`);
-      await SimpleGit().push('origin', branchName);
+      cli.action.start(`Pusing changes to remote ${branchNames.join(', ')}`);
+      await SimpleGit().push('origin', ...branchNames);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
