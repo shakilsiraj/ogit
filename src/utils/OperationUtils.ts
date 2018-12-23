@@ -4,13 +4,8 @@ import { ChangeTypes } from '../models';
 import { GitWrapper } from '../wrapper/git';
 
 export class OperationUtils {
-  public static getFilePath = (fileName: string): string => {
-    const lastIndex = fileName.lastIndexOf('(');
-    return fileName.substring(0, lastIndex - 1).trim();
-  };
-
-  public static addNewFilesToRepo = (fileNames: GitFile[]): void => {
-    fileNames.forEach(async (file: GitFile) => {
+  public static addNewFilesToRepo = (files: GitFile[]): void => {
+    files.forEach(async (file: GitFile) => {
       if (file.changeType === ChangeTypes.New) {
         await GitWrapper.addToRepo(file.path);
       }

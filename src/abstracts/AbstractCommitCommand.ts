@@ -1,3 +1,4 @@
+import { GitFile } from './../models/GitFile';
 import 'reflect-metadata';
 import { Command } from '@oclif/command';
 import * as inquirer from 'inquirer';
@@ -16,6 +17,7 @@ export default abstract class extends Command {
         name: `${file.path} ${FileNameUtils.getFileChangeType(
           file.changeType
         )}`,
+        value: file,
         checked: true
       });
     });
@@ -23,10 +25,9 @@ export default abstract class extends Command {
     const answers: any = await inquirer.prompt(await this.getPrompts());
 
     //lets filter out the files that needs to be added to git seperately..
-    const changeTypeToCheck = FileNameUtils.getFileChangeType(ChangeTypes.New);
-    answers.fileToBeCommitted.forEach(async (file: string) => {
-      if (file.endsWith(changeTypeToCheck)) {
-        await GitWrapper.addToRepo(this.getFilePath(file));
+    answers.fileToBeCommitted.forEach(async (file: GitFile) => {
+      if (file.changeType === ChangeTypes.New) {
+        await GitWrapper.addToRepo(file.path);
       }
     });
 
@@ -46,18 +47,11 @@ export default abstract class extends Command {
     skipValidation: boolean
   ): Promise<void>;
 
-  private readonly getListOfFilesFromPrompt = (
-    fileNames: string[]
-  ): string[] => {
+  private readonly getListOfFilesFromPrompt = (files: GitFile[]): string[] => {
     const processedFileNames: string[] = [];
-    fileNames.forEach(fileName => {
-      processedFileNames.push(this.getFilePath(fileName));
+    files.forEach(file => {
+      processedFileNames.push(file.path);
     });
     return processedFileNames;
-  };
-
-  private readonly getFilePath = (fileName: string): string => {
-    const lastIndex = fileName.lastIndexOf('(');
-    return fileName.substring(0, lastIndex - 1).trim();
   };
 }
