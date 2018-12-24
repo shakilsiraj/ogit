@@ -11,11 +11,14 @@ export class DeleteBranchCommand extends Command {
   }
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
-    const branchNames: string[] = [];
+    const branchNames = [];
     const verifyingNumber: string = ('' + Math.random()).substr(4, 4);
     this.branchesList.forEach(branch => {
       if (!branch.isCurrent) {
-        branchNames.push(`${this.getName(branch)} (${this.getType(branch)})`);
+        branchNames.push({
+          name: `${this.getName(branch)} (${this.getType(branch)})`,
+          value: branch
+        });
       }
     });
     const answers: any = await inquirer.prompt([
@@ -23,8 +26,8 @@ export class DeleteBranchCommand extends Command {
         message: 'Select the branch to delete',
         type: 'list',
         choices: branchNames,
-        name: 'branchName',
-        validate(choices: string[]) {
+        name: 'selectedBranch',
+        validate(choices: any[]) {
           return choices.length > 0;
         }
       },
@@ -37,7 +40,7 @@ export class DeleteBranchCommand extends Command {
         }
       }
     ]);
-    const selectBranchName = this.getNameFromPrompt(answers.branchName);
+    const selectBranchName = answers.selectedBranch.name;
     return {
       branchNameA:
         this.localBranches.indexOf(selectBranchName) > -1
