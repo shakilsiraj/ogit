@@ -8,14 +8,16 @@ A lazy developer&#39;s Git CLI made simple
 [![License](https://img.shields.io/npm/l/ogit.svg)](https://github.com/shakilsiraj/ogit/blob/master/package.json)
 
 <!-- toc -->
-* [ogit](#ogit)
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [ogit](#ogit)
+- [Usage](#usage)
+- [Commands](#commands)
+  <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g ogit
 $ ogit COMMAND
@@ -27,30 +29,32 @@ USAGE
   $ ogit COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`ogit amend-last-commit`](#ogit-amend-last-commit)
-* [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
-* [`ogit clear-stash`](#ogit-clear-stash)
-* [`ogit commit-changes`](#ogit-commit-changes)
-* [`ogit create-branch`](#ogit-create-branch)
-* [`ogit delete-branch`](#ogit-delete-branch)
-* [`ogit delete-last-commit`](#ogit-delete-last-commit)
-* [`ogit delete-stash`](#ogit-delete-stash)
-* [`ogit display-branches`](#ogit-display-branches)
-* [`ogit display-changes`](#ogit-display-changes)
-* [`ogit help [COMMAND]`](#ogit-help-command)
-* [`ogit pull-remote-changes [FILE]`](#ogit-pull-remote-changes-file)
-* [`ogit push-commits`](#ogit-push-commits)
-* [`ogit rename-branch`](#ogit-rename-branch)
-* [`ogit revert-changes`](#ogit-revert-changes)
-* [`ogit revert-last-commit`](#ogit-revert-last-commit)
-* [`ogit stash-changes`](#ogit-stash-changes)
-* [`ogit switch-branch`](#ogit-switch-branch)
-* [`ogit unstash-changes`](#ogit-unstash-changes)
+
+- [`ogit amend-last-commit`](#ogit-amend-last-commit)
+- [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
+- [`ogit clear-stash`](#ogit-clear-stash)
+- [`ogit commit-changes`](#ogit-commit-changes)
+- [`ogit create-branch`](#ogit-create-branch)
+- [`ogit delete-branch`](#ogit-delete-branch)
+- [`ogit delete-last-commit`](#ogit-delete-last-commit)
+- [`ogit delete-stash`](#ogit-delete-stash)
+- [`ogit display-branches`](#ogit-display-branches)
+- [`ogit display-changes`](#ogit-display-changes)
+- [`ogit help [COMMAND]`](#ogit-help-command)
+- [`ogit pull-remote-changes [FILE]`](#ogit-pull-remote-changes-file)
+- [`ogit push-commits`](#ogit-push-commits)
+- [`ogit rename-branch`](#ogit-rename-branch)
+- [`ogit revert-changes`](#ogit-revert-changes)
+- [`ogit revert-last-commit`](#ogit-revert-last-commit)
+- [`ogit stash-changes`](#ogit-stash-changes)
+- [`ogit switch-branch`](#ogit-switch-branch)
+- [`ogit unstash-changes`](#ogit-unstash-changes)
 
 ## `ogit amend-last-commit`
 
@@ -165,18 +169,13 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
 
-## `ogit pull-remote-changes [FILE]`
+## `ogit pull-remote-changes`
 
 describe the command here
 
 ```
 USAGE
-  $ ogit pull-remote-changes [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  $ ogit pull-remote-changes
 ```
 
 ## `ogit push-commits`
@@ -239,5 +238,9 @@ Applies the stashed changes back into workspace
 USAGE
   $ ogit unstash-changes
 ```
+
 <!-- commandsstop -->
+
+```
+
 ```
