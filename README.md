@@ -21,7 +21,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.16.0 linux-x64 node-v8.12.0
+ogit/1.17.0 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
@@ -43,9 +43,10 @@ USAGE
 * [`ogit display-branches`](#ogit-display-branches)
 * [`ogit display-changes`](#ogit-display-changes)
 * [`ogit help [COMMAND]`](#ogit-help-command)
+* [`ogit pull-remote-changes [FILE]`](#ogit-pull-remote-changes-file)
 * [`ogit push-commits`](#ogit-push-commits)
 * [`ogit rename-branch`](#ogit-rename-branch)
-* [`ogit revert-changes`](#ogit-revert-changes-file)
+* [`ogit revert-changes`](#ogit-revert-changes)
 * [`ogit revert-last-commit`](#ogit-revert-last-commit)
 * [`ogit stash-changes`](#ogit-stash-changes)
 * [`ogit switch-branch`](#ogit-switch-branch)
@@ -74,7 +75,7 @@ ARGUMENTS
 
 ## `ogit clear-stash`
 
-Clears all the stashes in the repo
+Clears all the stashes in the local repos
 
 ```
 USAGE
@@ -164,6 +165,20 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
 
+## `ogit pull-remote-changes [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ogit pull-remote-changes [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
 ## `ogit push-commits`
 
 Pushes local commits to the remote repo
@@ -184,7 +199,7 @@ USAGE
 
 ## `ogit revert-changes`
 
-Revers local file changes
+Reverts an uncommitted change
 
 ```
 USAGE
