@@ -239,5 +239,6 @@ Applies the stashed changes back into workspace
 USAGE
   $ ogit unstash-changes
 ```
+
 <!-- commandsstop -->
 ```
