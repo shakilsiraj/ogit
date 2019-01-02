@@ -167,7 +167,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3
 
 ## `ogit pull-remote-changes [FILE]`
 
-describe the command here
+Whatever
 
 ```
 USAGE
