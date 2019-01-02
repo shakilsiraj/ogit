@@ -47,7 +47,7 @@ USAGE
 - [`ogit display-branches`](#ogit-display-branches)
 - [`ogit display-changes`](#ogit-display-changes)
 - [`ogit help [COMMAND]`](#ogit-help-command)
-- [`ogit pull-remote-changes [FILE]`](#ogit-pull-remote-changes-file)
+- [`ogit pull-remote-changes`](#ogit-pull-remote-changes-file)
 - [`ogit push-commits`](#ogit-push-commits)
 - [`ogit rename-branch`](#ogit-rename-branch)
 - [`ogit revert-changes`](#ogit-revert-changes)
@@ -74,7 +74,7 @@ USAGE
   $ ogit checkout-repo URL
 
 ARGUMENTS
-  URL  URL of git reo
+  URL  URL of git repo
 ```
 
 ## `ogit clear-stash`
