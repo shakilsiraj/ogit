@@ -8,33 +8,46 @@ export default class PushCommits extends Command {
 
   async run() {
     const status: GitStatus = await GitWrapper.status();
-    let branchNameToPushTo = status.currentBranch;
+    const branchesList = await GitWrapper.listBranches();
+    const branchChoices = [
+      {
+        name: status.currentBranch,
+        value: status.currentBranch
+      },
+      {
+        name: `${status.trackingBranch} (upstream)`,
+        value: `HEAD:${status.trackingBranch}`
+      }
+    ];
+
+    branchesList.forEach(branch => {
+      if (
+        !branch.isLocal &&
+        branch.name != status.currentBranch &&
+        branch.name != status.trackingBranch
+      ) {
+        branchChoices.push({
+          name: branch.name,
+          value: branch.name
+        });
+      }
+    });
+
     if (status.currentBranch !== status.trackingBranch) {
       const answers: any = await inquirer.prompt([
         {
           message: 'Select the remote branch to push commits to',
-          type: 'list',
-          choices: [
-            status.currentBranch,
-            `${status.trackingBranch} (upstream)`
-          ],
+          type: 'checkbox',
+          choices: branchChoices,
           default: status.currentBranch,
-          name: 'branchName',
+          name: 'branchNames',
           validate(choices: string[]) {
             return choices.length > 0;
           }
         }
       ]);
 
-      if (answers.branchName !== status.currentBranch) {
-        branchNameToPushTo =
-          'HEAD:' +
-          status.trackingBranch.substring(
-            status.trackingBranch.indexOf('/') + 1
-          );
-      }
-
-      await GitWrapper.push(branchNameToPushTo);
+      await GitWrapper.push(answers.branchNames);
     }
   }
 }

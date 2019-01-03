@@ -4,7 +4,7 @@ import { GitWrapper } from '../wrapper/git';
 const chalk = require('chalk');
 
 export class ClearStashCommand extends Command {
-  static description = 'Clears all the stashes in the repo';
+  static description = 'Clears all the stashes in the local repos';
 
   public getPrompts = async (): Promise<any[]> => {
     const verifyingNumber = OperationUtils.getRandomVerificationNumber();
