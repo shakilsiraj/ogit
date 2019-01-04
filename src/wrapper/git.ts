@@ -180,7 +180,7 @@ export namespace GitWrapper {
    */
   export const push = async (branchNames: string[]): Promise<void> => {
     try {
-      cli.action.start(`Pusing changes to remote ${branchNames.join(', ')}`);
+      cli.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
       await SimpleGit().push('origin', ...branchNames);
       cli.action.stop();
     } catch (error) {
@@ -269,9 +269,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-          .split('\n')
-          .filter(n => n)
-          .sort()
+        .split('\n')
+        .filter(n => n)
+        .sort()
       : [];
   };
 
@@ -458,7 +458,7 @@ export namespace GitWrapper {
   const getStashedFiles = async (stashNumber: number): Promise<string[]> => {
     const fileNames: string[] = [];
 
-    /** tracked portion */
+    //tracked portion
     const fileNamesLookupOptions = {
       show: null,
       '--name-only': null
@@ -471,7 +471,8 @@ export namespace GitWrapper {
       .filter(n => n);
     trackedFileNames.forEach(fileName => fileNames.push(fileName));
 
-    /** Untracked portion, can throw error if there is no untracked file in
+    /**
+     * Untracked portion, can throw error if there is no untracked file in
      * that particular stash
      */
     // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
@@ -550,7 +551,7 @@ export namespace GitWrapper {
     remove = true
   ): Promise<void> => {
     cli.action.start(`Unstashing changes for ${message}`);
-    const unStashCommandOptions = {};
+    const unStashCommandOptions: any = {};
     if (remove) {
       unStashCommandOptions.pop = null;
     } else {
@@ -600,6 +601,20 @@ export namespace GitWrapper {
   };
 
   /**
+   * Synchronises the remote branches
+   */
+  export const syncRemoteBranches = async () => {
+    try {
+      cli.action.start('Resyncing remote branches');
+      await SimpleGit().raw(['fetch', 'origin', '--prune']);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
    * Reverts the changes to a file.
    * @param file the path to the file
    */
@@ -615,6 +630,29 @@ export namespace GitWrapper {
         await SimpleGit().checkout(['--', file.path]);
       }
       cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  export const pullRemoteChanges = async (
+    branch: GitBranch
+  ): Promise<GitFile[]> => {
+    try {
+      cli.action.start(`Pulling changes from ${branch.label}`);
+      const pullResult = await SimpleGit().raw([
+        'pull',
+        '--no-stat',
+        '-v',
+        'origin',
+        branch.label
+      ]);
+      cli.action.stop();
+      if (pullResult.indexOf('CONFLICT') > 0) {
+      } else {
+        return [];
+      }
     } catch (error) {
       cli.action.stop('failed');
       throw error;
