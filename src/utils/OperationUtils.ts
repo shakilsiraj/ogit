@@ -12,6 +12,10 @@ export class OperationUtils {
     });
   };
 
+  public static handleMergeConflicts = async (
+    files: string[]
+  ): Promise<void> => {};
+
   public static getRandomVerificationNumber = (): string => {
     return ('' + Math.random()).substr(4, 4);
   };

@@ -3,17 +3,22 @@ import Command, {
 } from '../abstracts/AbstractBranchCommand';
 import * as inquirer from 'inquirer';
 import { GitWrapper } from '../wrapper/git';
+import { OperationUtils } from '../utils/OperationUtils';
 
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';
   async run() {
+    const mergeConflictFiles = await GitWrapper.filesWithMergeConflicts();
+    if (mergeConflictFiles.length > 0) {
+      await OperationUtils.handleMergeConflicts(mergeConflictFiles);
+    }
     await super.runHelper();
   }
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const answers: any = await inquirer.prompt([
       {
-        message: 'Select the remote branch to pull changes',
+        message: 'Select the remote branch to pull changes from',
         type: 'list',
         choices: this.remoteBranches,
         name: 'remoteBranchName',

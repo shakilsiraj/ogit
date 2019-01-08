@@ -269,9 +269,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-        .split('\n')
-        .filter(n => n)
-        .sort()
+          .split('\n')
+          .filter(n => n)
+          .sort()
       : [];
   };
 
@@ -647,7 +647,7 @@ export namespace GitWrapper {
         '--name-only',
         '--diff-filter=U'
       ]);
-      fileNamesList = fileNames.split('\n');
+      fileNamesList = fileNames.split('\n').filter(n => n);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
