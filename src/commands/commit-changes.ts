@@ -30,7 +30,7 @@ export default class CommitChangesCommand extends Command {
         }
       },
       {
-        message: 'Skip varification',
+        message: 'Skip verification',
         type: 'confirm',
         name: 'skipValidation',
         default: false

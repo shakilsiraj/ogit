@@ -636,23 +636,51 @@ export namespace GitWrapper {
     }
   };
 
-  export const pullRemoteChanges = async (
-    branch: GitBranch
-  ): Promise<GitFile[]> => {
+  /**
+   * Returns the list of file names that have merge conflict.
+   */
+  export const filesWithMergeConflicts = async (): Promise<string[]> => {
+    let fileNamesList: string[];
     try {
-      cli.action.start(`Pulling changes from ${branch.label}`);
+      cli.action.start('Retrieving file names with merge conflict');
+      const fileNames = await SimpleGit().diff([
+        '--name-only',
+        '--diff-filter=U'
+      ]);
+      fileNamesList = fileNames.split('\n');
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+
+    return fileNamesList;
+  };
+
+  /**
+   * Pulls the changes from the remote branch into current.
+   * @param branch the remote branch to pull changes from.
+   */
+  export const pullRemoteChanges = async (
+    branch: string
+  ): Promise<string[]> => {
+    try {
+      cli.action.start(`Pulling changes from ${branch}`);
       const pullResult = await SimpleGit().raw([
         'pull',
         '--no-stat',
         '-v',
         'origin',
-        branch.label
+        branch
       ]);
       cli.action.stop();
-      if (pullResult.indexOf('CONFLICT') > 0) {
-      } else {
-        return [];
-      }
+      return pullResult.indexOf('CONFLICT') > 0
+        ? filesWithMergeConflicts()
+        : [];
+      // if (pullResult.indexOf('CONFLICT') > 0) {
+      // } else {
+
+      // }
     } catch (error) {
       cli.action.stop('failed');
       throw error;

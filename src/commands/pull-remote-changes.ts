@@ -1,7 +1,44 @@
-import { Command, flags } from '@oclif/command';
+import Command, {
+  BranchNamePairStructure
+} from '../abstracts/AbstractBranchCommand';
+import * as inquirer from 'inquirer';
+import { GitWrapper } from '../wrapper/git';
 
-export default class PullRemoteChanges extends Command {
-  static description = 'Pulls in the changes from remote repo';
+export class CreateBranchCommand extends Command {
+  static description = 'Creates a new local branch from a remote branch';
+  async run() {
+    await super.runHelper();
+  }
 
-  async run() {}
+  public async getSelectedBranch(): Promise<BranchNamePairStructure> {
+    const answers: any = await inquirer.prompt([
+      {
+        message: 'Select the remote branch to pull changes',
+        type: 'list',
+        choices: this.remoteBranches,
+        name: 'remoteBranchName',
+        validate(choices: string[]) {
+          return choices.length > 0;
+        }
+      }
+    ]);
+    return {
+      branchNameA: answers.remoteBranchName,
+      branchNameB: undefined
+    };
+  }
+  public async preformBranchOperation(
+    branchInfo: BranchNamePairStructure
+  ): Promise<void> {
+    const remoteBranchName = branchInfo.branchNameA;
+    const conflictedFiles = await GitWrapper.pullRemoteChanges(
+      remoteBranchName.substring(remoteBranchName.indexOf('/') + 1)
+    );
+    if (conflictedFiles.length > 0) {
+      console.log('Please resolve merge conflicts in the following files:');
+      conflictedFiles.forEach(file => {
+        console.log(file);
+      });
+    }
+  }
 }
