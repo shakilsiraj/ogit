@@ -40,3 +40,14 @@ Automatic merge failed; fix conflicts and then commit the result.
 #Check if there is any merge conflicts
 
 `git diff --name-only --diff-filter=U`
+
+# Reset local repo to a specific branch
+
+Clean the repo first:
+`git clean -f -d -x`
+
+Fetch remote changes:
+`git fetch -p`
+
+Reset to a specific branch:
+`git reset --hard origin/master`

@@ -269,9 +269,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-        .split('\n')
-        .filter(n => n)
-        .sort()
+          .split('\n')
+          .filter(n => n)
+          .sort()
       : [];
   };
 
@@ -696,10 +696,11 @@ export namespace GitWrapper {
     acceptRemote: boolean,
     filePath = '.'
   ) => {
+    const commitMessage = `Accepting ${
+      acceptRemote ? 'remote' : 'local'
+    } changes for ${filePath != '.' ? filePath : 'all conflicted files'}`;
     try {
-      cli.action.start(
-        `Accepting changes for ${filePath ? filePath : 'all conflicted files'}`
-      );
+      cli.action.start(commitMessage);
       const checkoutOptions = ['checkout'];
       if (acceptRemote) {
         checkoutOptions.push('--theirs');
@@ -709,6 +710,21 @@ export namespace GitWrapper {
       checkoutOptions.push(filePath);
 
       await SimpleGit().raw(checkoutOptions);
+      await SimpleGit().raw(['commit', '-am', commitMessage]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Cancels the merge operation.
+   */
+  export const cancelMerge = async (): Promise<void> => {
+    try {
+      cli.action.start(`Cancelling merge attempt`);
+      await SimpleGit().merge(['--abort']);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');

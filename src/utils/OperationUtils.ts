@@ -59,6 +59,7 @@ export class OperationUtils {
     console.log(howToProceedPrompt);
     if (howToProceedPrompt.mergeOperation === 'C') {
       mergeCancelled = true;
+      await GitWrapper.cancelMerge();
     } else if (howToProceedPrompt.mergeOperation === 'M') {
       console.log('Accepting all my changes');
       await GitWrapper.acceptChanges(false);
