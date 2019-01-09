@@ -8,11 +8,16 @@ import { OperationUtils } from '../utils/OperationUtils';
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';
   async run() {
+    let mergeCancelled = false;
     const mergeConflictFiles = await GitWrapper.filesWithMergeConflicts();
     if (mergeConflictFiles.length > 0) {
-      await OperationUtils.handleMergeConflicts(mergeConflictFiles);
+      mergeCancelled = await OperationUtils.handleMergeConflicts(
+        mergeConflictFiles
+      );
     }
-    await super.runHelper();
+    if (!mergeCancelled) {
+      await super.runHelper();
+    }
   }
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {

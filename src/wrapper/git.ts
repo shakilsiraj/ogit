@@ -269,9 +269,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-          .split('\n')
-          .filter(n => n)
-          .sort()
+        .split('\n')
+        .filter(n => n)
+        .sort()
       : [];
   };
 
@@ -681,6 +681,35 @@ export namespace GitWrapper {
       // } else {
 
       // }
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Accept merge changes.
+   * @param acceptRemote should use remote or local changes
+   * @param filePath
+   */
+  export const acceptChanges = async (
+    acceptRemote: boolean,
+    filePath = '.'
+  ) => {
+    try {
+      cli.action.start(
+        `Accepting changes for ${filePath ? filePath : 'all conflicted files'}`
+      );
+      const checkoutOptions = ['checkout'];
+      if (acceptRemote) {
+        checkoutOptions.push('--theirs');
+      } else {
+        checkoutOptions.push('--ours');
+      }
+      checkoutOptions.push(filePath);
+
+      await SimpleGit().raw(checkoutOptions);
+      cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
       throw error;
