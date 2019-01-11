@@ -620,4 +620,38 @@ export namespace GitWrapper {
       throw error;
     }
   };
+
+  /**
+   * Returns a list of tag names for the repo
+   */
+  export const tags = async (): Promise<SimpleGit.TagResult> => {
+    try {
+      cli.action.start('Reverting tag names');
+      return await SimpleGit().tags();
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Resets the current repo.
+   *
+   * @param pointer tag or branch name to set HEAD to
+   * @param strategy strategy to take
+   */
+  export const reset = async (
+    pointer: string,
+    strategy: string
+  ): Promise<void> => {
+    try {
+      cli.action.start(`Reseting current HEAD to ${pointer}`);
+      await SimpleGit().raw(['reset', strategy, pointer]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
