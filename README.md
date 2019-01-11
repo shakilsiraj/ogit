@@ -21,7 +21,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.16.0 linux-x64 node-v8.12.0
+ogit/1.17.0 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
@@ -45,7 +45,8 @@ USAGE
 * [`ogit help [COMMAND]`](#ogit-help-command)
 * [`ogit push-commits`](#ogit-push-commits)
 * [`ogit rename-branch`](#ogit-rename-branch)
-* [`ogit revert-changes`](#ogit-revert-changes-file)
+* [`ogit reset-head [FILE]`](#ogit-reset-head-file)
+* [`ogit revert-changes`](#ogit-revert-changes)
 * [`ogit revert-last-commit`](#ogit-revert-last-commit)
 * [`ogit stash-changes`](#ogit-stash-changes)
 * [`ogit switch-branch`](#ogit-switch-branch)
@@ -74,7 +75,7 @@ ARGUMENTS
 
 ## `ogit clear-stash`
 
-Clears all the stashes in the repo
+Clears all the stashes in the local repos
 
 ```
 USAGE
@@ -182,9 +183,23 @@ USAGE
   $ ogit rename-branch
 ```
 
+## `ogit reset-head [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ ogit reset-head [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
 ## `ogit revert-changes`
 
-Revers local file changes
+Reverts an uncommitted change
 
 ```
 USAGE
