@@ -149,12 +149,15 @@ export namespace GitWrapper {
     return branches;
   };
 
+  /**
+   * Commits the files into repo.
+   */
   export const commit = async (
     message: string,
     fileNames: string[],
     skipValidation: boolean
   ): Promise<SimpleGit.CommitSummary> => {
-    const options: any = {};
+    const options: any = { '--include': true };
     if (skipValidation) {
       options['--no-verify'] = null;
     }
@@ -677,10 +680,6 @@ export namespace GitWrapper {
       return pullResult.indexOf('CONFLICT') > 0
         ? filesWithMergeConflicts()
         : [];
-      // if (pullResult.indexOf('CONFLICT') > 0) {
-      // } else {
-
-      // }
     } catch (error) {
       cli.action.stop('failed');
       throw error;
@@ -698,7 +697,7 @@ export namespace GitWrapper {
   ) => {
     const commitMessage = `Accepting ${
       acceptRemote ? 'remote' : 'local'
-    } changes for ${filePath != '.' ? filePath : 'all conflicted files'}`;
+    } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
     try {
       cli.action.start(commitMessage);
       const checkoutOptions = ['checkout'];
@@ -710,7 +709,9 @@ export namespace GitWrapper {
       checkoutOptions.push(filePath);
 
       await SimpleGit().raw(checkoutOptions);
-      await SimpleGit().raw(['commit', '-am', commitMessage]);
+      if (filePath === '.') {
+        await autoCommit(commitMessage);
+      }
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -718,12 +719,18 @@ export namespace GitWrapper {
     }
   };
 
+  export const autoCommit = async (
+    message: string
+  ): Promise<SimpleGit.CommitSummary> => {
+    return await SimpleGit().commit(message, '', { '-a': true, m: true });
+  };
+
   /**
    * Cancels the merge operation.
    */
   export const cancelMerge = async (): Promise<void> => {
     try {
-      cli.action.start(`Cancelling merge attempt`);
+      cli.action.start('Cancelling merge attempt');
       await SimpleGit().merge(['--abort']);
       cli.action.stop();
     } catch (error) {

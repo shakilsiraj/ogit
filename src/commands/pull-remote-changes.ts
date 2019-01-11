@@ -4,6 +4,7 @@ import Command, {
 import * as inquirer from 'inquirer';
 import { GitWrapper } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
+import { CommitChangesCommand } from './commit-changes';
 
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';
@@ -16,6 +17,7 @@ export class CreateBranchCommand extends Command {
       );
     }
     if (!mergeCancelled) {
+      await CommitChangesCommand.run(['--noSummary']);
       await super.runHelper();
     }
   }

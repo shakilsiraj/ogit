@@ -1,9 +1,16 @@
+import { flags } from '@oclif/command';
 import { GitWrapper } from '../wrapper/git';
 import Command from '../abstracts/AbstractCommitCommand';
 
-export default class CommitChangesCommand extends Command {
+export class CommitChangesCommand extends Command {
   static description = 'Commit all the uncommitted changes to repo';
-  choices: any[] = [];
+
+  static flags = {
+    noSummary: flags.boolean({
+      default: false,
+      description: 'Do not display commit summary'
+    })
+  };
 
   async run() {
     await super.runHelper();
@@ -12,7 +19,7 @@ export default class CommitChangesCommand extends Command {
   public getPrompts = async (): Promise<any[]> => {
     return [
       {
-        message: 'The following changes will be committed',
+        message: 'The following changes needs to be committed',
         type: 'checkbox',
         choices: this.choices,
         name: 'fileToBeCommitted',
@@ -48,13 +55,15 @@ export default class CommitChangesCommand extends Command {
       fileNames,
       skipValidation
     );
-
-    console.log(
-      `Commit ${commitResult.commit} for branch ${
-        commitResult.branch
-      } was successful with ${commitResult.summary.changes} changes, ${
-        commitResult.summary.insertions
-      } insertions and ${commitResult.summary.deletions} deletions.`
-    );
+    const { flags } = this.parse(CommitChangesCommand);
+    if (!flags.noSummary) {
+      console.log(
+        `Commit ${commitResult.commit} for branch ${
+          commitResult.branch
+        } was successful with ${commitResult.summary.changes} changes, ${
+          commitResult.summary.insertions
+        } insertions and ${commitResult.summary.deletions} deletions.`
+      );
+    }
   };
 }

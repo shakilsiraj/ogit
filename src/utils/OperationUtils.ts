@@ -33,22 +33,22 @@ export class OperationUtils {
         choices: [
           {
             key: 'C',
-            name: HowToProceed.C,
+            name: 'Cancel merge',
             value: 'C'
           },
           {
             key: 'M',
-            name: HowToProceed.M,
+            name: 'Accept all my changes',
             value: 'M'
           },
           {
             key: 'R',
-            name: HowToProceed.R,
+            name: 'Accept all remote changes',
             value: 'R'
           },
           {
             key: 'O',
-            name: HowToProceed.O,
+            name: 'Merge one by one',
             value: 'O'
           }
         ],
@@ -56,15 +56,65 @@ export class OperationUtils {
       }
     ]);
 
-    console.log(howToProceedPrompt);
+    // console.log(howToProceedPrompt);
     if (howToProceedPrompt.mergeOperation === 'C') {
       mergeCancelled = true;
       await GitWrapper.cancelMerge();
     } else if (howToProceedPrompt.mergeOperation === 'M') {
-      console.log('Accepting all my changes');
       await GitWrapper.acceptChanges(false);
     } else if (howToProceedPrompt.mergeOperation === 'R') {
       await GitWrapper.acceptChanges(true);
+    } else {
+      for (const file of files) {
+        const howToMergePrompt: any = await inquirer.prompt([
+          {
+            message: `How would you like to resolve ${chalk.green(file)}?`,
+            type: 'expand',
+            choices: [
+              {
+                key: 'D',
+                name: 'Mark as merged',
+                value: 'D'
+              },
+              {
+                key: 'M',
+                name: 'Accept my changes',
+                value: 'M'
+              },
+              {
+                key: 'R',
+                name: 'Accept remote changes',
+                value: 'R'
+              },
+              {
+                key: 'C',
+                name: 'Later',
+                value: 'C'
+              }
+            ],
+            name: 'mergeOperation'
+          }
+        ]);
+        console.log(howToMergePrompt);
+        if (howToMergePrompt.mergeOperation === 'C') {
+          mergeCancelled = true;
+        } else if (howToMergePrompt.mergeOperation === 'D') {
+          await GitWrapper.addToRepo(file);
+        } else if (howToMergePrompt.mergeOperation === 'M') {
+          await GitWrapper.acceptChanges(false, file);
+          await GitWrapper.addToRepo(file);
+        } else {
+          await GitWrapper.acceptChanges(true, file);
+          await GitWrapper.addToRepo(file);
+        }
+      }
+
+      if (!mergeCancelled) {
+        await files.forEach(async file => {
+          await GitWrapper.addToRepo(file);
+        });
+        await GitWrapper.commit('Manual merge done', files, false);
+      }
     }
 
     return mergeCancelled;
@@ -73,11 +123,4 @@ export class OperationUtils {
   public static getRandomVerificationNumber = (): string => {
     return ('' + Math.random()).substr(4, 4);
   };
-}
-
-const enum HowToProceed {
-  C = 'Cancel merge',
-  M = 'Accept all my changes',
-  R = 'Accept all remote changes',
-  O = 'Merge one by one'
 }
