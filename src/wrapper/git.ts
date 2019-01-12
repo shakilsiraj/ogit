@@ -554,7 +554,7 @@ export namespace GitWrapper {
     remove = true
   ): Promise<void> => {
     cli.action.start(`Unstashing changes for ${message}`);
-    const unStashCommandOptions: any = {};
+    const unStashCommandOptions = {};
     if (remove) {
       unStashCommandOptions.pop = null;
     } else {
@@ -639,6 +639,42 @@ export namespace GitWrapper {
     }
   };
 
+
+  /**
+   * Returns a list of tag names for the repo
+   */
+  export const tags = async (): Promise<SimpleGit.TagResult> => {
+    try {
+      cli.action.start('Reverting tag names');
+      return await SimpleGit().tags();
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Resets the current repo.
+   *
+   * @param pointer tag or branch name to set HEAD to
+   * @param strategy strategy to take
+   */
+  export const reset = async (
+    pointer: string,
+    strategy: string
+  ): Promise<void> => {
+    try {
+      cli.action.start(`Reseting current HEAD to ${pointer}`);
+      await SimpleGit().raw(['reset', strategy, pointer]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+
   /**
    * Returns the list of file names that have merge conflict.
    */
@@ -697,7 +733,7 @@ export namespace GitWrapper {
   ) => {
     const commitMessage = `Accepting ${
       acceptRemote ? 'remote' : 'local'
-    } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
+      } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
     try {
       cli.action.start(commitMessage);
       const checkoutOptions = ['checkout'];
