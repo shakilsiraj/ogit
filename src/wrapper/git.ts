@@ -639,7 +639,6 @@ export namespace GitWrapper {
     }
   };
 
-
   /**
    * Returns a list of tag names for the repo
    */
@@ -674,7 +673,6 @@ export namespace GitWrapper {
     }
   };
 
-
   /**
    * Returns the list of file names that have merge conflict.
    */
@@ -700,9 +698,7 @@ export namespace GitWrapper {
    * Pulls the changes from the remote branch into current.
    * @param branch the remote branch to pull changes from.
    */
-  export const pullRemoteChanges = async (
-    branch: string
-  ): Promise<string[]> => {
+  export const pullRemoteChanges = async (branch: string): Promise<void> => {
     try {
       cli.action.start(`Pulling changes from ${branch}`);
       const pullResult = await SimpleGit().raw([
@@ -713,9 +709,6 @@ export namespace GitWrapper {
         branch
       ]);
       cli.action.stop();
-      return pullResult.indexOf('CONFLICT') > 0
-        ? filesWithMergeConflicts()
-        : [];
     } catch (error) {
       cli.action.stop('failed');
       throw error;
@@ -733,7 +726,7 @@ export namespace GitWrapper {
   ) => {
     const commitMessage = `Accepting ${
       acceptRemote ? 'remote' : 'local'
-      } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
+    } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
     try {
       cli.action.start(commitMessage);
       const checkoutOptions = ['checkout'];

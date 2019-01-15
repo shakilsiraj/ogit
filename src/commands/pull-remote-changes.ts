@@ -43,14 +43,19 @@ export class CreateBranchCommand extends Command {
     branchInfo: BranchNamePairStructure
   ): Promise<void> {
     const remoteBranchName = branchInfo.branchNameA;
-    const conflictedFiles = await GitWrapper.pullRemoteChanges(
-      remoteBranchName.substring(remoteBranchName.indexOf('/') + 1)
-    );
-    if (conflictedFiles.length > 0) {
-      console.log('Please resolve merge conflicts in the following files:');
-      conflictedFiles.forEach(file => {
-        console.log(file);
-      });
+    try {
+      await GitWrapper.pullRemoteChanges(
+        remoteBranchName.substring(remoteBranchName.indexOf('/') + 1)
+      );
+    } catch (error) {
+      console.log(error);
+      const conflictedFiles = await GitWrapper.filesWithMergeConflicts();
+      if (conflictedFiles) {
+        console.log('Please resolve merge conflicts in the following files:');
+        conflictedFiles.forEach(file => {
+          console.log(file);
+        });
+      }
     }
   }
 }
