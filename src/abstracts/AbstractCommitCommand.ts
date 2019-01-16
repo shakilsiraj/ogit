@@ -1,42 +1,50 @@
+import { GitFile } from './../models/GitFile';
 import 'reflect-metadata';
-import { Command } from '@oclif/command';
+import { Command, flags } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { GitStatus, ChangeTypes } from '../models';
 import { GitWrapper } from '../wrapper/git';
 import { FileNameUtils } from '../utils/FileNameUtils';
+import { runInThisContext } from 'vm';
 
 export default abstract class extends Command {
   choices: any[] = [];
 
   async runHelper() {
-    const status: GitStatus = await GitWrapper.status();
+    while (true) {
+      const status: GitStatus = await GitWrapper.status();
+      if (status.all.length > 0) {
+        this.choices = [];
+        status.all.forEach(file => {
+          this.choices.push({
+            name: `${file.path} ${FileNameUtils.getFileChangeType(
+              file.changeType
+            )}`,
+            value: file,
+            checked: true
+          });
+        });
 
-    status.all.forEach(file => {
-      this.choices.push({
-        name: `${file.path} ${FileNameUtils.getFileChangeType(
-          file.changeType
-        )}`,
-        checked: true
-      });
-    });
+        const answers: any = await inquirer.prompt(await this.getPrompts());
 
-    const answers: any = await inquirer.prompt(await this.getPrompts());
+        //lets filter out the files that needs to be added to git seperately..
+        answers.fileToBeCommitted.forEach(async (file: GitFile) => {
+          if (file.changeType === ChangeTypes.New) {
+            await GitWrapper.addToRepo(file.path);
+          }
+        });
 
-    //lets filter out the files that needs to be added to git seperately..
-    const changeTypeToCheck = FileNameUtils.getFileChangeType(ChangeTypes.New);
-    answers.fileToBeCommitted.forEach(async (file: string) => {
-      if (file.endsWith(changeTypeToCheck)) {
-        await GitWrapper.addToRepo(this.getFilePath(file));
+        await GitWrapper.optimizeRepo();
+
+        await this.runCommit(
+          answers.commitMessage,
+          this.getListOfFilesFromPrompt(answers.fileToBeCommitted),
+          answers.skipValidation
+        );
+      } else {
+        break;
       }
-    });
-
-    await GitWrapper.optimizeRepo();
-
-    await this.runCommit(
-      answers.commitMessage,
-      this.getListOfFilesFromPrompt(answers.fileToBeCommitted),
-      answers.skipValidation
-    );
+    }
   }
 
   public abstract getPrompts(): Promise<any[]>;
@@ -46,18 +54,11 @@ export default abstract class extends Command {
     skipValidation: boolean
   ): Promise<void>;
 
-  private readonly getListOfFilesFromPrompt = (
-    fileNames: string[]
-  ): string[] => {
+  private readonly getListOfFilesFromPrompt = (files: GitFile[]): string[] => {
     const processedFileNames: string[] = [];
-    fileNames.forEach(fileName => {
-      processedFileNames.push(this.getFilePath(fileName));
+    files.forEach(file => {
+      processedFileNames.push(file.path);
     });
     return processedFileNames;
-  };
-
-  private readonly getFilePath = (fileName: string): string => {
-    const lastIndex = fileName.lastIndexOf('(');
-    return fileName.substring(0, lastIndex - 1).trim();
   };
 }

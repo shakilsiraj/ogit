@@ -10,6 +10,7 @@ export default abstract class extends Command {
   protected branchesList: GitBranch[] = [];
 
   async runHelper() {
+    await GitWrapper.syncRemoteBranches();
     this.branchesList = await GitWrapper.listBranches();
     for (let branch of this.branchesList) {
       if (branch.isLocal) {
@@ -25,10 +26,6 @@ export default abstract class extends Command {
   public abstract async preformBranchOperation(
     branchInfo: BranchNamePairStructure
   ): Promise<void>;
-
-  protected getNameFromPrompt = (name: string): string => {
-    return name.split(' ')[0];
-  };
 
   protected getName = (branch: GitBranch): string => {
     return branch.isCurrent

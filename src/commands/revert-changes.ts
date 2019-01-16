@@ -14,15 +14,14 @@ export default class RevertChanges extends Command {
     if (status.all.length === 0) {
       console.log('You do not have any changes to revert');
     } else {
-      const statusMap = new Map<string, GitFile>();
+      // const statusMap = new Map<string, GitFile>();
 
-      const revertList: string[] = [];
+      const revertList = [];
 
-      status.all.forEach(status => {
-        const changeType = FileNameUtils.getFileChangeType(status.changeType);
-        const key = `${status.path} ${changeType}`;
-        revertList.push(key);
-        statusMap.set(key, status);
+      status.all.forEach(file => {
+        const changeType = FileNameUtils.getFileChangeType(file.changeType);
+        const key = `${file.path} ${changeType}`;
+        revertList.push({ name: key, value: file });
       });
 
       const verifyingNumber = OperationUtils.getRandomVerificationNumber();
@@ -34,7 +33,7 @@ export default class RevertChanges extends Command {
           type: 'checkbox',
           choices: revertList,
           name: 'revertList',
-          validate(choice: string[]) {
+          validate(choice: any[]) {
             return choice.length > 0;
           }
         },
@@ -48,8 +47,8 @@ export default class RevertChanges extends Command {
         }
       ]);
 
-      await answers.revertList.forEach(async choice => {
-        await GitWrapper.revertFile(statusMap.get(choice));
+      await answers.revertList.forEach(async file => {
+        await GitWrapper.revertFile(file);
       });
     }
   }

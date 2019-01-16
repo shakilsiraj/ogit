@@ -8,9 +8,9 @@ export class StashChangesCommand extends Command {
         message: 'The following changes will be stashed',
         type: 'checkbox',
         choices: this.choices,
-        name: 'fileToBeStashed',
+        name: 'filesToBeStashed',
         when: this.choices.length > 0,
-        validate(choices: string[]) {
+        validate(choices: any[]) {
           return choices.length > 0;
         }
       },
@@ -27,18 +27,17 @@ export class StashChangesCommand extends Command {
 
   public performStashOperation = async (answers: any): Promise<void> => {
     let partial = true;
-    if (answers.fileToBeStashed.length === this.choices.length) {
+    if (answers.filesToBeStashed.length === this.choices.length) {
       partial = false;
     }
+    OperationUtils.addNewFilesToRepo(answers.filesToBeStashed);
 
-    OperationUtils.addNewFilesToRepo(answers.fileToBeStashed);
-
-    const fileNames = [];
-    answers.fileToBeStashed.forEach(fileName => {
-      fileNames.push(OperationUtils.getFilePath(fileName));
+    const filePaths = [];
+    answers.filesToBeStashed.forEach(file => {
+      filePaths.push(file.path);
     });
 
-    await GitWrapper.stash(answers.stashMessage, fileNames, partial);
+    await GitWrapper.stash(answers.stashMessage, filePaths, partial);
   };
 
   async run() {
