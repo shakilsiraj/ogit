@@ -7,6 +7,9 @@ class GitFilesDeserializer implements Deserializer {
 
     for (let file of files) {
       const gitFile = new GitFile(file.path, file.working_dir, file.index);
+      if (ChangeTypes.Renamed === file.index) {
+        gitFile.path = file.path.split(' ').slice(-1)[0];
+      }
       gitFiles.set(gitFile.id, gitFile);
     }
 
@@ -18,7 +21,8 @@ export enum ChangeTypes {
   Deleted = 'D',
   New = '?',
   Modified = 'M',
-  Added = 'A'
+  Added = 'A',
+  Renamed = 'R'
 }
 
 export class GitStatus {

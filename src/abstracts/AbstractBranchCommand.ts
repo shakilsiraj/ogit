@@ -10,6 +10,7 @@ export default abstract class extends Command {
   protected branchesList: GitBranch[] = [];
 
   async runHelper() {
+    await GitWrapper.syncRemoteBranches();
     this.branchesList = await GitWrapper.listBranches();
     for (let branch of this.branchesList) {
       if (branch.isLocal) {

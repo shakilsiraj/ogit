@@ -22,9 +22,7 @@ export default class DisplayBranchesCommand extends Command {
 
   public async preformBranchOperation(
     branchInfo: BranchNamePairStructure
-  ): Promise<void> {
-    console.log(branchInfo);
-  }
+  ): Promise<void> {}
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     return null;

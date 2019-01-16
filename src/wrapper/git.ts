@@ -149,12 +149,15 @@ export namespace GitWrapper {
     return branches;
   };
 
+  /**
+   * Commits the files into repo.
+   */
   export const commit = async (
     message: string,
     fileNames: string[],
     skipValidation: boolean
   ): Promise<SimpleGit.CommitSummary> => {
-    const options: any = {};
+    const options: any = { '--include': true };
     if (skipValidation) {
       options['--no-verify'] = null;
     }
@@ -180,7 +183,7 @@ export namespace GitWrapper {
    */
   export const push = async (branchNames: string[]): Promise<void> => {
     try {
-      cli.action.start(`Pusing changes to remote ${branchNames.join(', ')}`);
+      cli.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
       await SimpleGit().push('origin', ...branchNames);
       cli.action.stop();
     } catch (error) {
@@ -458,7 +461,7 @@ export namespace GitWrapper {
   const getStashedFiles = async (stashNumber: number): Promise<string[]> => {
     const fileNames: string[] = [];
 
-    /** tracked portion */
+    //tracked portion
     const fileNamesLookupOptions = {
       show: null,
       '--name-only': null
@@ -471,7 +474,8 @@ export namespace GitWrapper {
       .filter(n => n);
     trackedFileNames.forEach(fileName => fileNames.push(fileName));
 
-    /** Untracked portion, can throw error if there is no untracked file in
+    /**
+     * Untracked portion, can throw error if there is no untracked file in
      * that particular stash
      */
     // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
@@ -600,6 +604,20 @@ export namespace GitWrapper {
   };
 
   /**
+   * Synchronises the remote branches
+   */
+  export const syncRemoteBranches = async () => {
+    try {
+      cli.action.start('Resyncing remote branches');
+      await SimpleGit().raw(['fetch', 'origin', '--prune']);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
    * Reverts the changes to a file.
    * @param file the path to the file
    */
@@ -648,6 +666,101 @@ export namespace GitWrapper {
     try {
       cli.action.start(`Reseting current HEAD to ${pointer}`);
       await SimpleGit().raw(['reset', strategy, pointer]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Returns the list of file names that have merge conflict.
+   */
+  export const filesWithMergeConflicts = async (): Promise<string[]> => {
+    let fileNamesList: string[];
+    try {
+      cli.action.start('Retrieving file names with merge conflict');
+      const fileNames = await SimpleGit().diff([
+        '--name-only',
+        '--diff-filter=U'
+      ]);
+      fileNamesList = fileNames.split('\n').filter(n => n);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+
+    return fileNamesList;
+  };
+
+  /**
+   * Pulls the changes from the remote branch into current.
+   * @param branch the remote branch to pull changes from.
+   */
+  export const pullRemoteChanges = async (branch: string): Promise<void> => {
+    try {
+      cli.action.start(`Pulling changes from ${branch}`);
+      const pullResult = await SimpleGit().raw([
+        'pull',
+        '--no-stat',
+        '-v',
+        'origin',
+        branch
+      ]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Accept merge changes.
+   * @param acceptRemote should use remote or local changes
+   * @param filePath
+   */
+  export const acceptChanges = async (
+    acceptRemote: boolean,
+    filePath = '.'
+  ) => {
+    const commitMessage = `Accepting ${
+      acceptRemote ? 'remote' : 'local'
+    } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
+    try {
+      cli.action.start(commitMessage);
+      const checkoutOptions = ['checkout'];
+      if (acceptRemote) {
+        checkoutOptions.push('--theirs');
+      } else {
+        checkoutOptions.push('--ours');
+      }
+      checkoutOptions.push(filePath);
+
+      await SimpleGit().raw(checkoutOptions);
+      if (filePath === '.') {
+        await autoCommit(commitMessage);
+      }
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  export const autoCommit = async (
+    message: string
+  ): Promise<SimpleGit.CommitSummary> => {
+    return await SimpleGit().commit(message, '', { '-a': true, m: true });
+  };
+
+  /**
+   * Cancels the merge operation.
+   */
+  export const cancelMerge = async (): Promise<void> => {
+    try {
+      cli.action.start('Cancelling merge attempt');
+      await SimpleGit().merge(['--abort']);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
