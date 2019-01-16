@@ -338,7 +338,7 @@ export namespace GitWrapper {
     remoteBranchName: string
   ): Promise<void> => {
     cli.action.start(`Creating a local branch ${branchName}`);
-    await SimpleGit().raw(['branch', branchName, remoteBranchName]);
+    await SimpleGit().checkout(['-b', branchName, '--track', remoteBranchName]);
     cli.action.stop();
   };
 

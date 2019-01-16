@@ -49,6 +49,5 @@ export class CreateBranchCommand extends Command {
       branchInfo.branchNameA,
       branchInfo.branchNameB
     );
-    await GitWrapper.switchBranch(branchInfo.branchNameA);
   }
 }
