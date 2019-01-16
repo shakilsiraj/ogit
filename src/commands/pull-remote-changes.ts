@@ -51,10 +51,11 @@ export class CreateBranchCommand extends Command {
       console.log(error);
       const conflictedFiles = await GitWrapper.filesWithMergeConflicts();
       if (conflictedFiles) {
-        console.log('Please resolve merge conflicts in the following files:');
-        conflictedFiles.forEach(file => {
-          console.log(file);
-        });
+        // console.log('Please resolve merge conflicts in the following files:');
+        // conflictedFiles.forEach(file => {
+        //   console.log(file);
+        // });
+        await OperationUtils.handleMergeConflicts(conflictedFiles);
       }
     }
   }
