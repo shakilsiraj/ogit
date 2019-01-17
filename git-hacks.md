@@ -41,6 +41,17 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 `git diff --name-only --diff-filter=U`
 
+# Merge two remote repos
+
+`git fetch origin -p`
+`git checkout -b branch1 origin/branch1`
+`git checkout -b branch2 origin/branch2`
+`git merge --no-ff branch1`
+
+fix all the merge conflicts!
+
+`git push origin HEAD:branch2`
+
 # Reset local repo to a specific branch
 
 Clean the repo first:

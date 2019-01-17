@@ -767,4 +767,19 @@ export namespace GitWrapper {
       throw error;
     }
   };
+
+  /**
+   * Merges the brnach into the current branch
+   * @param branchName the source branch to merge
+   */
+  export const merge = async (branchName: string): Promise<void> => {
+    try {
+      cli.action.start(`Merging branch ${branchName}`);
+      await SimpleGit().merge(['--no-ff', branchName]);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
