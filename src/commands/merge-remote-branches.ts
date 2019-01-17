@@ -2,7 +2,6 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import * as inquirer from 'inquirer';
-import { FileNameUtils } from '../utils/FileNameUtils';
 import { OperationUtils } from '../utils/OperationUtils';
 import { GitWrapper } from '../wrapper/git';
 
@@ -13,7 +12,7 @@ export class MergeRemoteBranches extends Command {
       .prompt({
         message: 'Select the source branch to merge',
         type: 'list',
-        choices: this.localBranches,
+        choices: this.remoteBranches,
         name: 'sourceBranch'
       })
       .then(answers => {
@@ -23,7 +22,7 @@ export class MergeRemoteBranches extends Command {
           choices: () => {
             console.log('validating');
             sourceBranch = (answers as any).sourceBranch;
-            return this.localBranches.filter(
+            return this.remoteBranches.filter(
               item => item !== (answers as any).sourceBranch
             );
           },
@@ -50,7 +49,10 @@ export class MergeRemoteBranches extends Command {
 
     await GitWrapper.createBranch(sourceBranchName, branchInfo.branchNameA);
     await GitWrapper.createBranch(targetBranchName, branchInfo.branchNameB);
-    await GitWrapper.merge(sourceBranchName);
+    await GitWrapper.merge(
+      sourceBranchName,
+      `Merged branch ${branchInfo.branchNameA} into ${branchInfo.branchNameB}`
+    );
     await GitWrapper.push([`HEAD:${branchInfo.branchNameB}`]);
     await GitWrapper.switchBranch(currentBranchName);
     await GitWrapper.deleteLocalBranch(sourceBranchName);
