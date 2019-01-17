@@ -272,9 +272,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-          .split('\n')
-          .filter(n => n)
-          .sort()
+        .split('\n')
+        .filter(n => n)
+        .sort()
       : [];
   };
 
@@ -643,14 +643,16 @@ export namespace GitWrapper {
    * Returns a list of tag names for the repo
    */
   export const tags = async (): Promise<SimpleGit.TagResult> => {
+    let tags: SimpleGit.TagResult;
     try {
-      cli.action.start('Reverting tag names');
-      return await SimpleGit().tags();
+      cli.action.start('Retrieving tag names');
+      tags = await SimpleGit().tags();
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
       throw error;
     }
+    return tags;
   };
 
   /**
@@ -751,7 +753,7 @@ export namespace GitWrapper {
   export const autoCommit = async (
     message: string
   ): Promise<SimpleGit.CommitSummary> => {
-    return await SimpleGit().commit(message, '', { '-a': true, m: true });
+    return SimpleGit().commit(message, '', { '-a': true, m: true });
   };
 
   /**
@@ -774,7 +776,7 @@ export namespace GitWrapper {
    */
   export const merge = async (
     branchName: string,
-    message: string = ''
+    message = ''
   ): Promise<void> => {
     try {
       cli.action.start(`Merging branch ${branchName}`);
