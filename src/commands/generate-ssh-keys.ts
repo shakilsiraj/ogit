@@ -1,12 +1,14 @@
 import { Command, flags } from '@oclif/command';
 import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
+import { OperationUtils } from '../utils/OperationUtils';
 
 export class GenerateSSHKeyPairss extends Command {
   static description =
     'Generates SSH key pairs to authenticate the user. For windows, requires ssh-keygen to be pre-installed.';
   async run() {
     const userName = await GitWrapper.getConfigData('user.email');
+    const homeDir = require('os').homedir();
     const answers: any = await inquirer.prompt([
       {
         message: 'Please enter a pass phrase for private key (optional)',
@@ -39,6 +41,7 @@ export class GenerateSSHKeyPairss extends Command {
       answers.type = 'rsa';
       answers.bits = 4096;
       answers.keep = true;
+      answers.location = homeDir + '/.ssh/id_rsa';
 
       const generatedSSHKeyPairs = await GitWrapper.generateSSHKeys(answers);
       console.log(
