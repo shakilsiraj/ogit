@@ -23,7 +23,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.18.0 darwin-x64 node-v8.9.4
+ogit/1.19.0 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
@@ -46,8 +46,9 @@ USAGE
 - [`ogit delete-stash`](#ogit-delete-stash)
 - [`ogit display-branches`](#ogit-display-branches)
 - [`ogit display-changes`](#ogit-display-changes)
+- [`ogit generate-ssh-keys`](#ogit-generate-ssh-keys-file)
 - [`ogit help [COMMAND]`](#ogit-help-command)
-- [`ogit merge-remote-branches [FILE]`](#ogit-merge-remote-branches-file)
+- [`ogit merge-remote-branches`](#ogit-merge-remote-branches)
 - [`ogit pull-remote-changes`](#ogit-pull-remote-changes)
 - [`ogit push-commits`](#ogit-push-commits)
 - [`ogit rename-branch`](#ogit-rename-branch)
@@ -157,6 +158,15 @@ ALIASES
   $ ogit status
 ```
 
+## `ogit generate-ssh-keys [FILE]`
+
+Generates SSH key pairs to authenticate the user
+
+```
+USAGE
+  $ ogit generate-ssh-keys
+```
+
 ## `ogit help [COMMAND]`
 
 display help for ogit
@@ -174,18 +184,13 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
 
-## `ogit merge-remote-branches [FILE]`
+## `ogit merge-remote-branches`
 
 Merges two remote branches
 
 ```
 USAGE
-  $ ogit merge-remote-branches [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  $ ogit merge-remote-branches
 ```
 
 ## `ogit pull-remote-changes`

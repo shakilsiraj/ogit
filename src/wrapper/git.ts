@@ -4,7 +4,7 @@ import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
-
+import * as keygen from 'ssh-keygen2';
 /**
  * Wrapper class for git commands.
  *
@@ -272,9 +272,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-        .split('\n')
-        .filter(n => n)
-        .sort()
+          .split('\n')
+          .filter(n => n)
+          .sort()
       : [];
   };
 
@@ -791,5 +791,50 @@ export namespace GitWrapper {
       cli.action.stop('failed');
       throw error;
     }
+  };
+
+  /**
+   * Returns the config data
+   * @param config name of the config
+   * @param global lookup in global scope?
+   */
+  export const getConfigData = async (
+    config: string,
+    global: boolean = true
+  ): Promise<string> => {
+    try {
+      cli.action.start(`Getting config ${config}`);
+      const commands = ['config'];
+      if (global) {
+        commands.push('--global');
+      }
+      commands.push(config);
+      console.log(config);
+      const data = await SimpleGit().raw(commands);
+      cli.action.stop();
+      return data.trim();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Generates SSH Key pairs.
+   * @param options
+   */
+  export const generateSSHKeys = async (options: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      cli.action.start(`Generating SSH Keys`);
+      keygen(options, (err: any, pairs: any) => {
+        if (err) {
+          cli.action.stop('failed');
+          reject(err);
+        } else {
+          cli.action.stop();
+          resolve(pairs);
+        }
+      });
+    });
   };
 }
