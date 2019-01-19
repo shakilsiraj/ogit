@@ -42,11 +42,13 @@ export class GenerateSSHKeyPairss extends Command {
         name: 'comment',
         default: userName
       })) as any).comment;
-
+      answers.name = escape(answers.name);
       answers.type = 'rsa';
       answers.bits = 4096;
       answers.keep = true;
-      answers.location = `${homeDir}/.ssh/${answers.name}_${answers.type}`;
+      answers.location = `${homeDir}/.ssh/${answers.name}_${answers.type}_${
+        answers.bits
+      }`;
 
       const generatedSSHKeyPairs = await GitWrapper.generateSSHKeys(answers);
       exec(`ssh-add ${answers.location}`, (err, stdout, stderr) => {
