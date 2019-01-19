@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
-import { OperationUtils } from '../utils/OperationUtils';
+const { exec } = require('child_process');
 
 export class GenerateSSHKeyPairss extends Command {
   static description =
@@ -10,6 +10,11 @@ export class GenerateSSHKeyPairss extends Command {
     const userName = await GitWrapper.getConfigData('user.email');
     const homeDir = require('os').homedir();
     const answers: any = await inquirer.prompt([
+      {
+        message: 'Please enter a name for the key',
+        type: 'input',
+        name: 'name'
+      },
       {
         message: 'Please enter a pass phrase for private key (optional)',
         type: 'password',
@@ -41,10 +46,15 @@ export class GenerateSSHKeyPairss extends Command {
       answers.type = 'rsa';
       answers.bits = 4096;
       answers.keep = true;
-      answers.location = homeDir + '/.ssh/id_rsa';
+      answers.location = `${homeDir}/.ssh/${answers.name}_${answers.type}`;
 
       const generatedSSHKeyPairs = await GitWrapper.generateSSHKeys(answers);
-      console.log(
+      exec(`ssh-add ${answers.location}`, (err, stdout, stderr) => {
+        if (err) {
+          throw err;
+        }
+      });
+      await console.log(
         `Please copy the following text and use it as your public key. \n${
           generatedSSHKeyPairs.public
         }`
