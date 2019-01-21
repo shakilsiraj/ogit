@@ -6,7 +6,7 @@ export class AmendLastCommand extends Command {
   async run() {
     await super.runHelper();
   }
-  getPrompts = async (): Promise<any[]> => {
+  async getPrompts(): Promise<any[]> {
     const lastCommitMessage = await GitWrapper.getLastCommitMessage();
 
     return Promise.resolve([
@@ -27,8 +27,8 @@ export class AmendLastCommand extends Command {
         }
       }
     ]);
-  };
-  runCommit = async (message: string, fileNames: string[]) => {
+  }
+  async runCommit(message: string, fileNames: string[]) {
     const commitResult = await GitWrapper.ammendLastCommit(fileNames, message);
 
     console.log(
@@ -38,5 +38,5 @@ export class AmendLastCommand extends Command {
         commitResult.summary.insertions
       } insertions and ${commitResult.summary.deletions} deletions.`
     );
-  };
+  }
 }

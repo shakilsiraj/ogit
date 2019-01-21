@@ -5,7 +5,6 @@ import * as inquirer from 'inquirer';
 import { GitStatus, ChangeTypes } from '../models';
 import { GitWrapper } from '../wrapper/git';
 import { FileNameUtils } from '../utils/FileNameUtils';
-import { runInThisContext } from 'vm';
 
 export default abstract class extends Command {
   choices: any[] = [];

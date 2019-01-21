@@ -6,7 +6,9 @@ import * as inquirer from 'inquirer';
 import { GitWrapper } from '../wrapper/git';
 
 export default class RenameBranch extends Command {
-  public getSelectedBranch = async (): Promise<BranchNamePairStructure> => {
+  static description = 'Renames a local branch to a new one';
+
+  async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const answers: any = await inquirer.prompt([
       {
         message: 'Select the branch to rename',
@@ -19,7 +21,7 @@ export default class RenameBranch extends Command {
         }
       },
       {
-        message: `Please enter the new name of the branch`,
+        message: 'Please enter the new name of the branch',
         type: 'input',
         name: 'newBranchName',
         validate(name: string) {
@@ -32,17 +34,15 @@ export default class RenameBranch extends Command {
       branchNameA: answers.localBranchName,
       branchNameB: answers.newBranchName
     };
-  };
-  public preformBranchOperation = async (
+  }
+  async preformBranchOperation(
     branchInfo: BranchNamePairStructure
-  ): Promise<void> => {
+  ): Promise<void> {
     await GitWrapper.renameBranch(
       branchInfo.branchNameA,
       branchInfo.branchNameB
     );
-  };
-
-  static description = 'Renames a local branch to a new one';
+  }
 
   async run() {
     this.runHelper();

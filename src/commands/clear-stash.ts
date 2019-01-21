@@ -1,12 +1,11 @@
 import Command from '../abstracts/AbstractStashCommand';
 import { OperationUtils } from '../utils/OperationUtils';
 import { GitWrapper } from '../wrapper/git';
-const chalk = require('chalk');
 
 export class ClearStashCommand extends Command {
   static description = 'Clears all the stashes in the local repos';
 
-  public getPrompts = async (): Promise<any[]> => {
+  async getPrompts(): Promise<any[]> {
     const verifyingNumber = OperationUtils.getRandomVerificationNumber();
     return [
       {
@@ -18,16 +17,16 @@ export class ClearStashCommand extends Command {
         }
       }
     ];
-  };
+  }
+
+  async performStashOperation(): Promise<void> {
+    await GitWrapper.clearStash();
+  }
+  async run() {
+    this.runHelper();
+  }
 
   protected shouldCheckForChanges = (): boolean => {
     return false;
   };
-
-  public performStashOperation = async (answers: any): Promise<void> => {
-    await GitWrapper.clearStash();
-  };
-  async run() {
-    this.runHelper();
-  }
 }
