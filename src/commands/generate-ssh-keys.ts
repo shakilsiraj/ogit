@@ -8,7 +8,7 @@ export class GenerateSSHKeyPairss extends Command {
     'Generates SSH key pairs to authenticate the user. For windows, requires ssh-keygen to be pre-installed.';
   async run() {
     const userName = await GitWrapper.getConfigData('user.email');
-    const homeDir = require('os').homedir();
+    const homeDir = this.getHomeDirectory();
     const answers: any = await inquirer.prompt([
       {
         message: 'Please enter a name for the key',
@@ -62,5 +62,9 @@ export class GenerateSSHKeyPairss extends Command {
         }`
       );
     }
+  }
+
+  private getHomeDirectory() {
+    return process.env.HOME || process.env.USERPROFILE;
   }
 }

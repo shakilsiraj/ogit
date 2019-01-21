@@ -800,7 +800,7 @@ export namespace GitWrapper {
    */
   export const getConfigData = async (
     config: string,
-    global: boolean = true
+    global = true
   ): Promise<string> => {
     try {
       cli.action.start(`Getting config ${config}`);
@@ -809,7 +809,6 @@ export namespace GitWrapper {
         commands.push('--global');
       }
       commands.push(config);
-      console.log(config);
       const data = await SimpleGit().raw(commands);
       cli.action.stop();
       return data.trim();
@@ -825,7 +824,7 @@ export namespace GitWrapper {
    */
   export const generateSSHKeys = async (options: any): Promise<any> => {
     return new Promise((resolve, reject) => {
-      cli.action.start(`Generating SSH Keys`);
+      cli.action.start('Generating SSH Keys');
       keygen(options, (err: any, pairs: any) => {
         if (err) {
           cli.action.stop('failed');
