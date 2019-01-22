@@ -52,7 +52,10 @@
   "homepage": "https://bitbucket.org/ssiraj/ogit",
   "keywords": [
     "git",
-    "git cli"
+    "git cli",
+    "cli",
+    "Source Control",
+    "VCS"
   ],
   "license": "MIT",
   "main": "lib/index.js",
