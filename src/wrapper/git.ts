@@ -272,9 +272,9 @@ export namespace GitWrapper {
     ]);
     return fileNamesString
       ? fileNamesString
-        .split('\n')
-        .filter(n => n)
-        .sort()
+          .split('\n')
+          .filter(n => n)
+          .sort()
       : [];
   };
 
@@ -803,7 +803,7 @@ export namespace GitWrapper {
       commands.push(config);
       const data = await SimpleGit().raw(commands);
       cli.action.stop();
-      return data.trim();
+      return data ? data.trim() : null;
     } catch (error) {
       cli.action.stop('failed');
       throw error;

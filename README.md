@@ -1,6 +1,6 @@
 # ogit
 
-A lazy developer&#39;s Git CLI made simple
+A lazy developer&#39;s Git CLI made simple. Makes using git on cloud IDEs (i.e. C9) a walk in the park.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/ogit.svg)](https://npmjs.org/package/ogit)
@@ -158,7 +158,7 @@ ALIASES
 
 ## `ogit generate-ssh-keys`
 
-Generates SSH key pairs to authenticate the user. For windows, requires ssh-keygen to be pre-installed.
+Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command
 
 ```
 USAGE
