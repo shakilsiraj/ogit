@@ -828,4 +828,24 @@ export namespace GitWrapper {
       });
     });
   };
+
+  /**
+   * Clones a remote repo into the directory
+   *
+   * @param url of the remote repo
+   * @param dirName to clone to
+   */
+  export const cloneRepo = async (
+    url: string,
+    dirName: string
+  ): Promise<void> => {
+    try {
+      cli.action.start(`Cloning repo ${url}`);
+      await SimpleGit().clone(url, dirName);
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
