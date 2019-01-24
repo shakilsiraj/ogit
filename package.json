@@ -1,7 +1,7 @@
 {
   "name": "ogit",
   "description": "A lazy developer's Git CLI made simple. Makes using git on cloud IDEs (i.e. C9) a walk in the park.",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "author": "shakil.siraj@gmail.com",
   "bin": {
     "ogit": "./bin/run"
