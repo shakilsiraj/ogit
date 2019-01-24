@@ -55,7 +55,11 @@
     "git cli",
     "cli",
     "Source Control",
-    "VCS"
+    "Version Control",
+    "VCS",
+    "IDE",
+    "Online",
+    "Cloud"
   ],
   "license": "MIT",
   "main": "lib/index.js",
