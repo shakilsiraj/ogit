@@ -22,7 +22,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.20.0 darwin-x64 node-v8.9.4
+ogit/1.21.0 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
@@ -37,6 +37,7 @@ USAGE
 * [`ogit amend-last-commit`](#ogit-amend-last-commit)
 * [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
 * [`ogit clear-stash`](#ogit-clear-stash)
+* [`ogit clone-repo`](#ogit-clone-repo)
 * [`ogit commit-changes`](#ogit-commit-changes)
 * [`ogit create-branch`](#ogit-create-branch)
 * [`ogit delete-branch`](#ogit-delete-branch)
@@ -85,6 +86,15 @@ Clears all the stashes in the local repos
 ```
 USAGE
   $ ogit clear-stash
+```
+
+## `ogit clone-repo`
+
+Clones a remote repo
+
+```
+USAGE
+  $ ogit clone-repo
 ```
 
 ## `ogit commit-changes`
