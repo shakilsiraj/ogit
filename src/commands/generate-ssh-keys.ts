@@ -5,7 +5,7 @@ const { exec } = require('child_process');
 
 export class GenerateSSHKeyPairss extends Command {
   static description =
-    'Generates SSH key pairs to authenticate the user. For windows, requires ssh-keygen to be pre-installed.';
+    'Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command';
   async run() {
     const userName = await GitWrapper.getConfigData('user.email');
     const homeDir = this.getHomeDirectory();

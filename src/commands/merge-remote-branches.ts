@@ -6,7 +6,8 @@ import { OperationUtils } from '../utils/OperationUtils';
 import { GitWrapper } from '../wrapper/git';
 
 export class MergeRemoteBranches extends Command {
-  public getSelectedBranch = async (): Promise<BranchNamePairStructure> => {
+  static description = 'Merges two remote branches';
+  async getSelectedBranch(): Promise<BranchNamePairStructure> {
     let sourceBranch;
     const answers: any = await inquirer
       .prompt({
@@ -17,7 +18,7 @@ export class MergeRemoteBranches extends Command {
       })
       .then(answers => {
         return inquirer.prompt({
-          message: `Select the target branch to merge into`,
+          message: 'Select the target branch to merge into',
           type: 'list',
           choices: () => {
             console.log('validating');
@@ -37,11 +38,11 @@ export class MergeRemoteBranches extends Command {
       branchNameA: sourceBranch,
       branchNameB: answers.targetBranch
     };
-  };
+  }
 
-  public preformBranchOperation = async (
+  async preformBranchOperation(
     branchInfo: BranchNamePairStructure
-  ): Promise<void> => {
+  ): Promise<void> {
     const randomNumber = OperationUtils.getRandomVerificationNumber();
     const sourceBranchName = `${randomNumber}_${branchInfo.branchNameA}`;
     const targetBranchName = `${randomNumber}_${branchInfo.branchNameB}`;
@@ -59,8 +60,7 @@ export class MergeRemoteBranches extends Command {
     await GitWrapper.deleteLocalBranch(targetBranchName);
 
     console.log(sourceBranchName, targetBranchName);
-  };
-  static description = 'Merges two remote branches';
+  }
 
   async run() {
     await this.runHelper();

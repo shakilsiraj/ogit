@@ -4,17 +4,20 @@
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
-    "rootDir": "src",
     "strict": true,
     "target": "es6",
+    "rootDirs": [
+      "./src"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "skipLibCheck": true,
     "experimentalDecorators": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "lib": [
       "ES2015"
     ]
-  },
-  "include": [
-    "src/**/*"
-  ]
+  }
 }

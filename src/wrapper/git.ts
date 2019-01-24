@@ -489,9 +489,7 @@ export namespace GitWrapper {
         .split('\n')
         .filter(n => n);
       untrackedFileNames.forEach(fileName => fileNames.push(fileName));
-    } catch (error) {
-      /** DO_NOTHING */
-    }
+    } catch (error) {}
 
     return fileNames.sort();
   };
@@ -554,11 +552,11 @@ export namespace GitWrapper {
     remove = true
   ): Promise<void> => {
     cli.action.start(`Unstashing changes for ${message}`);
-    const unStashCommandOptions = {};
+    const unStashCommandOptions = [];
     if (remove) {
-      unStashCommandOptions.pop = null;
+      unStashCommandOptions.push('pop');
     } else {
-      unStashCommandOptions.apply = null;
+      unStashCommandOptions.push('apply');
     }
     unStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
@@ -703,13 +701,7 @@ export namespace GitWrapper {
   export const pullRemoteChanges = async (branch: string): Promise<void> => {
     try {
       cli.action.start(`Pulling changes from ${branch}`);
-      const pullResult = await SimpleGit().raw([
-        'pull',
-        '--no-stat',
-        '-v',
-        'origin',
-        branch
-      ]);
+      await SimpleGit().raw(['pull', '--no-stat', '-v', 'origin', branch]);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -811,7 +803,7 @@ export namespace GitWrapper {
       commands.push(config);
       const data = await SimpleGit().raw(commands);
       cli.action.stop();
-      return data.trim();
+      return data ? data.trim() : null;
     } catch (error) {
       cli.action.stop('failed');
       throw error;

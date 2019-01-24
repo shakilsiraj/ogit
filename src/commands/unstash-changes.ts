@@ -4,7 +4,7 @@ import { GitWrapper } from '../wrapper/git';
 export class UnStashCommand extends Command {
   static description = 'Applies the stashed changes back into workspace';
 
-  public getPrompts = async (): Promise<any[]> => {
+  async getPrompts(): Promise<any[]> {
     return [
       {
         message: 'Select the stash to apply back',
@@ -22,17 +22,9 @@ export class UnStashCommand extends Command {
         default: true
       }
     ];
-  };
+  }
 
-  protected shouldProceedWithPrompts = (): boolean => {
-    if (this.stashNames.length === 0) {
-      console.log('You do not have any stashes to run this operation.');
-      return false;
-    }
-    return true;
-  };
-
-  public performStashOperation = async (answers: any): Promise<void> => {
+  async performStashOperation(answers: any): Promise<void> {
     const selectedStash = answers.selectedStash;
     try {
       await GitWrapper.unstash(
@@ -46,9 +38,17 @@ export class UnStashCommand extends Command {
         console.log(error.fileNamesArray[i]);
       }
     }
-  };
+  }
 
   async run() {
     this.runHelper();
   }
+
+  protected shouldProceedWithPrompts = (): boolean => {
+    if (this.stashNames.length === 0) {
+      console.log('You do not have any stashes to run this operation.');
+      return false;
+    }
+    return true;
+  };
 }

@@ -16,7 +16,7 @@ export class CommitChangesCommand extends Command {
     await super.runHelper();
   }
 
-  public getPrompts = async (): Promise<any[]> => {
+  async getPrompts(): Promise<any[]> {
     return [
       {
         message: 'The following changes needs to be committed',
@@ -43,13 +43,13 @@ export class CommitChangesCommand extends Command {
         default: false
       }
     ];
-  };
+  }
 
-  public runCommit = async (
+  async runCommit(
     message: string,
     fileNames: string[],
     skipValidation: boolean
-  ) => {
+  ) {
     const commitResult = await GitWrapper.commit(
       message,
       fileNames,
@@ -65,5 +65,5 @@ export class CommitChangesCommand extends Command {
         } insertions and ${commitResult.summary.deletions} deletions.`
       );
     }
-  };
+  }
 }

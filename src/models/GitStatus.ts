@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { JsonProperty, Deserializer } from 'json-object-mapper';
 import { GitFile } from './GitFile';
 

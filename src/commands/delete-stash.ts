@@ -5,7 +5,7 @@ import { GitWrapper } from '../wrapper/git';
 export class DeleteStashCommand extends Command {
   static description = 'Deletes a list of stashes in the repo';
 
-  public getPrompts = async (): Promise<any[]> => {
+  async getPrompts(): Promise<any[]> {
     const verifyingNumber = OperationUtils.getRandomVerificationNumber();
     return [
       {
@@ -26,7 +26,19 @@ export class DeleteStashCommand extends Command {
         }
       }
     ];
-  };
+  }
+
+  async performStashOperation(answers: any): Promise<void> {
+    const selectedStash = answers.selectedStash;
+    await GitWrapper.deleteStash(
+      selectedStash.stashNumber,
+      selectedStash.stashName
+    );
+  }
+
+  async run() {
+    this.runHelper();
+  }
 
   protected shouldProceedWithPrompts = (): boolean => {
     if (this.stashNames.length === 0) {
@@ -35,16 +47,4 @@ export class DeleteStashCommand extends Command {
     }
     return true;
   };
-
-  public performStashOperation = async (answers: any): Promise<void> => {
-    const selectedStash = answers.selectedStash;
-    await GitWrapper.deleteStash(
-      selectedStash.stashNumber,
-      selectedStash.stashName
-    );
-  };
-
-  async run() {
-    this.runHelper();
-  }
 }

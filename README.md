@@ -1,6 +1,6 @@
 # ogit
 
-A lazy developer&#39;s Git CLI made simple
+A lazy developer&#39;s Git CLI made simple. Makes using git on cloud IDEs (i.e. C9) a walk in the park.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/ogit.svg)](https://npmjs.org/package/ogit)
@@ -8,56 +8,54 @@ A lazy developer&#39;s Git CLI made simple
 [![License](https://img.shields.io/npm/l/ogit.svg)](https://github.com/shakilsiraj/ogit/blob/master/package.json)
 
 <!-- toc -->
+* [ogit](#ogit)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
-- [ogit](#ogit)
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.19.0 darwin-x64 node-v8.9.4
+ogit/1.20.0 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
 ...
 ```
-
 <!-- usagestop -->
+
 
 # Commands
 
 <!-- commands -->
-
-- [`ogit amend-last-commit`](#ogit-amend-last-commit)
-- [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
-- [`ogit clear-stash`](#ogit-clear-stash)
-- [`ogit commit-changes`](#ogit-commit-changes)
-- [`ogit create-branch`](#ogit-create-branch)
-- [`ogit delete-branch`](#ogit-delete-branch)
-- [`ogit delete-last-commit`](#ogit-delete-last-commit)
-- [`ogit delete-stash`](#ogit-delete-stash)
-- [`ogit display-branches`](#ogit-display-branches)
-- [`ogit display-changes`](#ogit-display-changes)
-- [`ogit generate-ssh-keys`](#ogit-generate-ssh-keys-file)
-- [`ogit help [COMMAND]`](#ogit-help-command)
-- [`ogit merge-remote-branches`](#ogit-merge-remote-branches)
-- [`ogit pull-remote-changes`](#ogit-pull-remote-changes)
-- [`ogit push-commits`](#ogit-push-commits)
-- [`ogit rename-branch`](#ogit-rename-branch)
-- [`ogit reset-head`](#ogit-reset-head)
-- [`ogit revert-changes`](#ogit-revert-changes)
-- [`ogit revert-last-commit`](#ogit-revert-last-commit)
-- [`ogit stash-changes`](#ogit-stash-changes)
-- [`ogit switch-branch`](#ogit-switch-branch)
-- [`ogit unstash-changes`](#ogit-unstash-changes)
+* [`ogit amend-last-commit`](#ogit-amend-last-commit)
+* [`ogit checkout-repo URL`](#ogit-checkout-repo-url)
+* [`ogit clear-stash`](#ogit-clear-stash)
+* [`ogit commit-changes`](#ogit-commit-changes)
+* [`ogit create-branch`](#ogit-create-branch)
+* [`ogit delete-branch`](#ogit-delete-branch)
+* [`ogit delete-last-commit`](#ogit-delete-last-commit)
+* [`ogit delete-stash`](#ogit-delete-stash)
+* [`ogit display-branches`](#ogit-display-branches)
+* [`ogit display-changes`](#ogit-display-changes)
+* [`ogit generate-ssh-keys`](#ogit-generate-ssh-keys)
+* [`ogit help [COMMAND]`](#ogit-help-command)
+* [`ogit merge-remote-branches`](#ogit-merge-remote-branches)
+* [`ogit pull-remote-changes`](#ogit-pull-remote-changes)
+* [`ogit push-commits`](#ogit-push-commits)
+* [`ogit rename-branch`](#ogit-rename-branch)
+* [`ogit reset-head`](#ogit-reset-head)
+* [`ogit revert-changes`](#ogit-revert-changes)
+* [`ogit revert-last-commit`](#ogit-revert-last-commit)
+* [`ogit stash-changes`](#ogit-stash-changes)
+* [`ogit switch-branch`](#ogit-switch-branch)
+* [`ogit unstash-changes`](#ogit-unstash-changes)
 
 ## `ogit amend-last-commit`
 
@@ -158,9 +156,9 @@ ALIASES
   $ ogit status
 ```
 
-## `ogit generate-ssh-keys [FILE]`
+## `ogit generate-ssh-keys`
 
-Generates SSH key pairs to authenticate the user
+Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command
 
 ```
 USAGE
@@ -182,7 +180,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
 
 ## `ogit merge-remote-branches`
 
@@ -249,6 +247,8 @@ USAGE
 
 ## `ogit stash-changes`
 
+Add DESCRIPTION!!!!
+
 ```
 USAGE
   $ ogit stash-changes
@@ -271,9 +271,4 @@ Applies the stashed changes back into workspace
 USAGE
   $ ogit unstash-changes
 ```
-
 <!-- commandsstop -->
-
-```
-
-```

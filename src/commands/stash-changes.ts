@@ -2,7 +2,9 @@ import Command from '../abstracts/AbstractStashCommand';
 import { GitWrapper } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 export class StashChangesCommand extends Command {
-  public getPrompts = async (): Promise<any[]> => {
+  static description = 'Add DESCRIPTION!!!!';
+
+  async getPrompts(): Promise<any[]> {
     return [
       {
         message: 'The following changes will be stashed',
@@ -23,9 +25,9 @@ export class StashChangesCommand extends Command {
         }
       }
     ];
-  };
+  }
 
-  public performStashOperation = async (answers: any): Promise<void> => {
+  async performStashOperation(answers: any): Promise<void> {
     let partial = true;
     if (answers.filesToBeStashed.length === this.choices.length) {
       partial = false;
@@ -38,7 +40,7 @@ export class StashChangesCommand extends Command {
     });
 
     await GitWrapper.stash(answers.stashMessage, filePaths, partial);
-  };
+  }
 
   async run() {
     this.runHelper();
