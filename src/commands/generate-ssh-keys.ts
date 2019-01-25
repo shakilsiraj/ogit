@@ -22,7 +22,7 @@ export class GenerateSSHKeyPairss extends Command {
         name: 'passphrase'
       },
       {
-        message: 'Please re-enter a pass phrase for private key (optional)',
+        message: 'Please re-enter the pass phrase',
         type: 'password',
         mask: '*',
         name: 'confirmPassphrase',
