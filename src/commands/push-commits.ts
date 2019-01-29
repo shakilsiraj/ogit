@@ -17,10 +17,10 @@ export default class PushCommits extends Command {
       },
       {
         name: `${status.trackingBranch} (upstream)`,
-        value: `HEAD:${status.trackingBranch}`
+        value: `HEAD:${status.currentBranch}`
       }
     ];
-
+    // console.log(branchChoices);
     branchesList.forEach(branch => {
       if (
         !branch.isLocal &&
