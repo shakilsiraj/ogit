@@ -3,10 +3,26 @@ import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 const { exec } = require('child_process');
 
-export class GenerateSSHKeyPairss extends Command {
+export class GenerateSSHKeyPairs extends Command {
   static description =
     'Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command';
+
   async run() {
+    console.log(process.env.SSH_AGENT_PID);
+    if (!process.env.SSH_AGENT_PID) {
+      console.log('Unable to find any ssh-agent running.');
+      console.log(
+        'Please start the agent (i.e. eval `ssh-agent -s`) as an admin and try again.'
+      );
+      if (this.isWindowsOs()) {
+        console.log('This command best works with GitBash.');
+      }
+    } else {
+      this.runCommand();
+    }
+  }
+
+  async runCommand() {
     const userName = await GitWrapper.getConfigData('user.email');
     const homeDir = this.getHomeDirectory();
     const answers: any = await inquirer.prompt([
@@ -62,6 +78,10 @@ export class GenerateSSHKeyPairss extends Command {
         }`
       );
     }
+  }
+
+  private isWindowsOs() {
+    return require('os').platform() === 'win32';
   }
 
   private getHomeDirectory() {

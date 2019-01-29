@@ -816,7 +816,7 @@ export namespace GitWrapper {
    */
   export const generateSSHKeys = async (options: any): Promise<any> => {
     return new Promise((resolve, reject) => {
-      cli.action.start('Generating SSH Keys');
+      cli.action.start(`Generating SSH Keys ${options.location} `);
       keygen(options, (err: any, pairs: any) => {
         if (err) {
           cli.action.stop('failed');
