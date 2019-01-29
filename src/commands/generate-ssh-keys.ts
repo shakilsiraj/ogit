@@ -1,9 +1,15 @@
 import { Command, flags } from '@oclif/command';
 import { GitWrapper } from '../wrapper/git';
 import * as inquirer from 'inquirer';
+import * as path from 'path';
+import * as fs from 'fs';
 const { exec } = require('child_process');
 
 export class GenerateSSHKeyPairs extends Command {
+
+  readonly DEFAULT_TYPE = 'rsa';
+  readonly DEFAULT_BITS = 4096;
+
   static description =
     'Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command';
 
@@ -24,12 +30,18 @@ export class GenerateSSHKeyPairs extends Command {
 
   async runCommand() {
     const userName = await GitWrapper.getConfigData('user.email');
-    const homeDir = this.getHomeDirectory();
     const answers: any = await inquirer.prompt([
       {
         message: 'Please enter a name for the key',
         type: 'input',
-        name: 'name'
+        name: 'name',
+        validate: input => {
+          const keyPath = this.getFilePath(input, this.DEFAULT_TYPE, this.DEFAULT_BITS);
+          if (fs.existsSync(keyPath)) {
+            return 'File already exists!';
+          }
+          return !!input;
+        }
       },
       {
         message: 'Please enter a pass phrase for private key (optional)',
@@ -59,20 +71,15 @@ export class GenerateSSHKeyPairs extends Command {
         default: userName
       })) as any).comment;
       answers.name = escape(answers.name);
-      answers.type = 'rsa';
-      answers.bits = 4096;
+      answers.type = this.DEFAULT_TYPE;
+      answers.bits = this.DEFAULT_BITS;
       answers.keep = true;
-      answers.location = `${homeDir}/.ssh/${answers.name}_${answers.type}_${
-        answers.bits
-      }`;
+      answers.location = this.getFilePath(answers.name, answers.type, answers.bits);
 
       const generatedSSHKeyPairs = await GitWrapper.generateSSHKeys(answers);
-      exec(`ssh-add ${answers.location}`, (err, stdout, stderr) => {
-        if (err) {
-          throw err;
-        }
-      });
-      await console.log(
+      // console.log(generatedSSHKeyPairs);
+      await exec(`ssh-add ${answers.location}`);
+      console.log(
         `Please copy the following text and use it as your public key. \n${
           generatedSSHKeyPairs.public
         }`
@@ -80,11 +87,16 @@ export class GenerateSSHKeyPairs extends Command {
     }
   }
 
+  private getFilePath(name, type, bits) : string {
+    const homeDir = this.getHomeDirectory();
+    return path.resolve(`${homeDir}/.ssh/${escape(name)}_${type}_${bits}`);
+  }
+
   private isWindowsOs() {
     return require('os').platform() === 'win32';
   }
 
   private getHomeDirectory() {
-    return process.env.HOME || process.env.USERPROFILE;
+    return require('os').homedir();
   }
 }
