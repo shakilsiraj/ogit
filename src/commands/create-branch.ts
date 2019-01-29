@@ -1,7 +1,7 @@
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 
 export class CreateBranchCommand extends Command {
@@ -55,7 +55,7 @@ export class CreateBranchCommand extends Command {
   public async preformBranchOperation(
     branchInfo: BranchNamePairStructure
   ): Promise<void> {
-    await GitWrapper.createBranch(
+    await GitFacade.createBranch(
       branchInfo.branchNameA,
       branchInfo.branchNameB
     );

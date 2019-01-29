@@ -1,12 +1,11 @@
 import { Command, flags } from '@oclif/command';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
 import * as fs from 'fs';
 const { exec } = require('child_process');
 
 export class GenerateSSHKeyPairs extends Command {
-
   readonly DEFAULT_TYPE = 'rsa';
   readonly DEFAULT_BITS = 4096;
 
@@ -14,7 +13,7 @@ export class GenerateSSHKeyPairs extends Command {
     'Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command';
 
   async run() {
-    console.log(process.env.SSH_AGENT_PID);
+    // console.log(process.env.SSH_AGENT_PID);
     if (!process.env.SSH_AGENT_PID) {
       console.log('Unable to find any ssh-agent running.');
       console.log(
@@ -29,14 +28,18 @@ export class GenerateSSHKeyPairs extends Command {
   }
 
   async runCommand() {
-    const userName = await GitWrapper.getConfigData('user.email');
+    const userName = await GitFacade.getConfigData('user.email');
     const answers: any = await inquirer.prompt([
       {
         message: 'Please enter a name for the key',
         type: 'input',
         name: 'name',
         validate: input => {
-          const keyPath = this.getFilePath(input, this.DEFAULT_TYPE, this.DEFAULT_BITS);
+          const keyPath = this.getFilePath(
+            input,
+            this.DEFAULT_TYPE,
+            this.DEFAULT_BITS
+          );
           if (fs.existsSync(keyPath)) {
             return 'File already exists!';
           }
@@ -74,9 +77,13 @@ export class GenerateSSHKeyPairs extends Command {
       answers.type = this.DEFAULT_TYPE;
       answers.bits = this.DEFAULT_BITS;
       answers.keep = true;
-      answers.location = this.getFilePath(answers.name, answers.type, answers.bits);
+      answers.location = this.getFilePath(
+        answers.name,
+        answers.type,
+        answers.bits
+      );
 
-      const generatedSSHKeyPairs = await GitWrapper.generateSSHKeys(answers);
+      const generatedSSHKeyPairs = await GitFacade.generateSSHKeys(answers);
       // console.log(generatedSSHKeyPairs);
       await exec(`ssh-add ${answers.location}`);
       console.log(
@@ -87,7 +94,7 @@ export class GenerateSSHKeyPairs extends Command {
     }
   }
 
-  private getFilePath(name, type, bits) : string {
+  private getFilePath(name, type, bits): string {
     const homeDir = this.getHomeDirectory();
     return path.resolve(`${homeDir}/.ssh/${escape(name)}_${type}_${bits}`);
   }

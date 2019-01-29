@@ -1,15 +1,15 @@
 import { GitStatus } from './../models/GitStatus';
 import { Command } from '@oclif/command';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 
 export default class PushCommits extends Command {
   static description = 'Pushes local commits to the remote repo';
 
   async run() {
-    await GitWrapper.syncRemoteBranches();
-    const status: GitStatus = await GitWrapper.status();
-    const branchesList = await GitWrapper.listBranches();
+    await GitFacade.syncRemoteBranches();
+    const status: GitStatus = await GitFacade.status();
+    const branchesList = await GitFacade.listBranches();
     const branchChoices = [
       {
         name: status.currentBranch,
@@ -48,7 +48,7 @@ export default class PushCommits extends Command {
         }
       ]);
 
-      await GitWrapper.push(answers.branchNames);
+      await GitFacade.push(answers.branchNames);
     }
   }
 }

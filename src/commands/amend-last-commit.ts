@@ -1,5 +1,5 @@
 import Command from '../abstracts/AbstractCommitCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class AmendLastCommand extends Command {
   static description = 'Amends the last commit to repo';
@@ -7,7 +7,7 @@ export class AmendLastCommand extends Command {
     await super.runHelper();
   }
   async getPrompts(): Promise<any[]> {
-    const lastCommitMessage = await GitWrapper.getLastCommitMessage();
+    const lastCommitMessage = await GitFacade.getLastCommitMessage();
 
     return Promise.resolve([
       {
@@ -29,7 +29,7 @@ export class AmendLastCommand extends Command {
     ]);
   }
   async runCommit(message: string, fileNames: string[]) {
-    const commitResult = await GitWrapper.ammendLastCommit(fileNames, message);
+    const commitResult = await GitFacade.ammendLastCommit(fileNames, message);
 
     console.log(
       `Amend commit ${commitResult.commit} for branch ${

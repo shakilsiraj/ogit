@@ -1,6 +1,6 @@
 import Command from '../abstracts/AbstractStashCommand';
 import { OperationUtils } from '../utils/OperationUtils';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class DeleteStashCommand extends Command {
   static description = 'Deletes a list of stashes in the repo';
@@ -30,7 +30,7 @@ export class DeleteStashCommand extends Command {
 
   async performStashOperation(answers: any): Promise<void> {
     const selectedStash = answers.selectedStash;
-    await GitWrapper.deleteStash(
+    await GitFacade.deleteStash(
       selectedStash.stashNumber,
       selectedStash.stashName
     );

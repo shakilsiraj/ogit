@@ -3,7 +3,7 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import * as inquirer from 'inquirer';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export default class RenameBranch extends Command {
   static description = 'Renames a local branch to a new one';
@@ -13,7 +13,7 @@ export default class RenameBranch extends Command {
       {
         message: 'Select the branch to rename',
         type: 'list',
-        default: await GitWrapper.getCurrentBranchName(),
+        default: await GitFacade.getCurrentBranchName(),
         choices: this.localBranches,
         name: 'localBranchName',
         validate(choices: string) {
@@ -38,7 +38,7 @@ export default class RenameBranch extends Command {
   async preformBranchOperation(
     branchInfo: BranchNamePairStructure
   ): Promise<void> {
-    await GitWrapper.renameBranch(
+    await GitFacade.renameBranch(
       branchInfo.branchNameA,
       branchInfo.branchNameB
     );

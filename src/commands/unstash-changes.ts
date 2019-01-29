@@ -1,5 +1,5 @@
 import Command from '../abstracts/AbstractStashCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class UnStashCommand extends Command {
   static description = 'Applies the stashed changes back into workspace';
@@ -27,7 +27,7 @@ export class UnStashCommand extends Command {
   async performStashOperation(answers: any): Promise<void> {
     const selectedStash = answers.selectedStash;
     try {
-      await GitWrapper.unstash(
+      await GitFacade.unstash(
         selectedStash.stashNumber,
         selectedStash.stashName,
         answers.removeAfterApplying

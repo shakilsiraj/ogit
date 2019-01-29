@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import { GitStash, GitStatus, ChangeTypes } from '../models';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 import { FileNameUtils } from '../utils/FileNameUtils';
 
@@ -9,7 +9,7 @@ export default abstract class extends Command {
   protected choices: any[] = [];
 
   async runHelper() {
-    const stashes = await GitWrapper.getStashes();
+    const stashes = await GitFacade.getStashes();
     stashes.forEach(stash => {
       const stashDisplayName = `(${stash.stashNumber}) On ${
         stash.branchName
@@ -17,7 +17,7 @@ export default abstract class extends Command {
       this.stashNames.push({ name: stashDisplayName, value: stash });
     });
 
-    const status: GitStatus = await GitWrapper.status();
+    const status: GitStatus = await GitFacade.status();
     status.all.forEach(file => {
       this.choices.push({
         name: `${file.path} ${FileNameUtils.getFileChangeType(

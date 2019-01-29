@@ -2,7 +2,7 @@ import 'reflect-metadata';
 const terminalLink = require('terminal-link');
 const chalk = require('chalk');
 const columnify = require('columnify');
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import { Command } from '@oclif/command';
 import { GitStatus } from '../models';
 
@@ -12,9 +12,9 @@ export default class DisplayChangesCommand extends Command {
   static aliases = ['status'];
 
   async run() {
-    const status: GitStatus = await GitWrapper.status();
+    const status: GitStatus = await GitFacade.status();
     const remoteBranch = status.trackingBranch
-      ? await GitWrapper.originUrl()
+      ? await GitFacade.originUrl()
       : null;
 
     let message = `Your are on branch ${chalk.blue(status.currentBranch)}`;

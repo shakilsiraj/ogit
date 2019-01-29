@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import * as inquirer from 'inquirer';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class CloneRepo extends Command {
   static description = 'Clones a remote repo';
@@ -27,6 +27,6 @@ export class CloneRepo extends Command {
       );
     }
 
-    await GitWrapper.cloneRepo(answers.url, answers.dirName);
+    await GitFacade.cloneRepo(answers.url, answers.dirName);
   }
 }

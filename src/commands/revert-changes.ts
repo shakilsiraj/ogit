@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import { GitStatus, GitFile } from '../models';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 import { FileNameUtils } from '../utils/FileNameUtils';
 import * as inquirer from 'inquirer';
@@ -9,7 +9,7 @@ export default class RevertChanges extends Command {
   static description = 'Reverts an uncommitted change';
 
   async run() {
-    const status: GitStatus = await GitWrapper.status();
+    const status: GitStatus = await GitFacade.status();
 
     if (status.all.length === 0) {
       console.log('You do not have any changes to revert');
@@ -48,7 +48,7 @@ export default class RevertChanges extends Command {
       ]);
 
       await answers.revertList.forEach(async file => {
-        await GitWrapper.revertFile(file);
+        await GitFacade.revertFile(file);
       });
     }
   }

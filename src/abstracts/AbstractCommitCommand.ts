@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Command, flags } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { GitStatus, ChangeTypes } from '../models';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import { FileNameUtils } from '../utils/FileNameUtils';
 
 export default abstract class extends Command {
@@ -11,7 +11,7 @@ export default abstract class extends Command {
 
   async runHelper() {
     while (true) {
-      const status: GitStatus = await GitWrapper.status();
+      const status: GitStatus = await GitFacade.status();
       if (status.all.length > 0) {
         this.choices = [];
         status.all.forEach(file => {
@@ -29,11 +29,11 @@ export default abstract class extends Command {
         //lets filter out the files that needs to be added to git seperately..
         answers.fileToBeCommitted.forEach(async (file: GitFile) => {
           if (file.changeType === ChangeTypes.New) {
-            await GitWrapper.addToRepo(file.path);
+            await GitFacade.addToRepo(file.path);
           }
         });
 
-        await GitWrapper.optimizeRepo();
+        await GitFacade.optimizeRepo();
 
         await this.runCommit(
           answers.commitMessage,

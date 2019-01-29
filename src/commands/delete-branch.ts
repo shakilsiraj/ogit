@@ -1,7 +1,7 @@
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 
 export class DeleteBranchCommand extends Command {
@@ -57,9 +57,9 @@ export class DeleteBranchCommand extends Command {
     branchInfo: BranchNamePairStructure
   ): Promise<void> {
     if (branchInfo.branchNameA) {
-      await GitWrapper.deleteLocalBranch(branchInfo.branchNameA);
+      await GitFacade.deleteLocalBranch(branchInfo.branchNameA);
     } else {
-      await GitWrapper.deleteRemoteBranch(branchInfo.branchNameB);
+      await GitFacade.deleteRemoteBranch(branchInfo.branchNameB);
     }
   }
 }

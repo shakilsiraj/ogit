@@ -1,7 +1,7 @@
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 
 export class CreateBranchCommand extends Command {
@@ -31,7 +31,7 @@ export class CreateBranchCommand extends Command {
     branchInfo: BranchNamePairStructure
   ): Promise<void> {
     try {
-      await GitWrapper.switchBranch(branchInfo.branchNameA);
+      await GitFacade.switchBranch(branchInfo.branchNameA);
     } catch (err) {
       console.error('Possible merge conflict with the following files:');
       err.fileNamesArray.forEach((fileName: string) => {

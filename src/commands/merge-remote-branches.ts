@@ -3,7 +3,7 @@ import Command, {
 } from '../abstracts/AbstractBranchCommand';
 import * as inquirer from 'inquirer';
 import { OperationUtils } from '../utils/OperationUtils';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class MergeRemoteBranches extends Command {
   static description = 'Merges two remote branches';
@@ -46,18 +46,18 @@ export class MergeRemoteBranches extends Command {
     const randomNumber = OperationUtils.getRandomVerificationNumber();
     const sourceBranchName = `${randomNumber}_${branchInfo.branchNameA}`;
     const targetBranchName = `${randomNumber}_${branchInfo.branchNameB}`;
-    const currentBranchName = await GitWrapper.getCurrentBranchName();
+    const currentBranchName = await GitFacade.getCurrentBranchName();
 
-    await GitWrapper.createBranch(sourceBranchName, branchInfo.branchNameA);
-    await GitWrapper.createBranch(targetBranchName, branchInfo.branchNameB);
-    await GitWrapper.merge(
+    await GitFacade.createBranch(sourceBranchName, branchInfo.branchNameA);
+    await GitFacade.createBranch(targetBranchName, branchInfo.branchNameB);
+    await GitFacade.merge(
       sourceBranchName,
       `Merged branch ${branchInfo.branchNameA} into ${branchInfo.branchNameB}`
     );
-    await GitWrapper.push([`HEAD:${branchInfo.branchNameB}`]);
-    await GitWrapper.switchBranch(currentBranchName);
-    await GitWrapper.deleteLocalBranch(sourceBranchName);
-    await GitWrapper.deleteLocalBranch(targetBranchName);
+    await GitFacade.push([`HEAD:${branchInfo.branchNameB}`]);
+    await GitFacade.switchBranch(currentBranchName);
+    await GitFacade.deleteLocalBranch(sourceBranchName);
+    await GitFacade.deleteLocalBranch(targetBranchName);
 
     console.log(sourceBranchName, targetBranchName);
   }

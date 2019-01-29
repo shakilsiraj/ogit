@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Command } from '@oclif/command';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import { GitBranch } from '../models';
 const chalk = require('chalk');
 
@@ -10,8 +10,8 @@ export default abstract class extends Command {
   protected branchesList: GitBranch[] = [];
 
   async runHelper() {
-    await GitWrapper.syncRemoteBranches();
-    this.branchesList = await GitWrapper.listBranches();
+    await GitFacade.syncRemoteBranches();
+    this.branchesList = await GitFacade.listBranches();
     for (let branch of this.branchesList) {
       if (branch.isLocal) {
         this.localBranches.push(branch.name);

@@ -1,5 +1,5 @@
 import { flags } from '@oclif/command';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import Command from '../abstracts/AbstractCommitCommand';
 
 export class CommitChangesCommand extends Command {
@@ -50,7 +50,7 @@ export class CommitChangesCommand extends Command {
     fileNames: string[],
     skipValidation: boolean
   ) {
-    const commitResult = await GitWrapper.commit(
+    const commitResult = await GitFacade.commit(
       message,
       fileNames,
       skipValidation

@@ -1,5 +1,5 @@
 import { Command } from '@oclif/command';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 
 export default class ResetHeadCommand extends Command {
@@ -8,7 +8,7 @@ export default class ResetHeadCommand extends Command {
   async run() {
     const choices = [];
 
-    const branchesList = await GitWrapper.listBranches();
+    const branchesList = await GitFacade.listBranches();
     branchesList.forEach(branch => {
       choices.push({
         name: `${branch.name} (branch)`,
@@ -16,7 +16,7 @@ export default class ResetHeadCommand extends Command {
       });
     });
 
-    const tagResult = await GitWrapper.tags();
+    const tagResult = await GitFacade.tags();
     tagResult.all.forEach(tag =>
       choices.push({ name: `${tag} (tag)`, value: tag })
     );
@@ -52,6 +52,6 @@ export default class ResetHeadCommand extends Command {
       }
     ]);
     // console.log(answers);
-    await GitWrapper.reset(answers.selectedPosition, answers.strategy);
+    await GitFacade.reset(answers.selectedPosition, answers.strategy);
   }
 }

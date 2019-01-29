@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { GitWrapper } from '../git';
+import { GitFacade } from '../git';
 import * as fs from 'fs';
 import * as SimpleGit from 'simple-git/promise';
 import uuid = require('uuid');
@@ -12,7 +12,7 @@ xdescribe('ogit', () => {
         it('should return a list of created files when a file has created', async done => {
           const fileName = uuid.v4() + '.txt';
           createAndWriteToFile(fileName);
-          const status = await GitWrapper.status();
+          const status = await GitFacade.status();
           status.created.forEach(async stat => {
             if (stat.path === fileName) {
               fs.unlinkSync(fileName);
@@ -22,7 +22,7 @@ xdescribe('ogit', () => {
         });
         it('should return a list of changed files when a file has changed', async done => {
           fs.appendFileSync('tslint.json', '{}');
-          const status = await GitWrapper.status();
+          const status = await GitFacade.status();
           status.modified.forEach(async stat => {
             if (stat.path === 'tslint.json') {
               await SimpleGit().raw(['checkout', '--', 'tslint.json']);
@@ -32,7 +32,7 @@ xdescribe('ogit', () => {
         });
         it('should return a list of deleted files when a file has been deleted', async done => {
           fs.unlinkSync('tslint.json');
-          const status = await GitWrapper.status();
+          const status = await GitFacade.status();
           status.deleted.forEach(async stat => {
             if (stat.path === 'tslint.json') {
               await SimpleGit().raw(['checkout', '--', 'tslint.json']);
@@ -44,7 +44,7 @@ xdescribe('ogit', () => {
           const fileName = uuid.v4() + '.txt';
           createAndWriteToFile(fileName);
           await SimpleGit().raw(['add', '.']);
-          const status = await GitWrapper.status();
+          const status = await GitFacade.status();
           status.added.forEach(async stat => {
             if (stat.path === fileName) {
               await SimpleGit().raw(['reset', fileName]);
@@ -56,7 +56,7 @@ xdescribe('ogit', () => {
       });
       describe('originUrl', () => {
         it('should return the right value', async () => {
-          const originUrl = await GitWrapper.originUrl();
+          const originUrl = await GitFacade.originUrl();
           expect(originUrl).toEqual(
             'https://ssiraj@bitbucket.org/ssiraj/ogit.git'
           );
@@ -64,18 +64,18 @@ xdescribe('ogit', () => {
       });
       describe('initialized', () => {
         it('should be already initalized', async () => {
-          const alreadyInitialized = await GitWrapper.initialize();
+          const alreadyInitialized = await GitFacade.initialize();
           expect(alreadyInitialized).toBeFalsy();
         });
       });
 
       describe('listBranches', () => {
         it('should return a list', async () => {
-          const branchesSummary = await GitWrapper.listBranches();
+          const branchesSummary = await GitFacade.listBranches();
           expect(branchesSummary.length > 0).toBeTruthy();
         });
         it('should return a list containing local branch master', async done => {
-          const branchesSummary = await GitWrapper.listBranches();
+          const branchesSummary = await GitFacade.listBranches();
           for (let branchSummary of branchesSummary) {
             if (
               branchSummary.name === 'master' &&
@@ -87,7 +87,7 @@ xdescribe('ogit', () => {
           }
         });
         it('should return a list containing remote branch master', async done => {
-          const branchesSummary = await GitWrapper.listBranches();
+          const branchesSummary = await GitFacade.listBranches();
           for (let branchSummary of branchesSummary) {
             if (
               branchSummary.name === 'origin/master' &&
@@ -104,7 +104,7 @@ xdescribe('ogit', () => {
         it('should not fail', async () => {
           let success = true;
           try {
-            await GitWrapper.optimizeRepo();
+            await GitFacade.optimizeRepo();
           } catch (err) {
             console.log(err);
             success = false;
@@ -117,14 +117,14 @@ xdescribe('ogit', () => {
         it('should be able to add new files', async () => {
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const file2 = uuid.v4() + '.txt';
           createAndWriteToFile(file2);
-          await GitWrapper.addToRepo(file2);
+          await GitFacade.addToRepo(file2);
           const file3 = uuid.v4() + '.txt';
           createAndWriteToFile(file3);
-          await GitWrapper.addToRepo(file3);
-          const status = await GitWrapper.status();
+          await GitFacade.addToRepo(file3);
+          const status = await GitFacade.status();
           let found = 0;
           for (let i = 0; i < status.added.length; i++) {
             if (
@@ -145,7 +145,7 @@ xdescribe('ogit', () => {
       describe('getLastCommitMessage', () => {
         it('should return a string value', async () => {
           console.log('test');
-          const response = await GitWrapper.getLastCommitMessage();
+          const response = await GitFacade.getLastCommitMessage();
           expect(typeof response === 'string').toBeTruthy();
           expect(response).toBeDefined();
         });
@@ -153,7 +153,7 @@ xdescribe('ogit', () => {
 
       describe('getLastCommitHash', () => {
         it('should return a string value', async () => {
-          const response = await GitWrapper.getLastCommitHash();
+          const response = await GitFacade.getLastCommitHash();
           expect(typeof response === 'string').toBeTruthy();
           expect(response).toBeDefined();
         });
@@ -161,8 +161,8 @@ xdescribe('ogit', () => {
 
       describe('getFileNamesFromLastCommit', () => {
         it('should return a string array', async () => {
-          const response = await GitWrapper.getFileNamesFromCommit(
-            await GitWrapper.getLastCommitHash()
+          const response = await GitFacade.getFileNamesFromCommit(
+            await GitFacade.getLastCommitHash()
           );
           expect(response).toBeDefined();
         });
@@ -170,22 +170,22 @@ xdescribe('ogit', () => {
 
       describe('ammendLastCommit', () => {
         it('should amend a new file to the commit', async () => {
-          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const message =
             'testing ammendLastCommit > should add a new file to the commit';
-          await GitWrapper.commit(message, [file1], true);
+          await GitFacade.commit(message, [file1], true);
           const file2 = uuid.v4() + '.txt';
           createAndWriteToFile(file2);
-          await GitWrapper.addToRepo(file2);
-          const commitSummary = await GitWrapper.ammendLastCommit(
+          await GitFacade.addToRepo(file2);
+          const commitSummary = await GitFacade.ammendLastCommit(
             [file2],
             message
           );
-          expect(await GitWrapper.getLastCommitMessage()).toBe(message);
-          const fileNames = await GitWrapper.getFileNamesFromCommit(
+          expect(await GitFacade.getLastCommitMessage()).toBe(message);
+          const fileNames = await GitFacade.getFileNamesFromCommit(
             commitSummary.commit
           );
 
@@ -206,7 +206,7 @@ xdescribe('ogit', () => {
       //efa0e915a7d4c27fca2002350e47aceda4e6b872 - Fix for scenario where there was not files in the commit
       describe('getMessageFromCommitHash', () => {
         it('should return the subject as a string for a commit', async () => {
-          const response = await GitWrapper.getMessageFromCommitHash(
+          const response = await GitFacade.getMessageFromCommitHash(
             'efa0e915a7d4c27fca2002350e47aceda4e6b872'
           );
           expect(response).toBe(
@@ -217,29 +217,29 @@ xdescribe('ogit', () => {
 
       describe('revertCommit', () => {
         it('should keep the files in fileSystem', async () => {
-          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const message =
             'testing revertCommit > should keep the files in fileSystem';
-          const summary = await GitWrapper.commit(message, [file1], true);
+          const summary = await GitFacade.commit(message, [file1], true);
 
-          await GitWrapper.revertCommit(summary.commit);
+          await GitFacade.revertCommit(summary.commit);
 
           expect(fs.existsSync(file1)).toBeTruthy();
           await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
         it('should cleanup the hash from repo', async () => {
-          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const message =
             'testing revertCommit > should cleanup the hash from repo';
-          const summary = await GitWrapper.commit(message, [file1], true);
+          const summary = await GitFacade.commit(message, [file1], true);
 
-          await GitWrapper.revertCommit(summary.commit);
+          await GitFacade.revertCommit(summary.commit);
 
           const hashExists = await SimpleGit().raw([
             'branch',
@@ -254,29 +254,29 @@ xdescribe('ogit', () => {
 
       describe('deleteCommit', () => {
         it('should delete the files in fileSystem', async () => {
-          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const message =
             'testing revertCommit > should delete the files in fileSystem';
-          const summary = await GitWrapper.commit(message, [file1], true);
+          const summary = await GitFacade.commit(message, [file1], true);
 
-          await GitWrapper.deleteCommit(summary.commit);
+          await GitFacade.deleteCommit(summary.commit);
 
           expect(fs.existsSync(file1)).toBeFalsy();
           await SimpleGit().raw(['reset', '--hard', lastCommitHashBeforeTest]);
         });
         it('should cleanup the hash from repo', async () => {
-          const lastCommitHashBeforeTest = await GitWrapper.getLastCommitHash();
+          const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const message =
             'testing revertCommit > should cleanup the hash from repo';
-          const summary = await GitWrapper.commit(message, [file1], true);
+          const summary = await GitFacade.commit(message, [file1], true);
 
-          await GitWrapper.deleteCommit(summary.commit);
+          await GitFacade.deleteCommit(summary.commit);
 
           const hashExists = await SimpleGit().raw([
             'branch',
@@ -292,9 +292,9 @@ xdescribe('ogit', () => {
       describe('createBranch', () => {
         it('should be able to create a new branch', async done => {
           const newBranchName = 'branch_' + uuid.v4();
-          await GitWrapper.createBranch(newBranchName, 'origin/develop');
+          await GitFacade.createBranch(newBranchName, 'origin/develop');
 
-          const branches = await GitWrapper.listBranches();
+          const branches = await GitFacade.listBranches();
           for (let branch of branches) {
             console.log('Branch ' + branch.name);
             if (branch.name === newBranchName) {
@@ -308,12 +308,12 @@ xdescribe('ogit', () => {
       describe('switchBranch', () => {
         it('should be able to switch to a new branch', async () => {
           const newBranchName = 'branch_' + uuid.v4();
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
-          await GitWrapper.createBranch(newBranchName, 'origin/develop');
+          const currentBranchName = await GitFacade.getCurrentBranchName();
+          await GitFacade.createBranch(newBranchName, 'origin/develop');
 
-          await GitWrapper.switchBranch(newBranchName);
-          expect(await GitWrapper.getCurrentBranchName()).toBe(newBranchName);
-          await GitWrapper.switchBranch(currentBranchName);
+          await GitFacade.switchBranch(newBranchName);
+          expect(await GitFacade.getCurrentBranchName()).toBe(newBranchName);
+          await GitFacade.switchBranch(currentBranchName);
           await SimpleGit().deleteLocalBranch(newBranchName);
         });
       });
@@ -321,11 +321,11 @@ xdescribe('ogit', () => {
       describe('renameBranch', () => {
         it('should be able to rename current branch', async () => {
           const fakeBranchName = 'test-remote-branch';
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
-          await GitWrapper.renameBranch(currentBranchName, fakeBranchName);
-          expect(await GitWrapper.getCurrentBranchName()).toBe(fakeBranchName);
-          await GitWrapper.renameBranch(fakeBranchName, currentBranchName);
-          expect(await GitWrapper.getCurrentBranchName()).toBe(
+          const currentBranchName = await GitFacade.getCurrentBranchName();
+          await GitFacade.renameBranch(currentBranchName, fakeBranchName);
+          expect(await GitFacade.getCurrentBranchName()).toBe(fakeBranchName);
+          await GitFacade.renameBranch(fakeBranchName, currentBranchName);
+          expect(await GitFacade.getCurrentBranchName()).toBe(
             currentBranchName
           );
         });
@@ -334,9 +334,9 @@ xdescribe('ogit', () => {
       describe('deleteLocalBranch', () => {
         it('should be able to delete a local branch', async () => {
           const newBranchName = 'branch_' + uuid.v4();
-          await GitWrapper.createBranch(newBranchName, 'origin/develop');
+          await GitFacade.createBranch(newBranchName, 'origin/develop');
 
-          await GitWrapper.deleteLocalBranch(newBranchName);
+          await GitFacade.deleteLocalBranch(newBranchName);
         });
       });
 
@@ -346,7 +346,7 @@ xdescribe('ogit', () => {
           createAndWriteToFile(file1);
           await SimpleGit().raw(['stash', '-u']);
           expect(fs.existsSync(file1)).toBeFalsy();
-          await GitWrapper.clearStash();
+          await GitFacade.clearStash();
           expect(fs.existsSync(file1)).toBeFalsy();
         });
       });
@@ -358,9 +358,9 @@ xdescribe('ogit', () => {
           const file2 = uuid.v4() + '.txt';
           createAndWriteToFile(file2);
           await SimpleGit().raw(['stash', '-u', '-m getStashes test']);
-          const stashes = await GitWrapper.getStashes();
-          await GitWrapper.clearStash();
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          const stashes = await GitFacade.getStashes();
+          await GitFacade.clearStash();
+          const currentBranchName = await GitFacade.getCurrentBranchName();
           expect(stashes.length).toBe(1);
           expect(stashes[0]).toEqual({
             stashNumber: 0,
@@ -381,10 +381,10 @@ xdescribe('ogit', () => {
           const file3 = uuid.v4() + '.txt';
           createAndWriteToFile(file3);
           await SimpleGit().raw(['stash', '-u', '-m deleteStash test2']);
-          await GitWrapper.deleteStash(1, '');
-          const stashes = await GitWrapper.getStashes();
-          await GitWrapper.clearStash();
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          await GitFacade.deleteStash(1, '');
+          const stashes = await GitFacade.getStashes();
+          await GitFacade.clearStash();
+          const currentBranchName = await GitFacade.getCurrentBranchName();
           expect(stashes.length).toBe(1);
           expect(stashes[0]).toEqual({
             stashNumber: 0,
@@ -402,8 +402,8 @@ xdescribe('ogit', () => {
           const file2 = uuid.v4() + '.txt';
           createAndWriteToFile(file2);
           await SimpleGit().raw(['stash', '-u', '-m unstash test1']);
-          await GitWrapper.unstash(0, '');
-          await GitWrapper.clearStash();
+          await GitFacade.unstash(0, '');
+          await GitFacade.clearStash();
           expect(fs.existsSync(file1)).toBeTruthy();
           expect(fs.existsSync(file2)).toBeTruthy();
           fs.unlinkSync(file1);
@@ -418,14 +418,14 @@ xdescribe('ogit', () => {
           const file3 = uuid.v4() + '.txt';
           createAndWriteToFile(file3);
           await SimpleGit().raw(['stash', '-u', '-m unstash test2']);
-          await GitWrapper.unstash(1, '');
-          const stashes = await GitWrapper.getStashes();
-          await GitWrapper.clearStash();
+          await GitFacade.unstash(1, '');
+          const stashes = await GitFacade.getStashes();
+          await GitFacade.clearStash();
           expect(fs.existsSync(file1)).toBeTruthy();
           expect(fs.existsSync(file2)).toBeTruthy();
           fs.unlinkSync(file1);
           fs.unlinkSync(file2);
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          const currentBranchName = await GitFacade.getCurrentBranchName();
           expect(stashes.length).toBe(1);
           expect(stashes[0]).toEqual({
             stashNumber: 0,
@@ -444,14 +444,14 @@ xdescribe('ogit', () => {
           const file3 = uuid.v4() + '.txt';
           createAndWriteToFile(file3);
 
-          await GitWrapper.stash('test stash1', [file1, file2]);
+          await GitFacade.stash('test stash1', [file1, file2]);
           expect(fs.existsSync(file1)).toBeFalsy();
           expect(fs.existsSync(file2)).toBeFalsy();
           expect(fs.existsSync(file3)).toBeTruthy();
 
-          const stashes = await GitWrapper.getStashes();
-          await GitWrapper.clearStash();
-          const currentBranchName = await GitWrapper.getCurrentBranchName();
+          const stashes = await GitFacade.getStashes();
+          await GitFacade.clearStash();
+          const currentBranchName = await GitFacade.getCurrentBranchName();
           expect(stashes[0]).toEqual({
             stashNumber: 0,
             branchName: currentBranchName,
@@ -469,13 +469,13 @@ xdescribe('ogit', () => {
           const file3 = uuid.v4() + '.txt';
           createAndWriteToFile(file3);
 
-          await GitWrapper.stash('test stash2', [file1, file2, file3], false);
+          await GitFacade.stash('test stash2', [file1, file2, file3], false);
           expect(fs.existsSync(file1)).toBeFalsy();
           expect(fs.existsSync(file2)).toBeFalsy();
           expect(fs.existsSync(file3)).toBeFalsy();
 
-          const stashes = await GitWrapper.getStashes();
-          await GitWrapper.clearStash();
+          const stashes = await GitFacade.getStashes();
+          await GitFacade.clearStash();
           expect(stashes[0].files).toContain(file1);
           expect(stashes[0].files).toContain(file2);
           expect(stashes[0].files).toContain(file3);
@@ -488,16 +488,16 @@ xdescribe('ogit', () => {
           createAndWriteToFile(file1);
 
           const gitFile = new GitFile(file1, ' ', ChangeTypes.New);
-          await GitWrapper.revertFile(gitFile);
+          await GitFacade.revertFile(gitFile);
           expect(fs.existsSync(file1)).toBeFalsy();
         });
 
         it('should be able to delete a newly added file', async () => {
           const file1 = uuid.v4() + '.txt';
           createAndWriteToFile(file1);
-          await GitWrapper.addToRepo(file1);
+          await GitFacade.addToRepo(file1);
           const gitFile = new GitFile(file1, ' ', ChangeTypes.Added);
-          await GitWrapper.revertFile(gitFile);
+          await GitFacade.revertFile(gitFile);
           expect(fs.existsSync(file1)).toBeFalsy();
         });
 
@@ -505,10 +505,10 @@ xdescribe('ogit', () => {
           const file = 'package-lock.json';
           createAndWriteToFile(file);
           const gitFile = new GitFile(file, ' ', ChangeTypes.Modified);
-          await GitWrapper.revertFile(gitFile);
+          await GitFacade.revertFile(gitFile);
           expect(fs.existsSync(file)).toBeTruthy();
 
-          const status = await GitWrapper.status();
+          const status = await GitFacade.status();
           status.modified.forEach(gitFile => {
             if (gitFile.path === file) {
               fail();

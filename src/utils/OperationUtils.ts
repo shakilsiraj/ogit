@@ -1,6 +1,6 @@
 import { GitFile } from './../models/GitFile';
 import { ChangeTypes } from '../models';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 const chalk = require('chalk');
 
@@ -8,7 +8,7 @@ export class OperationUtils {
   public static addNewFilesToRepo = (files: GitFile[]): void => {
     files.forEach(async (file: GitFile) => {
       if (file.changeType === ChangeTypes.New) {
-        await GitWrapper.addToRepo(file.path);
+        await GitFacade.addToRepo(file.path);
       }
     });
   };
@@ -59,11 +59,11 @@ export class OperationUtils {
     // console.log(howToProceedPrompt);
     if (howToProceedPrompt.mergeOperation === 'C') {
       mergeCancelled = true;
-      await GitWrapper.cancelMerge();
+      await GitFacade.cancelMerge();
     } else if (howToProceedPrompt.mergeOperation === 'M') {
-      await GitWrapper.acceptChanges(false);
+      await GitFacade.acceptChanges(false);
     } else if (howToProceedPrompt.mergeOperation === 'R') {
-      await GitWrapper.acceptChanges(true);
+      await GitFacade.acceptChanges(true);
     } else {
       for (const file of files) {
         const howToMergePrompt: any = await inquirer.prompt([
@@ -99,21 +99,21 @@ export class OperationUtils {
         if (howToMergePrompt.mergeOperation === 'C') {
           mergeCancelled = true;
         } else if (howToMergePrompt.mergeOperation === 'D') {
-          await GitWrapper.addToRepo(file);
+          await GitFacade.addToRepo(file);
         } else if (howToMergePrompt.mergeOperation === 'M') {
-          await GitWrapper.acceptChanges(false, file);
-          await GitWrapper.addToRepo(file);
+          await GitFacade.acceptChanges(false, file);
+          await GitFacade.addToRepo(file);
         } else {
-          await GitWrapper.acceptChanges(true, file);
-          await GitWrapper.addToRepo(file);
+          await GitFacade.acceptChanges(true, file);
+          await GitFacade.addToRepo(file);
         }
       }
 
       if (!mergeCancelled) {
         await files.forEach(async file => {
-          await GitWrapper.addToRepo(file);
+          await GitFacade.addToRepo(file);
         });
-        await GitWrapper.commit('Manual merge done', files, false);
+        await GitFacade.commit('Manual merge done', files, false);
       }
     }
 

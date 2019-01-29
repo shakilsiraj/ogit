@@ -9,14 +9,14 @@ import * as keygen from 'ssh-keygen2';
  * Wrapper class for git commands.
  *
  * @export
- * @class GitWrapper
+ * @class GitFacade
  */
-export namespace GitWrapper {
+export namespace GitFacade {
   /**
    * Returns the status of the current git repo.
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const status = async (): Promise<GitStatus> => {
     let statusObj;
@@ -35,7 +35,7 @@ export namespace GitWrapper {
    * Returns the remote origin url for this branch.
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const originUrl = async (): Promise<string> => {
     let url;
@@ -53,7 +53,7 @@ export namespace GitWrapper {
    * Initializes the current directory as a git repo if not already.
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const initialize = async (): Promise<boolean> => {
     let success = false;
@@ -86,7 +86,7 @@ export namespace GitWrapper {
    * TODO: How to test this method?
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const checkoutRepo = async (url: string): Promise<void> => {
     let success = false;
@@ -94,7 +94,7 @@ export namespace GitWrapper {
     await initialize();
     try {
       cli.action.start('Adding remote origin to ' + url, '', { stdout: false });
-      const originUrl = await GitWrapper.originUrl();
+      const originUrl = await GitFacade.originUrl();
       if (originUrl) {
         cli.action.stop('failed as remote origin already exists!');
       } else {
@@ -124,7 +124,7 @@ export namespace GitWrapper {
    * Returns the list of branches in the current repo.
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const listBranches = async (): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
@@ -198,7 +198,7 @@ export namespace GitWrapper {
    * Add the file to source control.
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const addToRepo = async (filePath: string): Promise<void> => {
     try {
@@ -223,7 +223,7 @@ export namespace GitWrapper {
    * Ammends the last commit
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const ammendLastCommit = async (
     filePaths: string[],
@@ -244,7 +244,7 @@ export namespace GitWrapper {
    * Returns the last commit message from the commits
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const getLastCommitMessage = async (): Promise<string> => {
     return (await SimpleGit().raw([
@@ -258,7 +258,7 @@ export namespace GitWrapper {
    * Return file names in an string array from the last commit
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const getFileNamesFromCommit = async (
     commitHash: string
@@ -282,7 +282,7 @@ export namespace GitWrapper {
    * Returns the last commit hash from the commits
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const getLastCommitHash = async (): Promise<string> => {
     return (await SimpleGit().raw([
@@ -296,7 +296,7 @@ export namespace GitWrapper {
    * Returns the commit message by looking up the hash in repo
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const getMessageFromCommitHash = async (
     hash: string
@@ -308,7 +308,7 @@ export namespace GitWrapper {
    * Reverts a commit using the commit hash. It does not delete the files
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const revertCommit = async (hash: string): Promise<void> => {
     const commitMessage = await getMessageFromCommitHash(hash);
@@ -321,7 +321,7 @@ export namespace GitWrapper {
    * Reverts a commit using the commit hash. It does not delete the files
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const deleteCommit = async (hash: string): Promise<void> => {
     const commitMessage = await getMessageFromCommitHash(hash);
@@ -334,7 +334,7 @@ export namespace GitWrapper {
    * Creates a local branch from a remote branch
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const createBranch = async (
     branchName: string,
@@ -349,7 +349,7 @@ export namespace GitWrapper {
    * Renames a local branch
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const renameBranch = async (
     currantName: string,
@@ -372,7 +372,7 @@ export namespace GitWrapper {
    * TODO: missing unit test...
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const switchBranch = async (branchName: string): Promise<void> => {
     cli.action.start(`Switching to branch ${branchName}`);
@@ -393,7 +393,7 @@ export namespace GitWrapper {
    * Returns the current branch name
    *
    * @static
-   * @memberof GitWrapper
+   * @memberof GitFacade
    */
   export const getCurrentBranchName = async (): Promise<string> => {
     return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();

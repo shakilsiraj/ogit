@@ -1,5 +1,5 @@
 import Command from '../abstracts/AbstractStashCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 export class StashChangesCommand extends Command {
   static description = 'Add DESCRIPTION!!!!';
@@ -39,7 +39,7 @@ export class StashChangesCommand extends Command {
       filePaths.push(file.path);
     });
 
-    await GitWrapper.stash(answers.stashMessage, filePaths, partial);
+    await GitFacade.stash(answers.stashMessage, filePaths, partial);
   }
 
   async run() {

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 import { Command } from '@oclif/command';
 
 export default class CheckoutRepoCommand extends Command {
@@ -15,6 +15,6 @@ export default class CheckoutRepoCommand extends Command {
 
   async run() {
     const { args } = this.parse(CheckoutRepoCommand);
-    await GitWrapper.checkoutRepo(args.url);
+    await GitFacade.checkoutRepo(args.url);
   }
 }

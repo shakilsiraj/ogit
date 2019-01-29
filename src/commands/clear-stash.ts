@@ -1,6 +1,6 @@
 import Command from '../abstracts/AbstractStashCommand';
 import { OperationUtils } from '../utils/OperationUtils';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class ClearStashCommand extends Command {
   static description = 'Clears all the stashes in the local repos';
@@ -20,7 +20,7 @@ export class ClearStashCommand extends Command {
   }
 
   async performStashOperation(): Promise<void> {
-    await GitWrapper.clearStash();
+    await GitFacade.clearStash();
   }
   async run() {
     this.runHelper();

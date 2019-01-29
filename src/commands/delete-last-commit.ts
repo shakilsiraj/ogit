@@ -1,5 +1,5 @@
 import Command from '../abstracts/AbstractRevertCommand';
-import { GitWrapper } from '../wrapper/git';
+import { GitFacade } from '../wrapper/git';
 
 export class RevertLastCommitCommand extends Command {
   static description =
@@ -9,9 +9,9 @@ export class RevertLastCommitCommand extends Command {
   }
 
   public async getCommitHashes(): Promise<string[]> {
-    return [await GitWrapper.getLastCommitHash()];
+    return [await GitFacade.getLastCommitHash()];
   }
   public async preformRevertOnCommit(hash: string): Promise<void> {
-    await GitWrapper.deleteCommit(hash);
+    await GitFacade.deleteCommit(hash);
   }
 }
