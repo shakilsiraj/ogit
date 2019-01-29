@@ -7,6 +7,7 @@ export default class PushCommits extends Command {
   static description = 'Pushes local commits to the remote repo';
 
   async run() {
+    await GitWrapper.syncRemoteBranches();
     const status: GitStatus = await GitWrapper.status();
     const branchesList = await GitWrapper.listBranches();
     const branchChoices = [
