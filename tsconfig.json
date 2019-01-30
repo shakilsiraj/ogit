@@ -6,18 +6,13 @@
     "outDir": "lib",
     "strict": true,
     "target": "es6",
-    "rootDirs": [
-      "./src"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "rootDirs": ["./src"],
+    "typeRoots": ["node_modules/@types"],
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "lib": [
-      "ES2015"
-    ]
-  }
+    "lib": ["ES2015"]
+  },
+  "include": ["./src/**/*"]
 }

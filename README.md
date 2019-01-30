@@ -22,7 +22,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.21.0 darwin-x64 node-v8.9.4
+ogit/1.21.2 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
