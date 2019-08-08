@@ -42,4 +42,8 @@ export class CreateBranchCommand extends Command {
       );
     }
   }
+
+  public requireRemoteBranches(): boolean {
+    return false;
+  }
 }

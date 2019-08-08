@@ -47,4 +47,8 @@ export default class RenameBranch extends Command {
   async run() {
     this.runHelper();
   }
+
+  public requireRemoteBranches(): boolean {
+    return false;
+  }
 }

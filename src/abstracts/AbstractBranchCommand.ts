@@ -10,7 +10,9 @@ export default abstract class extends Command {
   protected branchesList: GitBranch[] = [];
 
   async runHelper() {
-    await GitFacade.syncRemoteBranches();
+    if (this.requireRemoteBranches()) {
+      await GitFacade.syncRemoteBranches();
+    }
     this.branchesList = await GitFacade.listBranches();
     for (let branch of this.branchesList) {
       if (branch.isLocal) {
@@ -40,6 +42,10 @@ export default abstract class extends Command {
     }
     return branchType;
   };
+
+  protected requireRemoteBranches(): boolean {
+    return true;
+  }
 }
 
 export interface BranchNamePairStructure {
