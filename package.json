@@ -1,12 +1,12 @@
 {
   "name": "ogit",
   "description": "A lazy developer's Git CLI made simple. Makes using git on cloud IDEs (i.e. C9) a walk in the park.",
-  "version": "1.21.3",
+  "version": "1.21.4",
   "author": "shakil.siraj@gmail.com",
   "bin": {
     "ogit": "./bin/run"
   },
-  "bugs": "https://bitbucket.org/ssiraj/ogit/issues",
+  "bugs": "https://github.com/shakilsiraj/ogit/issues",
   "dependencies": {
     "@oclif/command": "^1.5.8",
     "@oclif/config": "^1.12.0",
@@ -49,7 +49,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://bitbucket.org/ssiraj/ogit",
+  "homepage": "https://github.com/shakilsiraj/ogit",
   "keywords": [
     "git",
     "git cli",
@@ -70,7 +70,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "https://bitbucket.org/ssiraj/ogit",
+  "repository": "https://github.com/shakilsiraj/ogit",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p . -t stylish",
