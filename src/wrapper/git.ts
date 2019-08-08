@@ -745,7 +745,8 @@ export namespace GitFacade {
   export const autoCommit = async (
     message: string
   ): Promise<SimpleGit.CommitSummary> => {
-    return SimpleGit().commit(message, '', { '-a': true, m: true });
+    await SimpleGit().raw(['add', '--all']);
+    return SimpleGit().commit(message);
   };
 
   /**
