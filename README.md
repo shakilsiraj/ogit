@@ -22,7 +22,7 @@ $ npm install -g ogit
 $ ogit COMMAND
 running command...
 $ ogit (-v|--version|version)
-ogit/1.21.3 darwin-x64 node-v8.9.4
+ogit/1.21.5 darwin-x64 node-v8.9.4
 $ ogit --help [COMMAND]
 USAGE
   $ ogit COMMAND
@@ -67,6 +67,8 @@ USAGE
   $ ogit amend-last-commit
 ```
 
+_See code: [src/commands/amend-last-commit.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/amend-last-commit.ts)_
+
 ## `ogit checkout-repo URL`
 
 Checkout a git repo into current directory
@@ -79,6 +81,8 @@ ARGUMENTS
   URL  URL of git reo
 ```
 
+_See code: [src/commands/checkout-repo.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/checkout-repo.ts)_
+
 ## `ogit clear-stash`
 
 Clears all the stashes in the local repos
@@ -88,6 +92,8 @@ USAGE
   $ ogit clear-stash
 ```
 
+_See code: [src/commands/clear-stash.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/clear-stash.ts)_
+
 ## `ogit clone-repo`
 
 Clones a remote repo
@@ -96,6 +102,8 @@ Clones a remote repo
 USAGE
   $ ogit clone-repo
 ```
+
+_See code: [src/commands/clone-repo.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/clone-repo.ts)_
 
 ## `ogit commit-changes`
 
@@ -109,6 +117,8 @@ OPTIONS
   --noSummary  Do not display commit summary
 ```
 
+_See code: [src/commands/commit-changes.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/commit-changes.ts)_
+
 ## `ogit create-branch`
 
 Creates a new local branch from a remote branch
@@ -117,6 +127,8 @@ Creates a new local branch from a remote branch
 USAGE
   $ ogit create-branch
 ```
+
+_See code: [src/commands/create-branch.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/create-branch.ts)_
 
 ## `ogit delete-branch`
 
@@ -127,6 +139,8 @@ USAGE
   $ ogit delete-branch
 ```
 
+_See code: [src/commands/delete-branch.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/delete-branch.ts)_
+
 ## `ogit delete-last-commit`
 
 Deletes the last commit to repo, changes are removed from the file system
@@ -135,6 +149,8 @@ Deletes the last commit to repo, changes are removed from the file system
 USAGE
   $ ogit delete-last-commit
 ```
+
+_See code: [src/commands/delete-last-commit.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/delete-last-commit.ts)_
 
 ## `ogit delete-stash`
 
@@ -145,6 +161,8 @@ USAGE
   $ ogit delete-stash
 ```
 
+_See code: [src/commands/delete-stash.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/delete-stash.ts)_
+
 ## `ogit display-branches`
 
 Lists the branches within the current repo
@@ -153,6 +171,8 @@ Lists the branches within the current repo
 USAGE
   $ ogit display-branches
 ```
+
+_See code: [src/commands/display-branches.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/display-branches.ts)_
 
 ## `ogit display-changes`
 
@@ -166,6 +186,8 @@ ALIASES
   $ ogit status
 ```
 
+_See code: [src/commands/display-changes.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/display-changes.ts)_
+
 ## `ogit generate-ssh-keys`
 
 Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command
@@ -174,6 +196,8 @@ Generates SSH key pairs to authenticate the user. For Windows OS, requires git b
 USAGE
   $ ogit generate-ssh-keys
 ```
+
+_See code: [src/commands/generate-ssh-keys.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/generate-ssh-keys.ts)_
 
 ## `ogit help [COMMAND]`
 
@@ -201,6 +225,8 @@ USAGE
   $ ogit merge-remote-branches
 ```
 
+_See code: [src/commands/merge-remote-branches.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/merge-remote-branches.ts)_
+
 ## `ogit pull-remote-changes`
 
 Creates a new local branch from a remote branch
@@ -209,6 +235,8 @@ Creates a new local branch from a remote branch
 USAGE
   $ ogit pull-remote-changes
 ```
+
+_See code: [src/commands/pull-remote-changes.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/pull-remote-changes.ts)_
 
 ## `ogit push-commits`
 
@@ -219,6 +247,8 @@ USAGE
   $ ogit push-commits
 ```
 
+_See code: [src/commands/push-commits.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/push-commits.ts)_
+
 ## `ogit rename-branch`
 
 Renames a local branch to a new one
@@ -227,6 +257,8 @@ Renames a local branch to a new one
 USAGE
   $ ogit rename-branch
 ```
+
+_See code: [src/commands/rename-branch.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/rename-branch.ts)_
 
 ## `ogit reset-head`
 
@@ -237,6 +269,8 @@ USAGE
   $ ogit reset-head
 ```
 
+_See code: [src/commands/reset-head.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/reset-head.ts)_
+
 ## `ogit revert-changes`
 
 Reverts an uncommitted change
@@ -245,6 +279,8 @@ Reverts an uncommitted change
 USAGE
   $ ogit revert-changes
 ```
+
+_See code: [src/commands/revert-changes.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/revert-changes.ts)_
 
 ## `ogit revert-last-commit`
 
@@ -255,6 +291,8 @@ USAGE
   $ ogit revert-last-commit
 ```
 
+_See code: [src/commands/revert-last-commit.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/revert-last-commit.ts)_
+
 ## `ogit stash-changes`
 
 Add DESCRIPTION!!!!
@@ -263,6 +301,8 @@ Add DESCRIPTION!!!!
 USAGE
   $ ogit stash-changes
 ```
+
+_See code: [src/commands/stash-changes.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/stash-changes.ts)_
 
 ## `ogit switch-branch`
 
@@ -273,6 +313,8 @@ USAGE
   $ ogit switch-branch
 ```
 
+_See code: [src/commands/switch-branch.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/switch-branch.ts)_
+
 ## `ogit unstash-changes`
 
 Applies the stashed changes back into workspace
@@ -281,4 +323,6 @@ Applies the stashed changes back into workspace
 USAGE
   $ ogit unstash-changes
 ```
+
+_See code: [src/commands/unstash-changes.ts](https://github.com/shakilsiraj/ogit/blob/v1.21.5/src/commands/unstash-changes.ts)_
 <!-- commandsstop -->
