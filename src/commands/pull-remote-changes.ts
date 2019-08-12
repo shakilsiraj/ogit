@@ -1,13 +1,20 @@
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
+import { flags } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 import { CommitChangesCommand } from './commit-changes';
 
-export class CreateBranchCommand extends Command {
-  static description = 'Creates a new local branch from a remote branch';
+export class PullRemoteChanges extends Command {
+  static description = 'Pull remote changes from a branch and merge';
+
+  static flags = {
+    // can pass either --trackingOnly or -t
+    trackingOnly: flags.boolean({ char: 't' })
+  };
+
   async run() {
     let mergeCancelled = false;
     const mergeConflictFiles = await GitFacade.filesWithMergeConflicts();
@@ -18,7 +25,12 @@ export class CreateBranchCommand extends Command {
     }
     if (!mergeCancelled) {
       await CommitChangesCommand.run(['--noSummary']);
-      await super.runHelper();
+      const { flags } = this.parse(PullRemoteChanges);
+      if (flags.trackingOnly) {
+        await GitFacade.pullRemoteChanges();
+      } else {
+        await super.runHelper();
+      }
     }
   }
 

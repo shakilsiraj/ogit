@@ -696,12 +696,16 @@ export namespace GitFacade {
 
   /**
    * Pulls the changes from the remote branch into current.
-   * @param branch the remote branch to pull changes from.
+   * @param branch the remote branch to pull changes from. Defaults to the origin branch
    */
-  export const pullRemoteChanges = async (branch: string): Promise<void> => {
+  export const pullRemoteChanges = async (branch?: string): Promise<void> => {
     try {
-      cli.action.start(`Pulling changes from ${branch}`);
-      await SimpleGit().raw(['pull', '--no-stat', '-v', 'origin', branch]);
+      cli.action.start(`Pulling changes from ${branch ? branch : 'origin'}`);
+      const options = ['pull', '--no-stat', '-v', 'origin'];
+      if (branch) {
+        options.push(branch);
+      }
+      await SimpleGit().raw(options);
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
