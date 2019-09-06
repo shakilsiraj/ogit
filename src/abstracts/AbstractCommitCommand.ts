@@ -1,6 +1,6 @@
 import { GitFile } from './../models/GitFile';
 import 'reflect-metadata';
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { GitStatus, ChangeTypes } from '../models';
 import { GitFacade } from '../wrapper/git';

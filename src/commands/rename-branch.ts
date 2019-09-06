@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
@@ -45,7 +44,7 @@ export default class RenameBranch extends Command {
   }
 
   async run() {
-    this.runHelper();
+    await this.runHelper();
   }
 
   public requireRemoteBranches(): boolean {

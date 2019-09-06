@@ -41,7 +41,7 @@ export class UnStashCommand extends Command {
   }
 
   async run() {
-    this.runHelper();
+    await this.runHelper();
   }
 
   protected shouldProceedWithPrompts = (): boolean => {

@@ -25,7 +25,7 @@ export default class ResetHeadCommand extends Command {
       {
         message: 'Select the branch or tag name to reset HEAD to',
         type: 'list',
-        choices: choices,
+        choices,
         name: 'selectedPosition',
         validate(choices: any[]) {
           return choices.length > 0;

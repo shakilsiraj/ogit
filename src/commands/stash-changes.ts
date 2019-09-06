@@ -43,6 +43,6 @@ export class StashChangesCommand extends Command {
   }
 
   async run() {
-    this.runHelper();
+    await this.runHelper();
   }
 }

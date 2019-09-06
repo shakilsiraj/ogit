@@ -1,5 +1,5 @@
 import { Command } from '@oclif/command';
-import { GitStatus, GitFile } from '../models';
+import { GitStatus } from '../models';
 import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 import { FileNameUtils } from '../utils/FileNameUtils';

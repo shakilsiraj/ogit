@@ -24,8 +24,8 @@ export default class PushCommits extends Command {
     branchesList.forEach(branch => {
       if (
         !branch.isLocal &&
-        branch.name != status.currentBranch &&
-        branch.name != status.trackingBranch
+        branch.name !== status.currentBranch &&
+        branch.name !== status.trackingBranch
       ) {
         branchChoices.push({
           name: branch.name,

@@ -21,7 +21,7 @@ export default class DisplayBranchesCommand extends Command {
   }
 
   public async preformBranchOperation(
-    branchInfo: BranchNamePairStructure
+    _branchInfo: BranchNamePairStructure
   ): Promise<void> {}
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {

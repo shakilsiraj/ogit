@@ -23,7 +23,7 @@ export class ClearStashCommand extends Command {
     await GitFacade.clearStash();
   }
   async run() {
-    this.runHelper();
+    await this.runHelper();
   }
 
   protected shouldCheckForChanges = (): boolean => {

@@ -4,7 +4,8 @@ import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
-import * as keygen from 'ssh-keygen2';
+// import * as keygen from 'ssh-keygen2';
+const keygen = require('ssh-keygen2');
 /**
  * Wrapper class for git commands.
  *
@@ -272,9 +273,9 @@ export namespace GitFacade {
     ]);
     return fileNamesString
       ? fileNamesString
-          .split('\n')
-          .filter(n => n)
-          .sort()
+        .split('\n')
+        .filter(n => n)
+        .sort()
       : [];
   };
 
@@ -462,7 +463,7 @@ export namespace GitFacade {
     const fileNames: string[] = [];
 
     //tracked portion
-    const fileNamesLookupOptions = {
+    const fileNamesLookupOptions: any = {
       show: null,
       '--name-only': null
     };
@@ -489,7 +490,7 @@ export namespace GitFacade {
         .split('\n')
         .filter(n => n);
       untrackedFileNames.forEach(fileName => fileNames.push(fileName));
-    } catch (error) {}
+    } catch (_error) {}
 
     return fileNames.sort();
   };
@@ -530,7 +531,7 @@ export namespace GitFacade {
     message: string
   ): Promise<void> => {
     cli.action.start(`Deleting stash ${message}`);
-    const deleteStashCommandOptions = {
+    const deleteStashCommandOptions: any = {
       drop: null
     };
     deleteStashCommandOptions[`stash@{${stashNumber}}`] = null;
@@ -552,7 +553,7 @@ export namespace GitFacade {
     remove = true
   ): Promise<void> => {
     cli.action.start(`Unstashing changes for ${message}`);
-    const unStashCommandOptions = [];
+    const unStashCommandOptions: any = [];
     if (remove) {
       unStashCommandOptions.push('pop');
     } else {

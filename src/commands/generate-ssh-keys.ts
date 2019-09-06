@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -6,11 +6,10 @@ import * as fs from 'fs';
 const { exec } = require('child_process');
 
 export class GenerateSSHKeyPairs extends Command {
-  readonly DEFAULT_TYPE = 'rsa';
-  readonly DEFAULT_BITS = 4096;
-
   static description =
     'Generates SSH key pairs to authenticate the user. For Windows OS, requires git bash to be pre-installed and run as administrator for this command';
+  readonly DEFAULT_TYPE = 'rsa';
+  readonly DEFAULT_BITS = 4096;
 
   async run() {
     // console.log(process.env.SSH_AGENT_PID);
@@ -23,7 +22,7 @@ export class GenerateSSHKeyPairs extends Command {
         console.log('This command best works with GitBash.');
       }
     } else {
-      this.runCommand();
+      await this.runCommand();
     }
   }
 

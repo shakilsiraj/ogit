@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { GitFacade } from '../wrapper/git';
 
