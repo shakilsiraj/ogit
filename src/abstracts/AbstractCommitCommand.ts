@@ -10,7 +10,8 @@ export default abstract class extends Command {
   choices: any[] = [];
 
   async runHelper() {
-    while (true) {
+    let loopCondition = true;
+    while (loopCondition) {
       const status: GitStatus = await GitFacade.status();
       if (status.all.length > 0) {
         this.choices = [];
@@ -41,7 +42,7 @@ export default abstract class extends Command {
           answers.skipValidation
         );
       } else {
-        break;
+        loopCondition = false;
       }
     }
   }

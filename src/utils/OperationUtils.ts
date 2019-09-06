@@ -4,6 +4,7 @@ import { GitFacade } from '../wrapper/git';
 import * as inquirer from 'inquirer';
 const chalk = require('chalk');
 
+/* tslint:disable:no-unnecessary-class */
 export class OperationUtils {
   public static addNewFilesToRepo = (files: GitFile[]): void => {
     files.forEach(async (file: GitFile) => {

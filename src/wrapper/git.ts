@@ -490,6 +490,7 @@ export namespace GitFacade {
         .split('\n')
         .filter(n => n);
       untrackedFileNames.forEach(fileName => fileNames.push(fileName));
+      // tslint:disable-next-line
     } catch (_error) {}
 
     return fileNames.sort();
