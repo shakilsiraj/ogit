@@ -1,13 +1,11 @@
 import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
-import * as path from 'path';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
 const keygen = require('ssh-keygen2');
-// const relative = require('relative');
 /**
  * Wrapper class for git commands.
  *
@@ -64,7 +62,9 @@ export namespace GitFacade {
   export const originUrl = async (): Promise<string> => {
     let url;
     try {
-      url = await git().then(async g => await g.raw(['config', '--get', 'remote.origin.url']));
+      url = await git().then(
+        async g => await g.raw(['config', '--get', 'remote.origin.url'])
+      );
     } catch (error) {
       throw new Error(
         `Call to get remote origin failed with message: ${error.message}`
@@ -154,8 +154,8 @@ export namespace GitFacade {
     const branches: GitBranch[] = [];
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
-      await git().then(async g => await g.branch(['-r'])
-    ));
+      await git().then(async g => await g.branch(['-r']))
+    );
     remoteBranchesSummary.branches.forEach(branch => {
       branch.isLocal = false;
       branches.push(branch);
@@ -163,8 +163,8 @@ export namespace GitFacade {
 
     const localBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
-      await git().then(async g => await g.branchLocal()
-    ));
+      await git().then(async g => await g.branchLocal())
+    );
     localBranchesSummary.branches.forEach(branch => {
       branch.isLocal = true;
       branches.push(branch);
@@ -187,11 +187,9 @@ export namespace GitFacade {
     }
     try {
       cli.action.start('Committing changes');
-      const commitResult = await git().then(async g => await g.commit(
-        message,
-        fileNames,
-        options
-      ));
+      const commitResult = await git().then(
+        async g => await g.commit(message, fileNames, options)
+      );
       cli.action.stop();
       return commitResult;
     } catch (error) {
@@ -256,9 +254,12 @@ export namespace GitFacade {
     let summary: SimpleGit.CommitSummary;
 
     cli.action.start(`Updating last comment to ${message}`);
-    summary = await git().then(async g => await g.commit(message, filePaths, {
-      '--amend': null
-    }));
+    summary = await git().then(
+      async g =>
+        await g.commit(message, filePaths, {
+          '--amend': null
+        })
+    );
     cli.action.stop();
 
     return summary;
@@ -271,11 +272,9 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const getLastCommitMessage = async (): Promise<string> => {
-    return (await git().then(async g => await g.raw([
-      'log',
-      '--pretty=format:"%s"',
-      '-n 1'
-    ]))).replace(/['"]+/g, '');
+    return (await git().then(
+      async g => await g.raw(['log', '--pretty=format:"%s"', '-n 1'])
+    )).replace(/['"]+/g, '');
   };
 
   /**
@@ -287,13 +286,16 @@ export namespace GitFacade {
   export const getFileNamesFromCommit = async (
     commitHash: string
   ): Promise<string[]> => {
-    const fileNamesString = await git().then(async g => await g.raw([
-      'diff-tree',
-      '--no-commit-id',
-      '--name-only',
-      '-r',
-      commitHash
-    ]));
+    const fileNamesString = await git().then(
+      async g =>
+        await g.raw([
+          'diff-tree',
+          '--no-commit-id',
+          '--name-only',
+          '-r',
+          commitHash
+        ])
+    );
     return fileNamesString
       ? fileNamesString
           .split('\n')
@@ -309,11 +311,9 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const getLastCommitHash = async (): Promise<string> => {
-    return (await git().then(async g => await g.raw([
-      'log',
-      '--pretty=format:"%h"',
-      '-n 1'
-    ]))).replace(/['"]+/g, '');
+    return (await git().then(
+      async g => await g.raw(['log', '--pretty=format:"%h"', '-n 1'])
+    )).replace(/['"]+/g, '');
   };
 
   /**
@@ -365,7 +365,10 @@ export namespace GitFacade {
     remoteBranchName: string
   ): Promise<void> => {
     cli.action.start(`Creating a local branch ${branchName}`);
-    await git().then(async g => await g.checkout(['-b', branchName, '--track', remoteBranchName]));
+    await git().then(
+      async g =>
+        await g.checkout(['-b', branchName, '--track', remoteBranchName])
+    );
     cli.action.stop();
   };
 
@@ -381,7 +384,9 @@ export namespace GitFacade {
   ): Promise<void> => {
     try {
       cli.action.start(`Renaming local branch ${currantName} to ${newName}`);
-      await git().then(async g => await g.raw(['branch', '-m', currantName, newName]));
+      await git().then(
+        async g => await g.raw(['branch', '-m', currantName, newName])
+      );
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -420,7 +425,9 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const getCurrentBranchName = async (): Promise<string> => {
-    return (await git().then(async g => await g.raw(['symbolic-ref', '--short', 'HEAD']))).trim();
+    return (await git().then(
+      async g => await g.raw(['symbolic-ref', '--short', 'HEAD'])
+    )).trim();
   };
 
   /**
@@ -447,7 +454,9 @@ export namespace GitFacade {
   ): Promise<void> => {
     cli.action.start(`Deleting remote branch ${branchName}`);
     try {
-      await git().then(async g => await g.raw(['push', 'origin', '--delete', branchName]));
+      await git().then(
+        async g => await g.raw(['push', 'origin', '--delete', branchName])
+      );
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -462,9 +471,12 @@ export namespace GitFacade {
   export const clearStash = async (): Promise<void> => {
     cli.action.start('Removing all stashed changes');
     try {
-      await git().then(async g => await g.stash({
-        clear: null
-      }));
+      await git().then(
+        async g =>
+          await g.stash({
+            clear: null
+          })
+      );
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -491,9 +503,9 @@ export namespace GitFacade {
       '--name-only': null
     };
     fileNamesLookupOptions[`stash@{${stashNumber}}`] = null;
-    const trackedFileNames: string[] = (await git().then(async g => await g.stash(
-      fileNamesLookupOptions
-    )))
+    const trackedFileNames: string[] = (await git().then(
+      async g => await g.stash(fileNamesLookupOptions)
+    ))
       .split('\n')
       .filter(n => n);
     trackedFileNames.forEach(fileName => fileNames.push(fileName));
@@ -504,12 +516,15 @@ export namespace GitFacade {
      */
     // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
     try {
-      const untrackedFileNames: string[] = (await git().then(async g => await g.raw([
-        'ls-tree',
-        '-r',
-        `stash@{${stashNumber}}^3`,
-        '--name-only'
-      ])))
+      const untrackedFileNames: string[] = (await git().then(
+        async g =>
+          await g.raw([
+            'ls-tree',
+            '-r',
+            `stash@{${stashNumber}}^3`,
+            '--name-only'
+          ])
+      ))
         .split('\n')
         .filter(n => n);
       untrackedFileNames.forEach(fileName => fileNames.push(fileName));
@@ -524,10 +539,13 @@ export namespace GitFacade {
    */
   export const getStashes = async (): Promise<GitStash[]> => {
     const stashes: GitStash[] = [];
-    const stashNames: string[] = (await git().then(async g => await g.stash({
-      list: null,
-      '--pretty': 'format:%s %N'
-    })))
+    const stashNames: string[] = (await git().then(
+      async g =>
+        await g.stash({
+          list: null,
+          '--pretty': 'format:%s %N'
+        })
+    ))
       .split('\n')
       .filter(n => n);
     for (let i = 0; i < stashNames.length; i++) {
@@ -705,10 +723,9 @@ export namespace GitFacade {
     let fileNamesList: string[];
     try {
       cli.action.start('Retrieving file names with merge conflict');
-      const fileNames = await git().then(async g => await g.diff([
-        '--name-only',
-        '--diff-filter=U'
-      ]));
+      const fileNames = await git().then(
+        async g => await g.diff(['--name-only', '--diff-filter=U'])
+      );
       fileNamesList = fileNames.split('\n').filter(n => n);
       cli.action.stop();
     } catch (error) {
@@ -802,7 +819,7 @@ export namespace GitFacade {
   ): Promise<void> => {
     try {
       cli.action.start(`Merging branch ${branchName}`);
-      const mergeCommandParams = [];
+      const mergeCommandParams: any[] = [];
       if (message) {
         mergeCommandParams.push('-m', message);
       }

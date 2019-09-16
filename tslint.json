@@ -11,6 +11,9 @@
     "file-name-casing": [false, "camel-case"],
     "no-unused-variable": false,
     "no-empty-line-after-opening-brace": false,
-    "no-redundant-jsdoc": false
+    "no-redundant-jsdoc": false,
+    "no-return-await": false,
+    "ter-indent": false,
+    "no-floating-promises": false
   }
 }
