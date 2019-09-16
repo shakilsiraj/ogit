@@ -2,7 +2,7 @@ import Command from '../abstracts/AbstractStashCommand';
 import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 export class StashChangesCommand extends Command {
-  static description = 'Add DESCRIPTION!!!!';
+  static description = 'Stashes the changes in the workspace';
 
   async getPrompts(): Promise<any[]> {
     return [
