@@ -1,11 +1,13 @@
 import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
+import * as path from 'path';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
 const keygen = require('ssh-keygen2');
+// const relative = require('relative');
 /**
  * Wrapper class for git commands.
  *
@@ -13,6 +15,27 @@ const keygen = require('ssh-keygen2');
  * @class GitFacade
  */
 export namespace GitFacade {
+  export const git = async (): Promise<SimpleGit.SimpleGit> => {
+    let relativePath;
+    try {
+      relativePath = await SimpleGit().raw(['rev-parse', '--show-cdup']);
+    } catch (error) {
+      throw new Error(
+        `Call to get repository directory failed with message: ${error.message}`
+      );
+    }
+    //refactor
+    if (!relativePath.trim()) {
+      relativePath = '.';
+    } else {
+      relativePath = relativePath.trim();
+    }
+    // console.log(`relativePath ${relativePath}`);
+    const g = SimpleGit();
+    g.cwd(relativePath);
+    return g;
+  };
+
   /**
    * Returns the status of the current git repo.
    *
@@ -22,7 +45,7 @@ export namespace GitFacade {
   export const status = async (): Promise<GitStatus> => {
     let statusObj;
     try {
-      const gitStatus = await SimpleGit().status();
+      const gitStatus = await git().then(async g => await g.status());
       statusObj = ObjectMapper.deserialize(GitStatus, gitStatus);
     } catch (error) {
       throw new Error(
@@ -41,7 +64,7 @@ export namespace GitFacade {
   export const originUrl = async (): Promise<string> => {
     let url;
     try {
-      url = await SimpleGit().raw(['config', '--get', 'remote.origin.url']);
+      url = await git().then(async g => await g.raw(['config', '--get', 'remote.origin.url']));
     } catch (error) {
       throw new Error(
         `Call to get remote origin failed with message: ${error.message}`
@@ -60,8 +83,8 @@ export namespace GitFacade {
     let success = false;
     try {
       cli.action.start('Initializing git repo');
-      if (!(await SimpleGit().checkIsRepo())) {
-        await SimpleGit().init();
+      if (!(await git().then(async g => await g.checkIsRepo()))) {
+        await git().then(async g => await g.init());
         success = true;
         cli.action.stop();
       } else {
@@ -99,7 +122,7 @@ export namespace GitFacade {
       if (originUrl) {
         cli.action.stop('failed as remote origin already exists!');
       } else {
-        await SimpleGit().addRemote('origin', url);
+        await git().then(async g => await g.addRemote('origin', url));
         success = true;
         cli.action.stop();
       }
@@ -111,7 +134,7 @@ export namespace GitFacade {
     if (success) {
       try {
         cli.action.start('Pulling down repository');
-        await SimpleGit().pull('origin', branch);
+        await git().then(async g => await g.pull('origin', branch));
         cli.action.stop();
       } catch (error) {
         cli.action.stop(
@@ -131,8 +154,8 @@ export namespace GitFacade {
     const branches: GitBranch[] = [];
     const remoteBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
-      await SimpleGit().branch(['-r'])
-    );
+      await git().then(async g => await g.branch(['-r'])
+    ));
     remoteBranchesSummary.branches.forEach(branch => {
       branch.isLocal = false;
       branches.push(branch);
@@ -140,8 +163,8 @@ export namespace GitFacade {
 
     const localBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
-      await SimpleGit().branchLocal()
-    );
+      await git().then(async g => await g.branchLocal()
+    ));
     localBranchesSummary.branches.forEach(branch => {
       branch.isLocal = true;
       branches.push(branch);
@@ -164,11 +187,11 @@ export namespace GitFacade {
     }
     try {
       cli.action.start('Committing changes');
-      const commitResult = await SimpleGit().commit(
+      const commitResult = await git().then(async g => await g.commit(
         message,
         fileNames,
         options
-      );
+      ));
       cli.action.stop();
       return commitResult;
     } catch (error) {
@@ -185,7 +208,7 @@ export namespace GitFacade {
   export const push = async (branchNames: string[]): Promise<void> => {
     try {
       cli.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
-      await SimpleGit().push('origin', ...branchNames);
+      await git().then(async g => await g.push('origin', ...branchNames));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -204,7 +227,7 @@ export namespace GitFacade {
   export const addToRepo = async (filePath: string): Promise<void> => {
     try {
       cli.action.start(`Adding file to repo ${filePath} `);
-      await SimpleGit().add(filePath);
+      await git().then(async g => await g.add(filePath));
       cli.action.stop();
     } catch (error) {
       throw new Error(
@@ -217,7 +240,7 @@ export namespace GitFacade {
    * Optimizes the repo by calling garbage collection
    */
   export const optimizeRepo = async (): Promise<void> => {
-    await SimpleGit().raw(['gc']);
+    await git().then(async g => await g.raw(['gc']));
   };
 
   /**
@@ -233,9 +256,9 @@ export namespace GitFacade {
     let summary: SimpleGit.CommitSummary;
 
     cli.action.start(`Updating last comment to ${message}`);
-    summary = await SimpleGit().commit(message, filePaths, {
+    summary = await git().then(async g => await g.commit(message, filePaths, {
       '--amend': null
-    });
+    }));
     cli.action.stop();
 
     return summary;
@@ -248,11 +271,11 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const getLastCommitMessage = async (): Promise<string> => {
-    return (await SimpleGit().raw([
+    return (await git().then(async g => await g.raw([
       'log',
       '--pretty=format:"%s"',
       '-n 1'
-    ])).replace(/['"]+/g, '');
+    ]))).replace(/['"]+/g, '');
   };
 
   /**
@@ -264,18 +287,18 @@ export namespace GitFacade {
   export const getFileNamesFromCommit = async (
     commitHash: string
   ): Promise<string[]> => {
-    const fileNamesString = await SimpleGit().raw([
+    const fileNamesString = await git().then(async g => await g.raw([
       'diff-tree',
       '--no-commit-id',
       '--name-only',
       '-r',
       commitHash
-    ]);
+    ]));
     return fileNamesString
       ? fileNamesString
-        .split('\n')
-        .filter(n => n)
-        .sort()
+          .split('\n')
+          .filter(n => n)
+          .sort()
       : [];
   };
 
@@ -286,11 +309,11 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const getLastCommitHash = async (): Promise<string> => {
-    return (await SimpleGit().raw([
+    return (await git().then(async g => await g.raw([
       'log',
       '--pretty=format:"%h"',
       '-n 1'
-    ])).replace(/['"]+/g, '');
+    ]))).replace(/['"]+/g, '');
   };
 
   /**
@@ -314,7 +337,7 @@ export namespace GitFacade {
   export const revertCommit = async (hash: string): Promise<void> => {
     const commitMessage = await getMessageFromCommitHash(hash);
     cli.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
-    await SimpleGit().raw(['reset', '--soft', `${hash}~`]);
+    await git().then(async g => await g.raw(['reset', '--soft', `${hash}~`]));
     cli.action.stop();
   };
 
@@ -327,7 +350,7 @@ export namespace GitFacade {
   export const deleteCommit = async (hash: string): Promise<void> => {
     const commitMessage = await getMessageFromCommitHash(hash);
     cli.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
-    await SimpleGit().raw(['reset', '--hard', `${hash}~`]);
+    await git().then(async g => await g.raw(['reset', '--hard', `${hash}~`]));
     cli.action.stop();
   };
 
@@ -342,7 +365,7 @@ export namespace GitFacade {
     remoteBranchName: string
   ): Promise<void> => {
     cli.action.start(`Creating a local branch ${branchName}`);
-    await SimpleGit().checkout(['-b', branchName, '--track', remoteBranchName]);
+    await git().then(async g => await g.checkout(['-b', branchName, '--track', remoteBranchName]));
     cli.action.stop();
   };
 
@@ -358,7 +381,7 @@ export namespace GitFacade {
   ): Promise<void> => {
     try {
       cli.action.start(`Renaming local branch ${currantName} to ${newName}`);
-      await SimpleGit().raw(['branch', '-m', currantName, newName]);
+      await git().then(async g => await g.raw(['branch', '-m', currantName, newName]));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -378,7 +401,7 @@ export namespace GitFacade {
   export const switchBranch = async (branchName: string): Promise<void> => {
     cli.action.start(`Switching to branch ${branchName}`);
     try {
-      await SimpleGit().checkout(branchName);
+      await git().then(async g => await g.checkout(branchName));
       cli.action.stop();
     } catch (err) {
       cli.action.stop('failed');
@@ -397,7 +420,7 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const getCurrentBranchName = async (): Promise<string> => {
-    return (await SimpleGit().raw(['symbolic-ref', '--short', 'HEAD'])).trim();
+    return (await git().then(async g => await g.raw(['symbolic-ref', '--short', 'HEAD']))).trim();
   };
 
   /**
@@ -408,7 +431,7 @@ export namespace GitFacade {
   ): Promise<void> => {
     cli.action.start(`Deleting local branch ${branchName}`);
     try {
-      await SimpleGit().raw(['branch', '-D', branchName]);
+      await git().then(async g => await g.raw(['branch', '-D', branchName]));
       cli.action.stop();
     } catch (e) {
       cli.action.stop('failed');
@@ -424,7 +447,7 @@ export namespace GitFacade {
   ): Promise<void> => {
     cli.action.start(`Deleting remote branch ${branchName}`);
     try {
-      await SimpleGit().raw(['push', 'origin', '--delete', branchName]);
+      await git().then(async g => await g.raw(['push', 'origin', '--delete', branchName]));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -439,9 +462,9 @@ export namespace GitFacade {
   export const clearStash = async (): Promise<void> => {
     cli.action.start('Removing all stashed changes');
     try {
-      await SimpleGit().stash({
+      await git().then(async g => await g.stash({
         clear: null
-      });
+      }));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -468,9 +491,9 @@ export namespace GitFacade {
       '--name-only': null
     };
     fileNamesLookupOptions[`stash@{${stashNumber}}`] = null;
-    const trackedFileNames: string[] = (await SimpleGit().stash(
+    const trackedFileNames: string[] = (await git().then(async g => await g.stash(
       fileNamesLookupOptions
-    ))
+    )))
       .split('\n')
       .filter(n => n);
     trackedFileNames.forEach(fileName => fileNames.push(fileName));
@@ -481,12 +504,12 @@ export namespace GitFacade {
      */
     // untrackedLookupOptions[`stash@{${stashNumber}}^3`] = null;
     try {
-      const untrackedFileNames: string[] = (await SimpleGit().raw([
+      const untrackedFileNames: string[] = (await git().then(async g => await g.raw([
         'ls-tree',
         '-r',
         `stash@{${stashNumber}}^3`,
         '--name-only'
-      ]))
+      ])))
         .split('\n')
         .filter(n => n);
       untrackedFileNames.forEach(fileName => fileNames.push(fileName));
@@ -501,10 +524,10 @@ export namespace GitFacade {
    */
   export const getStashes = async (): Promise<GitStash[]> => {
     const stashes: GitStash[] = [];
-    const stashNames: string[] = (await SimpleGit().stash({
+    const stashNames: string[] = (await git().then(async g => await g.stash({
       list: null,
       '--pretty': 'format:%s %N'
-    }))
+    })))
       .split('\n')
       .filter(n => n);
     for (let i = 0; i < stashNames.length; i++) {
@@ -537,7 +560,7 @@ export namespace GitFacade {
     };
     deleteStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
-      await SimpleGit().stash(deleteStashCommandOptions);
+      await git().then(async g => await g.stash(deleteStashCommandOptions));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -562,7 +585,7 @@ export namespace GitFacade {
     }
     unStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
-      await SimpleGit().stash(unStashCommandOptions);
+      await git().then(async g => await g.stash(unStashCommandOptions));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -589,14 +612,14 @@ export namespace GitFacade {
     if (partial) {
       commandList = ['stash', 'push', '-m', message, '--'];
       for (let i = 0; i < fileNames.length; i++) {
-        await SimpleGit().add(fileNames[i]);
+        await git().then(async g => await g.add(fileNames[i]));
         commandList.push(fileNames[i]);
       }
     } else {
       commandList = ['stash', 'save', '-u', message];
     }
     try {
-      await SimpleGit().raw(commandList);
+      await git().then(async g => await g.raw(commandList));
     } catch (error) {
       cli.action.stop('failed');
       throw error;
@@ -609,7 +632,7 @@ export namespace GitFacade {
   export const syncRemoteBranches = async () => {
     try {
       cli.action.start('Resyncing remote branches');
-      await SimpleGit().raw(['fetch', 'origin', '--prune']);
+      await git().then(async g => await g.raw(['fetch', 'origin', '--prune']));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -625,12 +648,12 @@ export namespace GitFacade {
     try {
       cli.action.start(`Reverting file ${file.path}`);
       if (file.changeType === ChangeTypes.New) {
-        await SimpleGit().raw(['clean', '-f', file.path]);
+        await git().then(async g => await g.raw(['clean', '-f', file.path]));
       } else if (file.changeType === ChangeTypes.Added) {
-        await SimpleGit().raw(['reset', file.path]);
-        await SimpleGit().raw(['clean', '-f', file.path]);
+        await git().then(async g => await g.raw(['reset', file.path]));
+        await git().then(async g => await g.raw(['clean', '-f', file.path]));
       } else {
-        await SimpleGit().checkout(['--', file.path]);
+        await git().then(async g => await g.checkout(['--', file.path]));
       }
       cli.action.stop();
     } catch (error) {
@@ -646,7 +669,7 @@ export namespace GitFacade {
     let tags: SimpleGit.TagResult;
     try {
       cli.action.start('Retrieving tag names');
-      tags = await SimpleGit().tags();
+      tags = await git().then(async g => await g.tags());
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -667,7 +690,7 @@ export namespace GitFacade {
   ): Promise<void> => {
     try {
       cli.action.start(`Reseting current HEAD to ${pointer}`);
-      await SimpleGit().raw(['reset', strategy, pointer]);
+      await git().then(async g => await g.raw(['reset', strategy, pointer]));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -682,10 +705,10 @@ export namespace GitFacade {
     let fileNamesList: string[];
     try {
       cli.action.start('Retrieving file names with merge conflict');
-      const fileNames = await SimpleGit().diff([
+      const fileNames = await git().then(async g => await g.diff([
         '--name-only',
         '--diff-filter=U'
-      ]);
+      ]));
       fileNamesList = fileNames.split('\n').filter(n => n);
       cli.action.stop();
     } catch (error) {
@@ -707,7 +730,7 @@ export namespace GitFacade {
       if (branch) {
         options.push(branch);
       }
-      await SimpleGit().raw(options);
+      await git().then(async g => await g.raw(options));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -737,7 +760,7 @@ export namespace GitFacade {
       }
       checkoutOptions.push(filePath);
 
-      await SimpleGit().raw(checkoutOptions);
+      await git().then(async g => await g.raw(checkoutOptions));
       if (filePath === '.') {
         await autoCommit(commitMessage);
       }
@@ -751,7 +774,7 @@ export namespace GitFacade {
   export const autoCommit = async (
     message: string
   ): Promise<SimpleGit.CommitSummary> => {
-    await SimpleGit().raw(['add', '--all']);
+    await git().then(async g => await g.raw(['add', '--all']));
     return SimpleGit().commit(message);
   };
 
@@ -761,7 +784,7 @@ export namespace GitFacade {
   export const cancelMerge = async (): Promise<void> => {
     try {
       cli.action.start('Cancelling merge attempt');
-      await SimpleGit().merge(['--abort']);
+      await git().then(async g => await g.merge(['--abort']));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -784,7 +807,7 @@ export namespace GitFacade {
         mergeCommandParams.push('-m', message);
       }
       mergeCommandParams.push('--no-ff', branchName);
-      await SimpleGit().merge(mergeCommandParams);
+      await git().then(async g => await g.merge(mergeCommandParams));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -808,7 +831,7 @@ export namespace GitFacade {
         commands.push('--global');
       }
       commands.push(config);
-      const data = await SimpleGit().raw(commands);
+      const data = await git().then(async g => await g.raw(commands));
       cli.action.stop();
       return data ? data.trim() : null;
     } catch (error) {
@@ -848,7 +871,7 @@ export namespace GitFacade {
   ): Promise<void> => {
     try {
       cli.action.start(`Cloning repo ${url}`);
-      await SimpleGit().clone(url, dirName);
+      await git().then(async g => await g.clone(url, dirName));
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
