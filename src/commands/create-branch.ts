@@ -6,18 +6,21 @@ import * as inquirer from 'inquirer';
 
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';
-  async run() {
+    async run() {
     await super.runHelper();
   }
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
+    inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+
     const localBranches = this.localBranches;
     let remoteBranchName;
+
     const answers: any = await inquirer
       .prompt([
         {
           message: 'Select the remote branch to create local from',
-          type: 'list',
+          type: 'autocomplete',
           choices: this.remoteBranches,
           name: 'remoteBranchName',
           validate(choices: string[]) {
