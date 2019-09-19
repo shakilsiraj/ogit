@@ -2,31 +2,39 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { GitFacade } from '../wrapper/git';
+import { flags } from '@oclif/command';
 import * as inquirer from 'inquirer';
 
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';
-    async run() {
+
+  static flags = {
+    // can search --search or -s
+    search: flags.boolean({ char: 's' })
+  };
+
+  async run() {
     await super.runHelper();
   }
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
-    inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
-
     const localBranches = this.localBranches;
     let remoteBranchName;
-
+    const { flags } = this.parse(CreateBranchCommand);
     const answers: any = await inquirer
       .prompt([
         {
-          message: 'Select the remote branch to create local from',
-          type: 'autocomplete',
+          message: flags.search
+            ? 'Name of the remote branch to create local from'
+            : 'Select the remote branch to create local from',
+          type: flags.search ? 'autocomplete' : 'list',
+          source: this.searchRemoteBranches,
           choices: this.remoteBranches,
           name: 'remoteBranchName',
           validate(choices: string[]) {
             return choices.length > 0;
           }
-        }
+        } as any
       ])
       .then((answers: any) => {
         return inquirer.prompt({

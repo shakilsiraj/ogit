@@ -3,13 +3,38 @@ import { Command } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
 import { GitBranch } from '../models';
 const chalk = require('chalk');
+import * as inquirer from 'inquirer';
 
 export default abstract class extends Command {
   protected localBranches: string[] = [];
   protected remoteBranches: string[] = [];
   protected branchesList: GitBranch[] = [];
 
+  public searchRemoteBranches = (
+    answers: string[],
+    input: string
+  ): Promise<string[]> => {
+    const searchResults = this.remoteBranches.filter(
+      branch => branch.indexOf(input) > 0
+    );
+    return Promise.resolve(searchResults ? searchResults : answers);
+  };
+
+  public searchLocalBranches = (
+    answers: string[],
+    input: string
+  ): Promise<string[]> => {
+    const searchResults = this.localBranches.filter(
+      branch => branch.indexOf(input) > 0
+    );
+    return Promise.resolve(searchResults);
+  };
+
   async runHelper() {
+    inquirer.registerPrompt(
+      'autocomplete',
+      require('inquirer-autocomplete-prompt')
+    );
     if (this.requireRemoteBranches()) {
       await GitFacade.syncRemoteBranches();
     }
