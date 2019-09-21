@@ -2,24 +2,37 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import * as inquirer from 'inquirer';
+import { flags } from '@oclif/command';
 import { OperationUtils } from '../utils/OperationUtils';
 import { GitFacade } from '../wrapper/git';
 
 export class MergeRemoteBranches extends Command {
   static description = 'Merges two remote branches';
+  static flags = {
+    // can search --search or -s
+    search: flags.boolean({ char: 's' })
+  };
+
   async getSelectedBranch(): Promise<BranchNamePairStructure> {
     let sourceBranch;
+    const { flags } = this.parse(MergeRemoteBranches);
     const answers: any = await inquirer
       .prompt({
-        message: 'Select the source branch to merge',
-        type: 'list',
+        message: flags.search
+          ? 'Name of the source branch to merge'
+          : 'Select the source branch to merge',
+        type: flags.search ? 'autocomplete' : 'list',
+        source: this.searchRemoteBranches,
         choices: this.remoteBranches,
         name: 'sourceBranch'
-      })
+      } as any)
       .then(answers => {
         return inquirer.prompt({
-          message: 'Select the target branch to merge into',
-          type: 'list',
+          message: flags.search
+            ? 'Name of the target branch to merge into'
+            : 'Select the target branch to merge into',
+          source: this.searchRemoteBranches,
+          type: flags.search ? 'autocomplete' : 'list',
           choices: () => {
             console.log('validating');
             sourceBranch = (answers as any).sourceBranch;
@@ -31,7 +44,7 @@ export class MergeRemoteBranches extends Command {
           validate(choices: string) {
             return choices.length > 0;
           }
-        });
+        } as any);
       });
 
     return {

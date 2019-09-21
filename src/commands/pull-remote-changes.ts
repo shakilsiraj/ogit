@@ -7,12 +7,14 @@ import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 import { CommitChangesCommand } from './commit-changes';
 
-export class PullRemoteChanges extends Command {
+export class PullRemoteChangesCommand extends Command {
   static description = 'Pull remote changes from a branch and merge';
 
   static flags = {
     // can pass either --trackingOnly or -t
-    trackingOnly: flags.boolean({ char: 't' })
+    trackingOnly: flags.boolean({ char: 't' }),
+    // can search --search or -s
+    search: flags.boolean({ char: 's' })
   };
 
   async run() {
@@ -25,7 +27,7 @@ export class PullRemoteChanges extends Command {
     }
     if (!mergeCancelled) {
       await CommitChangesCommand.run(['--noSummary']);
-      const { flags } = this.parse(PullRemoteChanges);
+      const { flags } = this.parse(PullRemoteChangesCommand);
       if (flags.trackingOnly) {
         await GitFacade.pullRemoteChanges();
       } else {
@@ -35,16 +37,20 @@ export class PullRemoteChanges extends Command {
   }
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
+    const { flags } = this.parse(PullRemoteChangesCommand);
     const answers: any = await inquirer.prompt([
       {
-        message: 'Select the remote branch to pull changes from',
-        type: 'list',
+        message: flags.search
+          ? 'Name of the remote branch to pull changes from'
+          : 'Select the remote branch to pull changes from',
+        type: flags.search ? 'autocomplete' : 'list',
         choices: this.remoteBranches,
+        source: this.searchRemoteBranches,
         name: 'remoteBranchName',
         validate(choices: string[]) {
           return choices.length > 0;
         }
-      }
+      } as any
     ]);
     return {
       branchNameA: answers.remoteBranchName,
