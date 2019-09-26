@@ -884,15 +884,53 @@ export namespace GitFacade {
    */
   export const cloneRepo = async (
     url: string,
-    dirName: string
+    dirName: string,
+    reference?: string
   ): Promise<void> => {
     try {
       cli.action.start(`Cloning repo ${url}`);
-      await git().then(async g => await g.clone(url, dirName));
+      await git().then(
+        async g =>
+          await g.clone(
+            url,
+            dirName,
+            reference ? ['--branch', reference] : null
+          )
+      );
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
       throw error;
     }
+  };
+
+  export const listRemoteReferences = async (url: string): Promise<any[]> => {
+    let references: any[] = [];
+    try {
+      cli.action.start(`Getting references for ${url}`);
+      await git().then(async g => {
+        const referencesString = await g.listRemote(['--heads', '--tags', url]);
+        referencesString
+          .split('\n')
+          .filter(v => !!v && v.indexOf('^{}') === -1)
+          .forEach(refStr => {
+            // console.log(refStr.split('\t'));
+            const chunks = refStr.split('\t');
+            if (chunks[1].indexOf('refs/') > -1) {
+              references.push({
+                hash: chunks[0],
+                name: chunks[1].replace('refs/', '')
+              });
+            }
+          });
+        // console.log(`referencesString - ${referencesString}`);
+      });
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+
+    return references;
   };
 }
