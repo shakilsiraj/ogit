@@ -34,7 +34,7 @@ export class MergeRemoteBranches extends Command {
           source: this.searchRemoteBranches,
           type: flags.search ? 'autocomplete' : 'list',
           choices: () => {
-            console.log('validating');
+            // console.log('validating');
             sourceBranch = (answers as any).sourceBranch;
             return this.remoteBranches.filter(
               item => item !== (answers as any).sourceBranch
@@ -72,7 +72,7 @@ export class MergeRemoteBranches extends Command {
     await GitFacade.deleteLocalBranch(sourceBranchName);
     await GitFacade.deleteLocalBranch(targetBranchName);
 
-    console.log(sourceBranchName, targetBranchName);
+    // console.log(sourceBranchName, targetBranchName);
   }
 
   async run() {
