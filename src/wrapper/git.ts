@@ -933,4 +933,29 @@ export namespace GitFacade {
 
     return references;
   };
+
+  /**
+   * Adds a tag to the current repo. Only does annotated tagging.
+   * @param name the name of the tag
+   * @param message message for the tag
+   */
+  export const addTag = async (
+    name: string,
+    message: string
+  ): Promise<void> => {
+    const options = ['-a', name];
+    if (message) {
+      options.push('-m', message);
+    }
+    try {
+      cli.action.start(`Tagging branch as ${name}`);
+      await git().then(async g => {
+        await g.tag(options);
+      });
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
