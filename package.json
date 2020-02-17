@@ -21,7 +21,7 @@
     "inquirer-autocomplete-prompt": "^1.0.1",
     "json-object-mapper": "^1.6.0",
     "reflect-metadata": "^0.1.13",
-    "simple-git": "^1.107.0",
+    "simple-git": "^1.131.0",
     "ssh-keygen2": "^0.1.0",
     "terminal-link": "^1.2.0",
     "tslib": "^1.9.3",
