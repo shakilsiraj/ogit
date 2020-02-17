@@ -9,7 +9,7 @@ export default class CheckoutRepoCommand extends Command {
     {
       name: 'url',
       required: true,
-      description: 'URL of git reo'
+      description: 'URL of git repository'
     }
   ];
 
