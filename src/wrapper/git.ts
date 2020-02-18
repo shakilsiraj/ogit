@@ -943,10 +943,7 @@ export namespace GitFacade {
     name: string,
     message: string
   ): Promise<void> => {
-    const options = ['-a', name];
-    if (message) {
-      options.push('-m', message);
-    }
+    const options = ['-a', name, '-m', message];
     try {
       cli.action.start(`Tagging branch as ${name}`);
       await git().then(async g => {

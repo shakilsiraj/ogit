@@ -35,9 +35,12 @@ export default class CreateTagCommand extends Command {
       });
       if (!flags.message) {
         prompts.push({
-          message: 'Please enter the commit message (optional)',
+          message: 'Please enter the commit message',
           type: 'input',
-          name: 'message'
+          name: 'message',
+          validate: (message: string) => {
+            return message && message.length > 0;
+          }
         });
       }
       if (prompts.length > 0) {
