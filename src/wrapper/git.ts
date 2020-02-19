@@ -933,4 +933,86 @@ export namespace GitFacade {
 
     return references;
   };
+
+  /**
+   * Adds a tag to the current repo. Only does annotated tagging.
+   * @param name the name of the tag
+   * @param message message for the tag
+   */
+  export const addTag = async (
+    name: string,
+    message: string
+  ): Promise<void> => {
+    const options = ['-a', name, '-m', message];
+    try {
+      cli.action.start(`Tagging branch as ${name}`);
+      await git().then(async g => {
+        await g.tag(options);
+      });
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Pushes a tag to origin
+   * @param tagName the tag name to push
+   */
+  export const pushTag = async (tagName: string): Promise<void> => {
+    try {
+      cli.action.start(`Pushing tag ${tagName} to origin`);
+      await git().then(async g => await g.push('origin', tagName));
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Pushes all the tags to origin
+   * @param tagName the tag name to push
+   */
+  export const pushAllTags = async (): Promise<void> => {
+    try {
+      cli.action.start(`Pushing all tags to origin`);
+      await git().then(async g => await g.push('origin', '--tags'));
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Deletes the tag from local repo
+   */
+  export const deleteLocalTag = async (tagName: string): Promise<void> => {
+    try {
+      cli.action.start(`Deleting tag ${tagName}`);
+      await git().then(async g => await g.tag(['-d', tagName]));
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Deletes the tag from remote repo
+   */
+  export const deleteRemoteTag = async (tagName: string): Promise<void> => {
+    try {
+      cli.action.start(`Deleting tag ${tagName} from origin`);
+      await git().then(
+        async g => await g.push('origin', `:refs/tags/${tagName}`)
+      );
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
