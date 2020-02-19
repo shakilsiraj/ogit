@@ -955,4 +955,34 @@ export namespace GitFacade {
       throw error;
     }
   };
+
+  /**
+   * Pushes a tag to origin
+   * @param tagName the tag name to push
+   */
+  export const pushTag = async (tagName: string): Promise<void> => {
+    try {
+      cli.action.start(`Pushing tag ${tagName} to origin`);
+      await git().then(async g => await g.push('origin', tagName));
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Pushes all the tags to origin
+   * @param tagName the tag name to push
+   */
+  export const pushAllTags = async (): Promise<void> => {
+    try {
+      cli.action.start(`Pushing all tags to origin`);
+      await git().then(async g => await g.push('origin', '--tags'));
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
