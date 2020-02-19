@@ -985,4 +985,34 @@ export namespace GitFacade {
       throw error;
     }
   };
+
+  /**
+   * Deletes the tag from local repo
+   */
+  export const deleteLocalTag = async (tagName: string): Promise<void> => {
+    try {
+      cli.action.start(`Deleting tag ${tagName}`);
+      await git().then(async g => await g.tag(['-d', tagName]));
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Deletes the tag from remote repo
+   */
+  export const deleteRemoteTag = async (tagName: string): Promise<void> => {
+    try {
+      cli.action.start(`Deleting tag ${tagName} from origin`);
+      await git().then(
+        async g => await g.push('origin', `:refs/tags/${tagName}`)
+      );
+      cli.action.stop();
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
 }
