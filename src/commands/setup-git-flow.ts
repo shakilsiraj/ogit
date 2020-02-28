@@ -72,7 +72,7 @@ export default class SetupGitFlowCommand extends Command {
     let answers: any = {};
     if (!flags.global) {
       prompts.push({
-        message: 'Setting up GitFlow globally??',
+        message: 'Setting up GitFlow globaly?',
         type: 'confirm',
         name: 'global',
         default: false
