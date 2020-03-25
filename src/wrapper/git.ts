@@ -1,7 +1,8 @@
+import { getConfigData } from './git';
 import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
-import cli from 'cli-ux';
+import cli, { config } from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
@@ -882,6 +883,26 @@ export namespace GitFacade {
       const data = await getConfig(config, global);
       cli.action.stop();
       return data ? data.trim() : null;
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Returns the config data by looking into local config first and then global config
+   * @param config name of the config
+   */
+  export const getConfigDataFromAnyWhere = async (
+    config: string
+  ): Promise<string> => {
+    try {
+      cli.action.start(`Getting config ${config}`);
+      let value = await getConfig(config, false);
+      if (!value) {
+        value = await getConfig(config, true);
+      }
+      return value ? value.trim() : null;
     } catch (error) {
       cli.action.stop('failed');
       throw error;
