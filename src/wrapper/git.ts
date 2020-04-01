@@ -1,8 +1,7 @@
-import { getConfigData } from './git';
 import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
-import cli, { config } from 'cli-ux';
+import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
@@ -1050,7 +1049,7 @@ export namespace GitFacade {
    */
   export const pushAllTags = async (): Promise<void> => {
     try {
-      cli.action.start(`Pushing all tags to origin`);
+      cli.action.start('Pushing all tags to origin');
       await git().then(async g => await g.push('origin', '--tags'));
       cli.action.stop();
     } catch (error) {

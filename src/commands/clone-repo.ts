@@ -1,11 +1,8 @@
-import { Command } from '@oclif/command';
+import { Command, flags } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { GitFacade } from '../wrapper/git';
-import { flags } from '@oclif/command';
-import { regExpLiteral } from '@babel/types';
 
 export class CloneRepoCommand extends Command {
-  private references: any;
   static description = 'Clones a remote repo';
   static flags = {
     // can search --search or -s
@@ -19,6 +16,7 @@ export class CloneRepoCommand extends Command {
       description: 'List branches and tags'
     })
   };
+  private references: any;
   async run() {
     const { flags } = this.parse(CloneRepoCommand);
     if (flags.search) {
