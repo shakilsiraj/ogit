@@ -889,6 +889,26 @@ export namespace GitFacade {
   };
 
   /**
+   * Returns the config data by looking into local config first and then global config
+   * @param config name of the config
+   */
+  export const getConfigDataFromAnyWhere = async (
+    config: string
+  ): Promise<string> => {
+    try {
+      cli.action.start(`Getting config ${config}`);
+      let value = await getConfig(config, false);
+      if (!value) {
+        value = await getConfig(config, true);
+      }
+      return value ? value.trim() : null;
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
    * Sets the config data
    * @param config name of the config
    * @param value value of the config
@@ -1029,7 +1049,7 @@ export namespace GitFacade {
    */
   export const pushAllTags = async (): Promise<void> => {
     try {
-      cli.action.start(`Pushing all tags to origin`);
+      cli.action.start('Pushing all tags to origin');
       await git().then(async g => await g.push('origin', '--tags'));
       cli.action.stop();
     } catch (error) {
