@@ -146,20 +146,25 @@ export namespace GitFacade {
 
   /**
    * Returns the list of branches in the current repo.
-   *
+   * @param localsOnly - should only display the local branches
    * @static
    * @memberof GitFacade
    */
-  export const listBranches = async (): Promise<GitBranch[]> => {
+  export const listBranches = async (
+    localsOnly = false
+  ): Promise<GitBranch[]> => {
     const branches: GitBranch[] = [];
-    const remoteBranchesSummary = ObjectMapper.deserialize(
-      GitBranchSummary,
-      await git().then(async g => await g.branch(['-r']))
-    );
-    remoteBranchesSummary.branches.forEach(branch => {
-      branch.isLocal = false;
-      branches.push(branch);
-    });
+
+    if (!localsOnly) {
+      const remoteBranchesSummary = ObjectMapper.deserialize(
+        GitBranchSummary,
+        await git().then(async g => await g.branch(['-r']))
+      );
+      remoteBranchesSummary.branches.forEach(branch => {
+        branch.isLocal = false;
+        branches.push(branch);
+      });
+    }
 
     const localBranchesSummary = ObjectMapper.deserialize(
       GitBranchSummary,
@@ -202,11 +207,21 @@ export namespace GitFacade {
   /**
    * Pushes the local commits to the remote branch
    * @param branchName the remote branch name
+   * @param pushTags should you need to push the tags as well, false by default
    */
-  export const push = async (branchNames: string[]): Promise<void> => {
+  export const push = async (
+    branchNames: string[],
+    pushTags = false
+  ): Promise<void> => {
+    const options = {};
+    if (pushTags) {
+      options['--follow-tags'] = null;
+    }
     try {
       cli.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
-      await git().then(async g => await g.push('origin', ...branchNames));
+      await git().then(
+        async g => await g.push('origin', ...branchNames, options)
+      );
       cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
@@ -741,10 +756,9 @@ export namespace GitFacade {
    * @param branch the remote branch to pull changes from. Defaults to the origin branch
    */
   export const pullRemoteChanges = async (branch?: string): Promise<void> => {
-    const branchName = branch ? branch : 'origin';
     try {
-      cli.action.start(`Pulling changes from ${branchName}`);
-      const options = ['pull', '--no-stat', '-v', branchName];
+      cli.action.start(`Pulling changes from ${branch ? branch : 'origin'}`);
+      const options = ['pull', '--no-stat', '-v', 'origin'];
       if (branch) {
         options.push(branch);
       }

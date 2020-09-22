@@ -38,7 +38,8 @@ export default class CompleteGitFlowCommand extends Command {
     this.config[VERSION_TAG_PREFIX] = await GitFacade.getConfigDataFromAnyWhere(
       VERSION_TAG_PREFIX
     );
-    this.currentBranchName = await GitFacade.getCurrentBranchName();
+    // this.currentBranchName = await GitFacade.getCurrentBranchName();
+    this.currentBranchName = 'release/1.9';
     this.currentBranchPrefix = this.currentBranchName.substring(
       0,
       this.currentBranchName.indexOf('/')
@@ -60,7 +61,7 @@ export default class CompleteGitFlowCommand extends Command {
       prompts[0].message = `Your local branch ${chalk.yellow(
         this.currentBranchName
       )} will be merged into ${chalk.yellow(this.config[NEXT_RELEASE_BRANCH])}`;
-      branchOperation = this.completeFeafureBranchWork;
+      branchOperation = this.completeFeatureBranchWork;
       branchesInfo.branches = [this.config[NEXT_RELEASE_BRANCH]];
     } else if (
       this.currentBranchPrefix === this.config[HOTFIX_BRANCH_NAME] ||
@@ -103,11 +104,34 @@ export default class CompleteGitFlowCommand extends Command {
     }
   }
 
-  private completeFeafureBranchWork = async (branchesInfo): Promise<void> => {
+  private completeFeatureBranchWork = async (branchesInfo): Promise<void> => {
     await PullRemoteChangesCommand.run(['--remote', branchesInfo.branches[0]]);
+    await GitFacade.push(branchesInfo.branches[0]);
   };
 
   private completeReleaseBranchWork = async (branchesInfo): Promise<void> => {
-    console.log('In hotfix branch merge');
+    const currentBranchName = await GitFacade.getCurrentBranchName();
+    const localBranches = await GitFacade.listBranches(true);
+    branchesInfo.branches.forEach(async branchName => {
+      const localBranchName = branchName.substring(branchName.indexOf('/') + 1);
+      const branchMatch = localBranches.find(
+        branch => branch.name === localBranchName
+      );
+      if (!!branchMatch) {
+        await GitFacade.switchBranch(localBranchName);
+        await GitFacade.pullRemoteChanges();
+      } else {
+        await GitFacade.createBranch(localBranchName, localBranchName);
+      }
+      await GitFacade.merge(currentBranchName);
+      if (branchesInfo.tagName) {
+        await GitFacade.addTag(
+          branchesInfo.tagName,
+          `Taged ${branchesInfo.tagName}`
+        );
+      }
+      await GitFacade.push(localBranchName, true);
+      await GitFacade.switchBranch(currentBranchName);
+    });
   };
 }
