@@ -1,7 +1,7 @@
 import {
   PRODUCTION_RELEASE_BRANCH,
   NEXT_RELEASE_BRANCH,
-  FEATURE_BRNACH_NAME,
+  FEATURE_BRANCH_NAME,
   RELEASE_BRANCH_NAME,
   HOTFIX_BRANCH_NAME
 } from './../utils/Constants';
@@ -27,8 +27,8 @@ export default class CreateGitFlowCommand extends Command {
 
   async run() {
     this.config[
-      FEATURE_BRNACH_NAME
-    ] = await GitFacade.getConfigDataFromAnyWhere(FEATURE_BRNACH_NAME);
+      FEATURE_BRANCH_NAME
+    ] = await GitFacade.getConfigDataFromAnyWhere(FEATURE_BRANCH_NAME);
     this.config[
       RELEASE_BRANCH_NAME
     ] = await GitFacade.getConfigDataFromAnyWhere(RELEASE_BRANCH_NAME);
@@ -44,7 +44,7 @@ export default class CreateGitFlowCommand extends Command {
   private getBranchNamePrefix(type: string, config: any): string {
     switch (type) {
       case 'feature':
-        return config[FEATURE_BRNACH_NAME];
+        return config[FEATURE_BRANCH_NAME];
       case 'release':
         return config[RELEASE_BRANCH_NAME];
       case 'hotfix':

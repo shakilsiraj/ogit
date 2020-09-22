@@ -1,7 +1,7 @@
 import {
   PRODUCTION_RELEASE_BRANCH,
   NEXT_RELEASE_BRANCH,
-  FEATURE_BRNACH_NAME,
+  FEATURE_BRANCH_NAME,
   RELEASE_BRANCH_NAME,
   HOTFIX_BRANCH_NAME,
   VERSION_TAG_PREFIX
@@ -159,7 +159,7 @@ export default class SetupGitFlowCommand extends Command {
       options.global
     );
     await GitFacade.setConfigData(
-      FEATURE_BRNACH_NAME,
+      FEATURE_BRANCH_NAME,
       options.feature,
       options.global
     );

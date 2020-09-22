@@ -14,7 +14,8 @@ export class PullRemoteChangesCommand extends Command {
     // can pass either --trackingOnly or -t
     trackingOnly: flags.boolean({ char: 't' }),
     // can search --search or -s
-    search: flags.boolean({ char: 's' })
+    search: flags.boolean({ char: 's' }),
+    remote: flags.string()
   };
 
   async run() {
@@ -38,24 +39,31 @@ export class PullRemoteChangesCommand extends Command {
 
   public async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const { flags } = this.parse(PullRemoteChangesCommand);
-    const answers: any = await inquirer.prompt([
-      {
-        message: flags.search
-          ? 'Name of the remote branch to pull changes from'
-          : 'Select the remote branch to pull changes from',
-        type: flags.search ? 'autocomplete' : 'list',
-        choices: this.remoteBranches,
-        source: this.searchRemoteBranches,
-        name: 'remoteBranchName',
-        validate(choices: string[]) {
-          return choices.length > 0;
-        }
-      } as any
-    ]);
-    return {
-      branchNameA: answers.remoteBranchName,
-      branchNameB: undefined
-    };
+    if (flags.remote) {
+      return {
+        branchNameA: flags.remote,
+        branchNameB: undefined
+      };
+    } else {
+      const answers: any = await inquirer.prompt([
+        {
+          message: flags.search
+            ? 'Name of the remote branch to pull changes from'
+            : 'Select the remote branch to pull changes from',
+          type: flags.search ? 'autocomplete' : 'list',
+          choices: this.remoteBranches,
+          source: this.searchRemoteBranches,
+          name: 'remoteBranchName',
+          validate(choices: string[]) {
+            return choices.length > 0;
+          }
+        } as any
+      ]);
+      return {
+        branchNameA: answers.remoteBranchName,
+        branchNameB: undefined
+      };
+    }
   }
   public async preformBranchOperation(
     branchInfo: BranchNamePairStructure

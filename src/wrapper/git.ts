@@ -741,9 +741,10 @@ export namespace GitFacade {
    * @param branch the remote branch to pull changes from. Defaults to the origin branch
    */
   export const pullRemoteChanges = async (branch?: string): Promise<void> => {
+    const branchName = branch ? branch : 'origin';
     try {
-      cli.action.start(`Pulling changes from ${branch ? branch : 'origin'}`);
-      const options = ['pull', '--no-stat', '-v', 'origin'];
+      cli.action.start(`Pulling changes from ${branchName}`);
+      const options = ['pull', '--no-stat', '-v', branchName];
       if (branch) {
         options.push(branch);
       }
@@ -893,17 +894,19 @@ export namespace GitFacade {
    * @param config name of the config
    */
   export const getConfigDataFromAnyWhere = async (
-    config: string
+    config: string,
+    silent = true
   ): Promise<string> => {
     try {
-      cli.action.start(`Getting config ${config}`);
+      if (!silent) cli.action.start(`Getting config ${config}`);
       let value = await getConfig(config, false);
+      if (!silent) cli.action.stop();
       if (!value) {
         value = await getConfig(config, true);
       }
       return value ? value.trim() : null;
     } catch (error) {
-      cli.action.stop('failed');
+      if (!silent) cli.action.stop('failed');
       throw error;
     }
   };
