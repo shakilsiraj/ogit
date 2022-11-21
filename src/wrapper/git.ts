@@ -1,7 +1,7 @@
 import { GitStatus, ChangeTypes } from '../models/GitStatus';
 import * as SimpleGit from 'simple-git/promise';
 import { ObjectMapper } from 'json-object-mapper';
-import cli from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
@@ -82,13 +82,13 @@ export namespace GitFacade {
   export const initialize = async (): Promise<boolean> => {
     let success = false;
     try {
-      cli.action.start('Initializing git repo');
+      CliUx.ux.action.start('Initializing git repo');
       if (!(await git().then(async g => await g.checkIsRepo()))) {
         await git().then(async g => await g.init());
         success = true;
-        cli.action.stop();
+        CliUx.ux.action.stop();
       } else {
-        cli.action.stop(
+        CliUx.ux.action.stop(
           'Skipping initialization as the directiory is already a git repo!'
         );
       }
@@ -117,27 +117,27 @@ export namespace GitFacade {
     const branch = 'master';
     await initialize();
     try {
-      cli.action.start('Adding remote origin to ' + url, '', { stdout: false });
+      CliUx.ux.action.start('Adding remote origin to ' + url, '', { stdout: false });
       const originUrl = await GitFacade.originUrl();
       if (originUrl) {
-        cli.action.stop('failed as remote origin already exists!');
+        CliUx.ux.action.stop('failed as remote origin already exists!');
       } else {
         await git().then(async g => await g.addRemote('origin', url));
         success = true;
-        cli.action.stop();
+        CliUx.ux.action.stop();
       }
     } catch (error) {
-      cli.action.stop(
+      CliUx.ux.action.stop(
         `Call to setup git repo failed with message: ${error.message}`
       );
     }
     if (success) {
       try {
-        cli.action.start('Pulling down repository');
+        CliUx.ux.action.start('Pulling down repository');
         await git().then(async g => await g.pull('origin', branch));
-        cli.action.stop();
+        CliUx.ux.action.stop();
       } catch (error) {
-        cli.action.stop(
+        CliUx.ux.action.stop(
           `Pulling down branch failed with message: ${error.message}`
         );
       }
@@ -186,11 +186,11 @@ export namespace GitFacade {
       options['--no-verify'] = null;
     }
     try {
-      cli.action.start('Committing changes');
+      CliUx.ux.action.start('Committing changes');
       const commitResult = await git().then(
         async g => await g.commit(message, fileNames, options)
       );
-      cli.action.stop();
+      CliUx.ux.action.stop();
       return commitResult;
     } catch (error) {
       throw new Error(
@@ -205,11 +205,11 @@ export namespace GitFacade {
    */
   export const push = async (branchNames: string[]): Promise<void> => {
     try {
-      cli.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
+      CliUx.ux.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
       await git().then(async g => await g.push('origin', ...branchNames));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw new Error(
         `Call to push changes failed with message: ${error.message}`
       );
@@ -224,9 +224,9 @@ export namespace GitFacade {
    */
   export const addToRepo = async (filePath: string): Promise<void> => {
     try {
-      cli.action.start(`Adding file to repo ${filePath} `);
+      CliUx.ux.action.start(`Adding file to repo ${filePath} `);
       await git().then(async g => await g.add(filePath));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
       throw new Error(
         `Call to add file to repo failed with message: ${error.message}`
@@ -253,14 +253,14 @@ export namespace GitFacade {
   ): Promise<SimpleGit.CommitSummary> => {
     let summary: SimpleGit.CommitSummary;
 
-    cli.action.start(`Updating last comment to ${message}`);
+    CliUx.ux.action.start(`Updating last comment to ${message}`);
     summary = await git().then(
       async g =>
         await g.commit(message, filePaths, {
           '--amend': null
         })
     );
-    cli.action.stop();
+    CliUx.ux.action.stop();
 
     return summary;
   };
@@ -336,9 +336,9 @@ export namespace GitFacade {
    */
   export const revertCommit = async (hash: string): Promise<void> => {
     const commitMessage = await getMessageFromCommitHash(hash);
-    cli.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
+    CliUx.ux.action.start(`Reverting commit ${hash} with subject ${commitMessage}`);
     await git().then(async g => await g.raw(['reset', '--soft', `${hash}~`]));
-    cli.action.stop();
+    CliUx.ux.action.stop();
   };
 
   /**
@@ -349,9 +349,9 @@ export namespace GitFacade {
    */
   export const deleteCommit = async (hash: string): Promise<void> => {
     const commitMessage = await getMessageFromCommitHash(hash);
-    cli.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
+    CliUx.ux.action.start(`Deleting commit ${hash} with subject ${commitMessage}`);
     await git().then(async g => await g.raw(['reset', '--hard', `${hash}~`]));
-    cli.action.stop();
+    CliUx.ux.action.stop();
   };
 
   /**
@@ -364,12 +364,12 @@ export namespace GitFacade {
     branchName: string,
     remoteBranchName: string
   ): Promise<void> => {
-    cli.action.start(`Creating a local branch ${branchName}`);
+    CliUx.ux.action.start(`Creating a local branch ${branchName}`);
     await git().then(
       async g =>
         await g.checkout(['-b', branchName, '--track', remoteBranchName])
     );
-    cli.action.stop();
+    CliUx.ux.action.stop();
   };
 
   /**
@@ -383,13 +383,13 @@ export namespace GitFacade {
     newName: string
   ): Promise<void> => {
     try {
-      cli.action.start(`Renaming local branch ${currantName} to ${newName}`);
+      CliUx.ux.action.start(`Renaming local branch ${currantName} to ${newName}`);
       await git().then(
         async g => await g.raw(['branch', '-m', currantName, newName])
       );
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw new Error(
         `Call to rename branch failed with message: ${error.message}`
       );
@@ -404,12 +404,12 @@ export namespace GitFacade {
    * @memberof GitFacade
    */
   export const switchBranch = async (branchName: string): Promise<void> => {
-    cli.action.start(`Switching to branch ${branchName}`);
+    CliUx.ux.action.start(`Switching to branch ${branchName}`);
     try {
       await git().then(async g => await g.checkout(branchName));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (err) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       const errorRegex = /checkout:\n((.+\n)+)Please/;
       const fileNames = errorRegex.exec(err.message)[1].trim();
       err.fileNamesArray = fileNames.split('\n').sort();
@@ -436,12 +436,12 @@ export namespace GitFacade {
   export const deleteLocalBranch = async (
     branchName: string
   ): Promise<void> => {
-    cli.action.start(`Deleting local branch ${branchName}`);
+    CliUx.ux.action.start(`Deleting local branch ${branchName}`);
     try {
       await git().then(async g => await g.raw(['branch', '-D', branchName]));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (e) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw e;
     }
   };
@@ -452,14 +452,14 @@ export namespace GitFacade {
   export const deleteRemoteBranch = async (
     branchName: string
   ): Promise<void> => {
-    cli.action.start(`Deleting remote branch ${branchName}`);
+    CliUx.ux.action.start(`Deleting remote branch ${branchName}`);
     try {
       await git().then(
         async g => await g.raw(['push', 'origin', '--delete', branchName])
       );
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -469,7 +469,7 @@ export namespace GitFacade {
    *
    */
   export const clearStash = async (): Promise<void> => {
-    cli.action.start('Removing all stashed changes');
+    CliUx.ux.action.start('Removing all stashed changes');
     try {
       await git().then(
         async g =>
@@ -477,9 +477,9 @@ export namespace GitFacade {
             clear: null
           })
       );
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -572,16 +572,16 @@ export namespace GitFacade {
     stashNumber: number,
     message: string
   ): Promise<void> => {
-    cli.action.start(`Deleting stash ${message}`);
+    CliUx.ux.action.start(`Deleting stash ${message}`);
     const deleteStashCommandOptions: any = {
       drop: null
     };
     deleteStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
       await git().then(async g => await g.stash(deleteStashCommandOptions));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -594,7 +594,7 @@ export namespace GitFacade {
     message: string,
     remove = true
   ): Promise<void> => {
-    cli.action.start(`Unstashing changes for ${message}`);
+    CliUx.ux.action.start(`Unstashing changes for ${message}`);
     const unStashCommandOptions: any = [];
     if (remove) {
       unStashCommandOptions.push('pop');
@@ -604,9 +604,9 @@ export namespace GitFacade {
     unStashCommandOptions[`stash@{${stashNumber}}`] = null;
     try {
       await git().then(async g => await g.stash(unStashCommandOptions));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       const errorRegex = /merge:\n((.+\n)+)Please/;
       const fileNames = errorRegex.exec(error.message)[1].trim();
       error.fileNamesArray = fileNames.split('\n').sort();
@@ -625,7 +625,7 @@ export namespace GitFacade {
     fileNames: string[],
     partial = true
   ) => {
-    cli.action.start(`Stashing changes for ${message}`);
+    CliUx.ux.action.start(`Stashing changes for ${message}`);
     let commandList: string[];
     if (partial) {
       commandList = ['stash', 'push', '-m', message, '--'];
@@ -639,7 +639,7 @@ export namespace GitFacade {
     try {
       await git().then(async g => await g.raw(commandList));
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -649,11 +649,11 @@ export namespace GitFacade {
    */
   export const syncRemoteBranches = async () => {
     try {
-      cli.action.start('Resyncing remote branches');
+      CliUx.ux.action.start('Resyncing remote branches');
       await git().then(async g => await g.raw(['fetch', 'origin', '--prune']));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -664,7 +664,7 @@ export namespace GitFacade {
    */
   export const revertFile = async (file: GitFile) => {
     try {
-      cli.action.start(`Reverting file ${file.path}`);
+      CliUx.ux.action.start(`Reverting file ${file.path}`);
       if (file.changeType === ChangeTypes.New) {
         await git().then(async g => await g.raw(['clean', '-f', file.path]));
       } else if (file.changeType === ChangeTypes.Added) {
@@ -673,9 +673,9 @@ export namespace GitFacade {
       } else {
         await git().then(async g => await g.checkout(['--', file.path]));
       }
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -686,11 +686,11 @@ export namespace GitFacade {
   export const tags = async (): Promise<SimpleGit.TagResult> => {
     let tags: SimpleGit.TagResult;
     try {
-      cli.action.start('Retrieving tag names');
+      CliUx.ux.action.start('Retrieving tag names');
       tags = await git().then(async g => await g.tags());
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
     return tags;
@@ -707,11 +707,11 @@ export namespace GitFacade {
     strategy: string
   ): Promise<void> => {
     try {
-      cli.action.start(`Reseting current HEAD to ${pointer}`);
+      CliUx.ux.action.start(`Reseting current HEAD to ${pointer}`);
       await git().then(async g => await g.raw(['reset', strategy, pointer]));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -722,14 +722,14 @@ export namespace GitFacade {
   export const filesWithMergeConflicts = async (): Promise<string[]> => {
     let fileNamesList: string[];
     try {
-      cli.action.start('Retrieving file names with merge conflict');
+      CliUx.ux.action.start('Retrieving file names with merge conflict');
       const fileNames = await git().then(
         async g => await g.diff(['--name-only', '--diff-filter=U'])
       );
       fileNamesList = fileNames.split('\n').filter(n => n);
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
 
@@ -742,15 +742,15 @@ export namespace GitFacade {
    */
   export const pullRemoteChanges = async (branch?: string): Promise<void> => {
     try {
-      cli.action.start(`Pulling changes from ${branch ? branch : 'origin'}`);
+      CliUx.ux.action.start(`Pulling changes from ${branch ? branch : 'origin'}`);
       const options = ['pull', '--no-stat', '-v', 'origin'];
       if (branch) {
         options.push(branch);
       }
       await git().then(async g => await g.raw(options));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -768,7 +768,7 @@ export namespace GitFacade {
       acceptRemote ? 'remote' : 'local'
     } changes for ${filePath !== '.' ? filePath : 'all conflicted files'}`;
     try {
-      cli.action.start(commitMessage);
+      CliUx.ux.action.start(commitMessage);
       const checkoutOptions = ['checkout'];
       if (acceptRemote) {
         checkoutOptions.push('--theirs');
@@ -781,9 +781,9 @@ export namespace GitFacade {
       if (filePath === '.') {
         await autoCommit(commitMessage);
       }
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -800,11 +800,11 @@ export namespace GitFacade {
    */
   export const cancelMerge = async (): Promise<void> => {
     try {
-      cli.action.start('Cancelling merge attempt');
+      CliUx.ux.action.start('Cancelling merge attempt');
       await git().then(async g => await g.merge(['--abort']));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -818,16 +818,16 @@ export namespace GitFacade {
     message = ''
   ): Promise<void> => {
     try {
-      cli.action.start(`Merging branch ${branchName}`);
+      CliUx.ux.action.start(`Merging branch ${branchName}`);
       const mergeCommandParams: any[] = [];
       if (message) {
         mergeCommandParams.push('-m', message);
       }
       mergeCommandParams.push('--no-ff', branchName);
       await git().then(async g => await g.merge(mergeCommandParams));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -878,12 +878,12 @@ export namespace GitFacade {
     global = true
   ): Promise<string> => {
     try {
-      cli.action.start(`Getting config ${config}`);
+      CliUx.ux.action.start(`Getting config ${config}`);
       const data = await getConfig(config, global);
-      cli.action.stop();
+      CliUx.ux.action.stop();
       return data ? data.trim() : null;
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -896,14 +896,14 @@ export namespace GitFacade {
     config: string
   ): Promise<string> => {
     try {
-      cli.action.start(`Getting config ${config}`);
+      CliUx.ux.action.start(`Getting config ${config}`);
       let value = await getConfig(config, false);
       if (!value) {
         value = await getConfig(config, true);
       }
       return value ? value.trim() : null;
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -920,11 +920,11 @@ export namespace GitFacade {
     global = true
   ): Promise<void> => {
     try {
-      cli.action.start(`Setting config ${config}`);
+      CliUx.ux.action.start(`Setting config ${config}`);
       await setConfig(config, value, global);
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -935,13 +935,13 @@ export namespace GitFacade {
    */
   export const generateSSHKeys = async (options: any): Promise<any> => {
     return new Promise((resolve, reject) => {
-      cli.action.start(`Generating SSH Keys ${options.location} `);
+      CliUx.ux.action.start(`Generating SSH Keys ${options.location} `);
       keygen(options, (err: any, pairs: any) => {
         if (err) {
-          cli.action.stop('failed');
+          CliUx.ux.action.stop('failed');
           reject(err);
         } else {
-          cli.action.stop();
+          CliUx.ux.action.stop();
           resolve(pairs);
         }
       });
@@ -960,7 +960,7 @@ export namespace GitFacade {
     reference?: string
   ): Promise<void> => {
     try {
-      cli.action.start(`Cloning repo ${url}`);
+      CliUx.ux.action.start(`Cloning repo ${url}`);
       await git().then(
         async g =>
           await g.clone(
@@ -969,9 +969,9 @@ export namespace GitFacade {
             reference ? ['--branch', reference] : null
           )
       );
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -979,7 +979,7 @@ export namespace GitFacade {
   export const listRemoteReferences = async (url: string): Promise<any[]> => {
     let references: any[] = [];
     try {
-      cli.action.start(`Getting references for ${url}`);
+      CliUx.ux.action.start(`Getting references for ${url}`);
       await git().then(async g => {
         const referencesString = await g.listRemote(['--heads', '--tags', url]);
         referencesString
@@ -997,9 +997,9 @@ export namespace GitFacade {
           });
         // console.log(`referencesString - ${referencesString}`);
       });
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
 
@@ -1017,13 +1017,13 @@ export namespace GitFacade {
   ): Promise<void> => {
     const options = ['-a', name, '-m', message];
     try {
-      cli.action.start(`Tagging branch as ${name}`);
+      CliUx.ux.action.start(`Tagging branch as ${name}`);
       await git().then(async g => {
         await g.tag(options);
       });
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -1034,11 +1034,11 @@ export namespace GitFacade {
    */
   export const pushTag = async (tagName: string): Promise<void> => {
     try {
-      cli.action.start(`Pushing tag ${tagName} to origin`);
+      CliUx.ux.action.start(`Pushing tag ${tagName} to origin`);
       await git().then(async g => await g.push('origin', tagName));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -1049,11 +1049,11 @@ export namespace GitFacade {
    */
   export const pushAllTags = async (): Promise<void> => {
     try {
-      cli.action.start('Pushing all tags to origin');
+      CliUx.ux.action.start('Pushing all tags to origin');
       await git().then(async g => await g.push('origin', '--tags'));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -1063,11 +1063,11 @@ export namespace GitFacade {
    */
   export const deleteLocalTag = async (tagName: string): Promise<void> => {
     try {
-      cli.action.start(`Deleting tag ${tagName}`);
+      CliUx.ux.action.start(`Deleting tag ${tagName}`);
       await git().then(async g => await g.tag(['-d', tagName]));
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
@@ -1077,13 +1077,13 @@ export namespace GitFacade {
    */
   export const deleteRemoteTag = async (tagName: string): Promise<void> => {
     try {
-      cli.action.start(`Deleting tag ${tagName} from origin`);
+      CliUx.ux.action.start(`Deleting tag ${tagName} from origin`);
       await git().then(
         async g => await g.push('origin', `:refs/tags/${tagName}`)
       );
-      cli.action.stop();
+      CliUx.ux.action.stop();
     } catch (error) {
-      cli.action.stop('failed');
+      CliUx.ux.action.stop('failed');
       throw error;
     }
   };
