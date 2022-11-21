@@ -67,7 +67,7 @@ export class CloneRepoCommand extends Command {
         }
       });
     if (answers) {
-      answers = Object.assign(answers, firstSetOfAnswers);
+      answers = {...answers, ...firstSetOfAnswers};
     } else {
       answers = firstSetOfAnswers;
     }

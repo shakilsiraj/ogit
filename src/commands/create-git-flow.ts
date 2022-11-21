@@ -26,39 +26,21 @@ export default class CreateGitFlowCommand extends Command {
   };
 
   async run() {
-    this.config[
-      FEATURE_BRNACH_NAME
-    ] = await GitFacade.getConfigDataFromAnyWhere(FEATURE_BRNACH_NAME);
-    this.config[
-      RELEASE_BRANCH_NAME
-    ] = await GitFacade.getConfigDataFromAnyWhere(RELEASE_BRANCH_NAME);
+    this.config[FEATURE_BRNACH_NAME] = await GitFacade.getConfigDataFromAnyWhere(FEATURE_BRNACH_NAME);
+    this.config[RELEASE_BRANCH_NAME] = await GitFacade.getConfigDataFromAnyWhere(RELEASE_BRANCH_NAME);
     this.config[HOTFIX_BRANCH_NAME] = await GitFacade.getConfigDataFromAnyWhere(
       HOTFIX_BRANCH_NAME
     );
-    this.config[
-      NEXT_RELEASE_BRANCH
-    ] = await GitFacade.getConfigDataFromAnyWhere(NEXT_RELEASE_BRANCH);
+    this.config[NEXT_RELEASE_BRANCH] = await GitFacade.getConfigDataFromAnyWhere(NEXT_RELEASE_BRANCH);
     await super.runHelper();
-  }
-
-  private getBranchNamePrefix(type: string, config: any): string {
-    switch (type) {
-      case 'feature':
-        return config[FEATURE_BRNACH_NAME];
-      case 'release':
-        return config[RELEASE_BRANCH_NAME];
-      case 'hotfix':
-        return config[HOTFIX_BRANCH_NAME];
-      default:
-        return '';
-    }
   }
 
   async getSelectedBranch(): Promise<BranchNamePairStructure> {
     const localBranches = this.localBranches;
     const { flags } = this.parse(CreateGitFlowCommand);
     const prompts = [];
-    let localBranchName: string, brnachType: string;
+    let localBranchName: string;
+    let brnachType: string;
     let answers: any = {};
     if (!flags.type) {
       prompts.push({
@@ -140,5 +122,18 @@ export default class CreateGitFlowCommand extends Command {
       branchInfo.branchNameA,
       branchInfo.branchNameB
     );
+  }
+
+  private getBranchNamePrefix(type: string, config: any): string {
+    switch (type) {
+      case 'feature':
+        return config[FEATURE_BRNACH_NAME];
+      case 'release':
+        return config[RELEASE_BRANCH_NAME];
+      case 'hotfix':
+        return config[HOTFIX_BRANCH_NAME];
+      default:
+        return '';
+    }
   }
 }
