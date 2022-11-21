@@ -5,7 +5,7 @@ import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
-const keygen = require('ssh-keygen2');
+const keygen = require('@andrewwlane/ssh-keygen2');
 /**
  * Wrapper class for git commands.
  *
