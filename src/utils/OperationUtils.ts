@@ -1,8 +1,8 @@
 import { GitFile } from './../models/GitFile';
 import { ChangeTypes } from '../models';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
-const chalk = require('chalk');
+import inquirer from 'inquirer';
+import chalk from 'chalk';
 
 /* tslint:disable:no-unnecessary-class */
 export class OperationUtils {

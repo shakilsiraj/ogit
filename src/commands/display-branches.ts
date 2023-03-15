@@ -1,7 +1,7 @@
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
-const columnify = require('columnify');
+import columnify from 'columnify';
 
 export default class DisplayBranchesCommand extends Command {
   static description = 'Lists the branches within the current repo';

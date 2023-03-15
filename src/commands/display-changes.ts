@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-const terminalLink = require('terminal-link');
-const chalk = require('chalk');
-const columnify = require('columnify');
+import terminalLink from 'terminal-link';
+import chalk from 'chalk';
+import columnify from 'columnify';
 import { GitFacade } from '../wrapper/git';
 import { Command } from '@oclif/command';
 import { GitStatus } from '../models';

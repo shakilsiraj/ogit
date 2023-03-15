@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { GitFacade } from '../git';
 import * as fs from 'fs';
 import * as SimpleGit from 'simple-git/promise';
-import uuid = require('uuid');
+import {v4 as uuidv4} from 'uuid';
 import { GitFile, ChangeTypes } from '../../models';
 
 xdescribe('ogit', () => {
@@ -10,7 +10,7 @@ xdescribe('ogit', () => {
     describe('git', () => {
       describe('status', () => {
         it('should return a list of created files when a file has created', async done => {
-          const fileName = uuid.v4() + '.txt';
+          const fileName = uuidv4() + '.txt';
           createAndWriteToFile(fileName);
           const status = await GitFacade.status();
           status.created.forEach(async stat => {
@@ -41,7 +41,7 @@ xdescribe('ogit', () => {
           });
         });
         it('should return a list of added files when a file has been added', async done => {
-          const fileName = uuid.v4() + '.txt';
+          const fileName = uuidv4() + '.txt';
           createAndWriteToFile(fileName);
           await SimpleGit().raw(['add', '.']);
           const status = await GitFacade.status();
@@ -115,13 +115,13 @@ xdescribe('ogit', () => {
 
       describe('addToRepo', () => {
         it('should be able to add new files', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
           await GitFacade.addToRepo(file2);
-          const file3 = uuid.v4() + '.txt';
+          const file3 = uuidv4() + '.txt';
           createAndWriteToFile(file3);
           await GitFacade.addToRepo(file3);
           const status = await GitFacade.status();
@@ -171,13 +171,13 @@ xdescribe('ogit', () => {
       describe('ammendLastCommit', () => {
         it('should amend a new file to the commit', async () => {
           const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
           const message =
             'testing ammendLastCommit > should add a new file to the commit';
           await GitFacade.commit(message, [file1], true);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
           await GitFacade.addToRepo(file2);
           const commitSummary = await GitFacade.ammendLastCommit(
@@ -218,7 +218,7 @@ xdescribe('ogit', () => {
       describe('revertCommit', () => {
         it('should keep the files in fileSystem', async () => {
           const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
           const message =
@@ -232,7 +232,7 @@ xdescribe('ogit', () => {
         });
         it('should cleanup the hash from repo', async () => {
           const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
           const message =
@@ -255,7 +255,7 @@ xdescribe('ogit', () => {
       describe('deleteCommit', () => {
         it('should delete the files in fileSystem', async () => {
           const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
           const message =
@@ -269,7 +269,7 @@ xdescribe('ogit', () => {
         });
         it('should cleanup the hash from repo', async () => {
           const lastCommitHashBeforeTest = await GitFacade.getLastCommitHash();
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
           const message =
@@ -291,7 +291,7 @@ xdescribe('ogit', () => {
 
       describe('createBranch', () => {
         it('should be able to create a new branch', async done => {
-          const newBranchName = 'branch_' + uuid.v4();
+          const newBranchName = 'branch_' + uuidv4();
           await GitFacade.createBranch(newBranchName, 'origin/develop');
 
           const branches = await GitFacade.listBranches();
@@ -307,7 +307,7 @@ xdescribe('ogit', () => {
 
       describe('switchBranch', () => {
         it('should be able to switch to a new branch', async () => {
-          const newBranchName = 'branch_' + uuid.v4();
+          const newBranchName = 'branch_' + uuidv4();
           const currentBranchName = await GitFacade.getCurrentBranchName();
           await GitFacade.createBranch(newBranchName, 'origin/develop');
 
@@ -333,7 +333,7 @@ xdescribe('ogit', () => {
 
       describe('deleteLocalBranch', () => {
         it('should be able to delete a local branch', async () => {
-          const newBranchName = 'branch_' + uuid.v4();
+          const newBranchName = 'branch_' + uuidv4();
           await GitFacade.createBranch(newBranchName, 'origin/develop');
 
           await GitFacade.deleteLocalBranch(newBranchName);
@@ -342,7 +342,7 @@ xdescribe('ogit', () => {
 
       describe('stash', () => {
         it('clearStash should clear all the stashed changes', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await SimpleGit().raw(['stash', '-u']);
           expect(fs.existsSync(file1)).toBeFalsy();
@@ -353,9 +353,9 @@ xdescribe('ogit', () => {
 
       describe('getStashes', () => {
         it('should return a list of stash entries', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
           await SimpleGit().raw(['stash', '-u', '-m getStashes test']);
           const stashes = await GitFacade.getStashes();
@@ -373,12 +373,12 @@ xdescribe('ogit', () => {
 
       describe('deleteStash', () => {
         it('should delete a stash entry based on number', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
           await SimpleGit().raw(['stash', '-u', '-m deleteStash test1']);
-          const file3 = uuid.v4() + '.txt';
+          const file3 = uuidv4() + '.txt';
           createAndWriteToFile(file3);
           await SimpleGit().raw(['stash', '-u', '-m deleteStash test2']);
           await GitFacade.deleteStash(1, '');
@@ -397,9 +397,9 @@ xdescribe('ogit', () => {
 
       describe('unstash', () => {
         it('should pop a stash entry based on number', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
           await SimpleGit().raw(['stash', '-u', '-m unstash test1']);
           await GitFacade.unstash(0, '');
@@ -410,12 +410,12 @@ xdescribe('ogit', () => {
           fs.unlinkSync(file2);
         });
         it('should leave the other stash entries intact', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
           await SimpleGit().raw(['stash', '-u', '-m unstash test1']);
-          const file3 = uuid.v4() + '.txt';
+          const file3 = uuidv4() + '.txt';
           createAndWriteToFile(file3);
           await SimpleGit().raw(['stash', '-u', '-m unstash test2']);
           await GitFacade.unstash(1, '');
@@ -437,11 +437,11 @@ xdescribe('ogit', () => {
       });
       describe('stash', () => {
         it('should stash a partial selection of files', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
-          const file3 = uuid.v4() + '.txt';
+          const file3 = uuidv4() + '.txt';
           createAndWriteToFile(file3);
 
           await GitFacade.stash('test stash1', [file1, file2]);
@@ -462,11 +462,11 @@ xdescribe('ogit', () => {
           fs.unlinkSync(file3);
         });
         it('should stash all the files', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
-          const file2 = uuid.v4() + '.txt';
+          const file2 = uuidv4() + '.txt';
           createAndWriteToFile(file2);
-          const file3 = uuid.v4() + '.txt';
+          const file3 = uuidv4() + '.txt';
           createAndWriteToFile(file3);
 
           await GitFacade.stash('test stash2', [file1, file2, file3], false);
@@ -484,7 +484,7 @@ xdescribe('ogit', () => {
 
       describe('revertFile', () => {
         it('should be able to delete an un-stages file', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
 
           const gitFile = new GitFile(file1, ' ', ChangeTypes.New);
@@ -493,7 +493,7 @@ xdescribe('ogit', () => {
         });
 
         it('should be able to delete a newly added file', async () => {
-          const file1 = uuid.v4() + '.txt';
+          const file1 = uuidv4() + '.txt';
           createAndWriteToFile(file1);
           await GitFacade.addToRepo(file1);
           const gitFile = new GitFile(file1, ' ', ChangeTypes.Added);

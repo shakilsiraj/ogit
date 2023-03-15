@@ -11,8 +11,8 @@ import Command, {
 import 'reflect-metadata';
 import { GitFacade } from '../wrapper/git';
 import { flags } from '@oclif/command';
-import inquirer = require('inquirer');
-const chalk = require('chalk');
+import inquirer from 'inquirer';
+import chalk from 'chalk';
 
 export default class CreateGitFlowCommand extends Command {
   static description = 'Starts GitFlow branching model workflow';

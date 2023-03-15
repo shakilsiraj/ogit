@@ -32,7 +32,7 @@ export class UnStashCommand extends Command {
         selectedStash.stashName,
         answers.removeAfterApplying
       );
-    } catch (error) {
+    } catch (error:any) {
       console.log('Unstashing conflicts with the following files:');
       for (let i = 0; i < error.fileNamesArray.length; i++) {
         console.log(error.fileNamesArray[i]);

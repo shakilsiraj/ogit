@@ -1,7 +1,7 @@
 import { GitStatus } from './../models/GitStatus';
 import { Command } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export default class PushCommits extends Command {
   static description = 'Pushes local commits to the remote repo';

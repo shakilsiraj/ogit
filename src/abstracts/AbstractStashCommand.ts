@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import { GitStatus } from '../models';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 import { FileNameUtils } from '../utils/FileNameUtils';
 
 export default abstract class extends Command {

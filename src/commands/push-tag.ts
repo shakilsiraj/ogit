@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { GitFacade } from '../wrapper/git';
 import { Command, flags } from '@oclif/command';
-import inquirer = require('inquirer');
+import inquirer from 'inquirer';
 
 export default class PushTagCommand extends Command {
   static description = 'Pushes local tag(s) to origin';

@@ -3,7 +3,7 @@ import Command, {
 } from '../abstracts/AbstractBranchCommand';
 import { GitFacade } from '../wrapper/git';
 import { flags } from '@oclif/command';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export class CreateBranchCommand extends Command {
   static description = 'Creates a new local branch from a remote branch';

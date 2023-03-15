@@ -1,7 +1,7 @@
 import { GitFile } from './../models/GitFile';
 import 'reflect-metadata';
 import { Command } from '@oclif/command';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 import { GitStatus, ChangeTypes } from '../models';
 import { GitFacade } from '../wrapper/git';
 import { FileNameUtils } from '../utils/FileNameUtils';
@@ -48,7 +48,7 @@ export default abstract class extends Command {
   }
 
   public abstract getPrompts(): Promise<any[]>;
-  public abstract async runCommit(
+  public abstract runCommit(
     message: string,
     fileNames: string[],
     skipValidation: boolean

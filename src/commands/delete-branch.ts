@@ -2,7 +2,7 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export class DeleteBranchCommand extends Command {
   static description = 'Deletes a branch from the repo';

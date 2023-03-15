@@ -2,7 +2,7 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { flags } from '@oclif/command';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 import { CommitChangesCommand } from './commit-changes';
@@ -65,7 +65,7 @@ export class PullRemoteChangesCommand extends Command {
       await GitFacade.pullRemoteChanges(
         remoteBranchName.substring(remoteBranchName.indexOf('/') + 1)
       );
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
       const conflictedFiles = await GitFacade.filesWithMergeConflicts();
       if (conflictedFiles) {

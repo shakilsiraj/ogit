@@ -2,8 +2,8 @@ import 'reflect-metadata';
 import { Command } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
 import { GitBranch } from '../models';
-const chalk = require('chalk');
-import * as inquirer from 'inquirer';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
 
 export default abstract class extends Command {
   protected localBranches: string[] = [];
@@ -49,8 +49,8 @@ export default abstract class extends Command {
     await this.preformBranchOperation(await this.getSelectedBranch());
   }
 
-  public abstract async getSelectedBranch(): Promise<BranchNamePairStructure>;
-  public abstract async preformBranchOperation(
+  public abstract getSelectedBranch(): Promise<BranchNamePairStructure>;
+  public abstract preformBranchOperation(
     branchInfo: BranchNamePairStructure
   ): Promise<void>;
 

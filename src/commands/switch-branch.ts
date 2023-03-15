@@ -2,7 +2,7 @@ import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export class CreateBranchCommand extends Command {
   static description = 'Switches the current branch to another local branch';
@@ -32,7 +32,7 @@ export class CreateBranchCommand extends Command {
   ): Promise<void> {
     try {
       await GitFacade.switchBranch(branchInfo.branchNameA);
-    } catch (err) {
+    } catch (err:any) {
       console.error('Possible merge conflict with the following files:');
       err.fileNamesArray.forEach((fileName: string) => {
         console.error(fileName.trim());

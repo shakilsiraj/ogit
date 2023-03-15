@@ -1,10 +1,10 @@
-import * as uuid from 'uuid/v4';
+import {v4 as uuidv4} from 'uuid';
 
 export class GitFile {
   path: string = undefined;
   workingDir: string = undefined;
   index: string = undefined;
-  id = uuid();
+  id = uuidv4();
 
   constructor(path: string, workingDir: string, index: string) {
     this.path = path;

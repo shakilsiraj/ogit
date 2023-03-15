@@ -9,7 +9,7 @@ import {
 import 'reflect-metadata';
 import { GitFacade } from '../wrapper/git';
 import { Command, flags } from '@oclif/command';
-import inquirer = require('inquirer');
+import inquirer from 'inquirer';
 import { GitBranch } from '../models';
 
 export default class SetupGitFlowCommand extends Command {

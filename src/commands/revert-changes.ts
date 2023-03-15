@@ -3,7 +3,7 @@ import { GitStatus } from '../models';
 import { GitFacade } from '../wrapper/git';
 import { OperationUtils } from '../utils/OperationUtils';
 import { FileNameUtils } from '../utils/FileNameUtils';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export default class RevertChanges extends Command {
   static description = 'Reverts an uncommitted change';

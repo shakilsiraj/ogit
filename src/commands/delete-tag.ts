@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { GitFacade } from '../wrapper/git';
 import { Command } from '@oclif/command';
-import inquirer = require('inquirer');
+import inquirer from 'inquirer';
 
 export default class DeleteTagCommand extends Command {
   static description = 'Deletes a tag from local and remote repo';

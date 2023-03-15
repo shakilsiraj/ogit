@@ -1,7 +1,7 @@
 import Command, {
   BranchNamePairStructure
 } from '../abstracts/AbstractBranchCommand';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 import { flags } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
 

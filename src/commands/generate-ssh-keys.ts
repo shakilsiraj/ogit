@@ -1,9 +1,9 @@
 import { Command } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 import * as path from 'path';
 import * as fs from 'fs';
-const { exec } = require('child_process');
+import { exec } from 'child_process';
 
 export class GenerateSSHKeyPairs extends Command {
   static description =

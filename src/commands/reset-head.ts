@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import { GitFacade } from '../wrapper/git';
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export default class ResetHeadCommand extends Command {
   static description = 'Resets the current HEAD to a branch or tag';

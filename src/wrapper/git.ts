@@ -1,11 +1,11 @@
 import { GitStatus, ChangeTypes } from '../models/GitStatus';
-import * as SimpleGit from 'simple-git/promise';
+import simpleGit, { CommitResult, SimpleGit, TagResult } from 'simple-git';
 import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
 // import * as keygen from 'ssh-keygen2';
-const keygen = require('ssh-keygen2');
+import keygen from '@andrewwlane/ssh-keygen2';
 /**
  * Wrapper class for git commands.
  *
@@ -13,11 +13,11 @@ const keygen = require('ssh-keygen2');
  * @class GitFacade
  */
 export namespace GitFacade {
-  export const git = async (): Promise<SimpleGit.SimpleGit> => {
+  export const git = async (): Promise<SimpleGit> => {
     let relativePath;
     try {
-      relativePath = await SimpleGit().raw(['rev-parse', '--show-cdup']);
-    } catch (error) {
+      relativePath = await simpleGit().raw(['rev-parse', '--show-cdup']);
+    } catch (error:any) {
       throw new Error(
         `Call to get repository directory failed with message: ${error.message}`
       );
@@ -29,7 +29,7 @@ export namespace GitFacade {
       relativePath = relativePath.trim();
     }
     // console.log(`relativePath ${relativePath}`);
-    const g = SimpleGit();
+    const g = simpleGit();
     g.cwd(relativePath);
     return g;
   };
@@ -45,7 +45,7 @@ export namespace GitFacade {
     try {
       const gitStatus = await git().then(async g => await g.status());
       statusObj = ObjectMapper.deserialize(GitStatus, gitStatus);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(
         `Call to get repository status failed with message: ${error.message}`
       );
@@ -65,7 +65,7 @@ export namespace GitFacade {
       url = await git().then(
         async g => await g.raw(['config', '--get', 'remote.origin.url'])
       );
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(
         `Call to get remote origin failed with message: ${error.message}`
       );
@@ -92,7 +92,7 @@ export namespace GitFacade {
           'Skipping initialization as the directiory is already a git repo!'
         );
       }
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(
         `Call to check init status failed with message: ${error.message}`
       );
@@ -126,7 +126,7 @@ export namespace GitFacade {
         success = true;
         cli.action.stop();
       }
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop(
         `Call to setup git repo failed with message: ${error.message}`
       );
@@ -136,7 +136,7 @@ export namespace GitFacade {
         cli.action.start('Pulling down repository');
         await git().then(async g => await g.pull('origin', branch));
         cli.action.stop();
-      } catch (error) {
+      } catch (error:any) {
         cli.action.stop(
           `Pulling down branch failed with message: ${error.message}`
         );
@@ -180,7 +180,7 @@ export namespace GitFacade {
     message: string,
     fileNames: string[],
     skipValidation: boolean
-  ): Promise<SimpleGit.CommitSummary> => {
+  ): Promise<CommitResult> => {
     const options: any = { '--include': true };
     if (skipValidation) {
       options['--no-verify'] = null;
@@ -192,7 +192,7 @@ export namespace GitFacade {
       );
       cli.action.stop();
       return commitResult;
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(
         `Call to commit changes failed with message: ${error.message}`
       );
@@ -208,7 +208,7 @@ export namespace GitFacade {
       cli.action.start(`Pushing changes to remote ${branchNames.join(', ')}`);
       await git().then(async g => await g.push('origin', ...branchNames));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw new Error(
         `Call to push changes failed with message: ${error.message}`
@@ -227,7 +227,7 @@ export namespace GitFacade {
       cli.action.start(`Adding file to repo ${filePath} `);
       await git().then(async g => await g.add(filePath));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(
         `Call to add file to repo failed with message: ${error.message}`
       );
@@ -250,8 +250,8 @@ export namespace GitFacade {
   export const ammendLastCommit = async (
     filePaths: string[],
     message: string
-  ): Promise<SimpleGit.CommitSummary> => {
-    let summary: SimpleGit.CommitSummary;
+  ): Promise<CommitResult> => {
+    let summary: CommitResult;
 
     cli.action.start(`Updating last comment to ${message}`);
     summary = await git().then(
@@ -325,7 +325,7 @@ export namespace GitFacade {
   export const getMessageFromCommitHash = async (
     hash: string
   ): Promise<string> => {
-    return SimpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
+    return simpleGit().raw(['log', '--pretty=format:%s', '-n 1', hash]);
   };
 
   /**
@@ -388,7 +388,7 @@ export namespace GitFacade {
         async g => await g.raw(['branch', '-m', currantName, newName])
       );
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw new Error(
         `Call to rename branch failed with message: ${error.message}`
@@ -408,7 +408,7 @@ export namespace GitFacade {
     try {
       await git().then(async g => await g.checkout(branchName));
       cli.action.stop();
-    } catch (err) {
+    } catch (err:any) {
       cli.action.stop('failed');
       const errorRegex = /checkout:\n((.+\n)+)Please/;
       const fileNames = errorRegex.exec(err.message)[1].trim();
@@ -458,7 +458,7 @@ export namespace GitFacade {
         async g => await g.raw(['push', 'origin', '--delete', branchName])
       );
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -478,7 +478,7 @@ export namespace GitFacade {
           })
       );
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -580,7 +580,7 @@ export namespace GitFacade {
     try {
       await git().then(async g => await g.stash(deleteStashCommandOptions));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -605,7 +605,7 @@ export namespace GitFacade {
     try {
       await git().then(async g => await g.stash(unStashCommandOptions));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       const errorRegex = /merge:\n((.+\n)+)Please/;
       const fileNames = errorRegex.exec(error.message)[1].trim();
@@ -638,7 +638,7 @@ export namespace GitFacade {
     }
     try {
       await git().then(async g => await g.raw(commandList));
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -652,7 +652,7 @@ export namespace GitFacade {
       cli.action.start('Resyncing remote branches');
       await git().then(async g => await g.raw(['fetch', 'origin', '--prune']));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -674,7 +674,7 @@ export namespace GitFacade {
         await git().then(async g => await g.checkout(['--', file.path]));
       }
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -683,13 +683,13 @@ export namespace GitFacade {
   /**
    * Returns a list of tag names for the repo
    */
-  export const tags = async (): Promise<SimpleGit.TagResult> => {
-    let tags: SimpleGit.TagResult;
+  export const tags = async (): Promise<TagResult> => {
+    let tags: TagResult;
     try {
       cli.action.start('Retrieving tag names');
       tags = await git().then(async g => await g.tags());
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -710,7 +710,7 @@ export namespace GitFacade {
       cli.action.start(`Reseting current HEAD to ${pointer}`);
       await git().then(async g => await g.raw(['reset', strategy, pointer]));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -728,7 +728,7 @@ export namespace GitFacade {
       );
       fileNamesList = fileNames.split('\n').filter(n => n);
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -749,7 +749,7 @@ export namespace GitFacade {
       }
       await git().then(async g => await g.raw(options));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -782,7 +782,7 @@ export namespace GitFacade {
         await autoCommit(commitMessage);
       }
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -790,9 +790,9 @@ export namespace GitFacade {
 
   export const autoCommit = async (
     message: string
-  ): Promise<SimpleGit.CommitSummary> => {
+  ): Promise<CommitResult> => {
     await git().then(async g => await g.raw(['add', '--all']));
-    return SimpleGit().commit(message);
+    return simpleGit().commit(message);
   };
 
   /**
@@ -803,7 +803,7 @@ export namespace GitFacade {
       cli.action.start('Cancelling merge attempt');
       await git().then(async g => await g.merge(['--abort']));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -826,7 +826,7 @@ export namespace GitFacade {
       mergeCommandParams.push('--no-ff', branchName);
       await git().then(async g => await g.merge(mergeCommandParams));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -882,7 +882,7 @@ export namespace GitFacade {
       const data = await getConfig(config, global);
       cli.action.stop();
       return data ? data.trim() : null;
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -902,7 +902,7 @@ export namespace GitFacade {
         value = await getConfig(config, true);
       }
       return value ? value.trim() : null;
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -923,7 +923,7 @@ export namespace GitFacade {
       cli.action.start(`Setting config ${config}`);
       await setConfig(config, value, global);
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -970,7 +970,7 @@ export namespace GitFacade {
           )
       );
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -998,7 +998,7 @@ export namespace GitFacade {
         // console.log(`referencesString - ${referencesString}`);
       });
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -1022,7 +1022,7 @@ export namespace GitFacade {
         await g.tag(options);
       });
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -1037,7 +1037,7 @@ export namespace GitFacade {
       cli.action.start(`Pushing tag ${tagName} to origin`);
       await git().then(async g => await g.push('origin', tagName));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -1052,7 +1052,7 @@ export namespace GitFacade {
       cli.action.start('Pushing all tags to origin');
       await git().then(async g => await g.push('origin', '--tags'));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -1066,7 +1066,7 @@ export namespace GitFacade {
       cli.action.start(`Deleting tag ${tagName}`);
       await git().then(async g => await g.tag(['-d', tagName]));
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
@@ -1082,7 +1082,7 @@ export namespace GitFacade {
         async g => await g.push('origin', `:refs/tags/${tagName}`)
       );
       cli.action.stop();
-    } catch (error) {
+    } catch (error:any) {
       cli.action.stop('failed');
       throw error;
     }
