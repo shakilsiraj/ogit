@@ -1,7 +1,7 @@
 {
   "name": "ogit",
   "description": "A lazy developer's Git CLI made simple. Makes using git on cloud IDEs (i.e. C9) a walk in the park.",
-  "version": "1.28.1",
+  "version": "1.28.0",
   "author": "shakil.siraj@gmail.com",
   "bin": {
     "ogit": "./bin/run"
@@ -18,11 +18,11 @@
     "cli-ux": "^4.9.3",
     "columnify": "^1.5.4",
     "inquirer": "^7.0.4",
-    "inquirer-autocomplete-prompt": "1.4.0",
+    "inquirer-autocomplete-prompt": "^1.0.1",
     "json-object-mapper": "^1.6.0",
     "reflect-metadata": "^0.1.13",
     "simple-git": "^1.131.0",
-    "@andrewwlane/ssh-keygen2": "1.1.4",
+    "ssh-keygen2": "^0.1.0",
     "terminal-link": "^1.2.0",
     "tslib": "^1.9.3",
     "uuid": "^3.3.2"
@@ -37,6 +37,7 @@
     "@types/node": "^10.12.18",
     "@types/uuid": "^3.4.4",
     "globby": "^8.0.2",
+    "jest": "^25.0.0",
     "prettier": "^1.18.2",
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
