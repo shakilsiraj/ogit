@@ -4,8 +4,7 @@ import { ObjectMapper } from 'json-object-mapper';
 import cli from 'cli-ux';
 import { GitBranchSummary, GitBranch, GitFile } from '../models';
 import { GitStash } from '../models/GitStash';
-// import * as keygen from 'ssh-keygen2';
-const keygen = require('ssh-keygen2');
+const keygen = require('@andrewwlane/ssh-keygen2');
 /**
  * Wrapper class for git commands.
  *
@@ -833,6 +832,42 @@ export namespace GitFacade {
   };
 
   /**
+   * Sets the config value
+   * @param config the config to set
+   * @param value the value to set
+   * @param global if its global or not
+   */
+  export const setConfig = async (
+    config: string,
+    value: string,
+    global: boolean
+  ): Promise<void> => {
+    const commands = ['config'];
+    if (global) {
+      commands.push('--global');
+    }
+    commands.push(config, value);
+    await git().then(async g => g.raw(commands));
+  };
+
+  /**
+   * Returns the config value
+   * @param config to look for
+   * @param global if global config or not
+   */
+  export const getConfig = async (
+    config: string,
+    global: boolean
+  ): Promise<string> => {
+    const commands = ['config'];
+    if (global) {
+      commands.push('--global');
+    }
+    commands.push(config);
+    return await git().then(async g => await g.raw(commands));
+  };
+
+  /**
    * Returns the config data
    * @param config name of the config
    * @param global lookup in global scope?
@@ -843,14 +878,50 @@ export namespace GitFacade {
   ): Promise<string> => {
     try {
       cli.action.start(`Getting config ${config}`);
-      const commands = ['config'];
-      if (global) {
-        commands.push('--global');
-      }
-      commands.push(config);
-      const data = await git().then(async g => await g.raw(commands));
+      const data = await getConfig(config, global);
       cli.action.stop();
       return data ? data.trim() : null;
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Returns the config data by looking into local config first and then global config
+   * @param config name of the config
+   */
+  export const getConfigDataFromAnyWhere = async (
+    config: string
+  ): Promise<string> => {
+    try {
+      cli.action.start(`Getting config ${config}`);
+      let value = await getConfig(config, false);
+      if (!value) {
+        value = await getConfig(config, true);
+      }
+      return value ? value.trim() : null;
+    } catch (error) {
+      cli.action.stop('failed');
+      throw error;
+    }
+  };
+
+  /**
+   * Sets the config data
+   * @param config name of the config
+   * @param value value of the config
+   * @param global lookup in global scope?
+   */
+  export const setConfigData = async (
+    config: string,
+    value: string,
+    global = true
+  ): Promise<void> => {
+    try {
+      cli.action.start(`Setting config ${config}`);
+      await setConfig(config, value, global);
+      cli.action.stop();
     } catch (error) {
       cli.action.stop('failed');
       throw error;
@@ -977,7 +1048,7 @@ export namespace GitFacade {
    */
   export const pushAllTags = async (): Promise<void> => {
     try {
-      cli.action.start(`Pushing all tags to origin`);
+      cli.action.start('Pushing all tags to origin');
       await git().then(async g => await g.push('origin', '--tags'));
       cli.action.stop();
     } catch (error) {

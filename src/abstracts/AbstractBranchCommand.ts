@@ -21,7 +21,7 @@ export default abstract class extends Command {
   };
 
   public searchLocalBranches = (
-    answers: string[],
+    _answers: string[],
     input: string
   ): Promise<string[]> => {
     const searchResults = this.localBranches.filter(
